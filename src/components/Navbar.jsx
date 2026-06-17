@@ -46,7 +46,7 @@ export default function Navbar() {
             <span className="text-sky-400">Aurora</span>Lib
           </span>
         </Link>
-        <div className="hidden items-center bg-slate-900/60 border border-slate-800 p-1 px-2 rounded-xl gap-3 md:flex">
+        <div className="hidden items-center bg-slate-900/60 border border-slate-800 p-1 rounded-xl gap-3 md:flex">
           <div className="flex items-center gap-1">
             {baseNavItems.map((item) => (
               <Link
@@ -63,7 +63,7 @@ export default function Navbar() {
           <div className="flex items-center">
             <Link
               href="/auth/signin"
-              className="px-4 py-2 text-xs font-black rounded-lg bg-sky-400 text-slate-950 hover:bg-[#7dd3fc] transition-all duration-200 shadow-lg shadow-sky-400/10 flex items-center gap-1.5"
+              className="px-4 mx-1 py-2 text-xs font-black rounded-lg bg-sky-400 text-slate-950 hover:bg-[#7dd3fc] transition-all duration-200 shadow-lg shadow-sky-400/10 flex items-center gap-1.5"
             >
               <MdLogin className="text-sm" />
               <span>Start Reading</span>
@@ -109,7 +109,7 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <MdLogin className="text-lg" />
-                <span>Login / Register</span>
+                <span>Start Reading</span>
               </Link>
             </div>
           </motion.div>
