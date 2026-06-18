@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link"; // Correct Next.js client-side router link package
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { FcGoogle } from "react-icons/fc";
 import {
@@ -12,14 +13,32 @@ import {
   MdVisibilityOff,
   MdMenuBook,
   MdCreate,
+  MdErrorOutline,
 } from "react-icons/md";
+import { authClient } from "@/lib/auth-client";
 
 export default function SignUp() {
+  const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
+
   const [step, setStep] = useState(1); // Step 1: Account Creation, Step 2: Role Assignment
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [error, setError] = useState("");
+  useEffect(() => {
+    if (!isPending && session?.user) {
+      const role = session.user.role;
+      router.replace(role === "writer" ? "/dashboard/writer" : "/dashboard/reader");
+    }
+  }, [session, isPending, router]);
+  if (isPending || session?.user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />
+      </div>
+    );
+  }
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,29 +46,44 @@ export default function SignUp() {
     confirmPassword: "",
     role: "",
   });
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (error) setError(""); // Clear error on input change
   };
-
   const handleNextStep = (e) => {
     e.preventDefault();
+    setError("");
+
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters long.");
+      return;
+    }
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      setError("Passwords do not match. Please try again.");
       return;
     }
     setStep(2);
   };
-
   const handleRoleSelect = async (selectedRole) => {
     setLoading(true);
-    const finalData = { ...formData, role: selectedRole };
-    console.log("Final sign up data:", finalData);
-    setTimeout(() => {
+    setError("");
+
+    const { name, email, password } = formData;
+    const { data, error: authError } = await authClient.signUp.email({
+      name,
+      email,
+      password,
+      role: selectedRole,
+    });
+
+    if (authError) {
+      setError(authError.message || "Sign up failed. Please try again.");
       setLoading(false);
-      window.location.href =
-        selectedRole === "writer" ? "/dashboard/writer" : "/dashboard/reader";
-    }, 1500);
+      return;
+    }
+
+    window.location.href =
+      selectedRole === "writer" ? "/dashboard/writer" : "/dashboard/reader";
   };
 
   return (
@@ -73,7 +107,6 @@ export default function SignUp() {
               : "Tell us how you want to experience AuroraLib"}
           </p>
         </div>
-
         <AnimatePresence mode="wait">
           {step === 1 ? (
             <motion.div
@@ -208,6 +241,20 @@ export default function SignUp() {
                     </button>
                   </div>
                 </div>
+                <AnimatePresence>
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                      transition={{ duration: 0.2 }}
+                      className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3"
+                    >
+                      <MdErrorOutline className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+                      <p className="text-xs font-medium leading-relaxed text-red-300">{error}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
                 <button
                   type="submit"
                   className="w-full rounded-xl bg-sky-400 py-3 text-sm font-black text-slate-950 transition-all duration-200 hover:bg-[#7dd3fc] shadow-lg shadow-sky-400/10 mt-2"
@@ -257,6 +304,20 @@ export default function SignUp() {
                   </p>
                 </button>
               </div>
+              <AnimatePresence>
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3"
+                  >
+                    <MdErrorOutline className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+                    <p className="text-xs font-medium leading-relaxed text-red-300">{error}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               {loading && (
                 <div className="flex justify-center py-2">
                   <div className="h-6 w-6 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />

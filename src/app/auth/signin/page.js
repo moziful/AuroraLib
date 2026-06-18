@@ -1,26 +1,51 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { FcGoogle } from "react-icons/fc";
-import { MdEmail, MdLock, MdVisibility, MdVisibilityOff } from "react-icons/md";
+import { MdEmail, MdLock, MdVisibility, MdVisibilityOff, MdErrorOutline } from "react-icons/md";
+import { authClient } from "@/lib/auth-client";
 
 export default function SignIn() {
+    const router = useRouter();
+    const { data: session, isPending } = authClient.useSession();
+
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
-
+    const [error, setError] = useState("");
+    useEffect(() => {
+        if (!isPending && session?.user) {
+            const role = session.user.role;
+            router.replace(role === "writer" ? "/dashboard/writer" : "/dashboard/reader");
+        }
+    }, [session, isPending, router]);
+    if (isPending || session?.user) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-slate-950">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />
+            </div>
+        );
+    }
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (error) setError("");
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form Data:", formData);
         setLoading(true);
-        // Authentication
-        setTimeout(() => setLoading(false), 1500);
+        setError("");
+        const { data, error: authError } = await authClient.signIn.email(formData);
+        if (authError) {
+            setError(authError.message || "Sign in failed. Please check your credentials.");
+            setLoading(false);
+            return;
+        }
+        const role = data?.user?.role;
+        window.location.href = role === "writer" ? "/dashboard/writer" : "/dashboard/reader";
     };
 
     return (
@@ -34,7 +59,7 @@ export default function SignIn() {
                 <div className="text-center ">
                     <h2 className="text-xl font-bold text-slate-200">Welcome back to <span className="text-sky-400">Aurora</span>Lib</h2>
                     <p className="mt-1 text-xs text-slate-400">
-                        Discover & read your favorite books
+                        Discover &amp; read your favorite books
                     </p>
                 </div>
                 <div className="">
@@ -111,6 +136,20 @@ export default function SignIn() {
                             </button>
                         </div>
                     </div>
+                    <AnimatePresence>
+                        {error && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                                transition={{ duration: 0.2 }}
+                                className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3"
+                            >
+                                <MdErrorOutline className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+                                <p className="text-xs font-medium leading-relaxed text-red-300">{error}</p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                     <motion.button
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.99 }}
@@ -126,7 +165,7 @@ export default function SignIn() {
                     </motion.button>
                 </form>
                 <p className=" text-center text-xs text-slate-400">
-                    Don't have an account?{" "}
+                    Don&apos;t have an account?{" "}
                     <Link href="/auth/signup" className="font-bold text-sky-400 hover:underline">
                         Sign up
                     </Link>
