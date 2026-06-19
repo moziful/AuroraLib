@@ -39,7 +39,7 @@ export default function WriterDashboard() {
             </div>
           </Link>
           <Link
-            href="/books"
+            href="/dashboard/writer/view-book"
             className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-6 transition-all duration-300 hover:border-violet-500/40 hover:bg-slate-900/80 hover:shadow-lg hover:shadow-violet-500/5"
           >
             <div className="absolute inset-0 bg-linear-to-br from-violet-500/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
@@ -48,10 +48,10 @@ export default function WriterDashboard() {
                 <MdMenuBook className="text-2xl text-violet-400" />
               </div>
               <h2 className="text-base font-bold text-white group-hover:text-violet-300 transition-colors">
-                Browse All Books
+                Browse All of Your Books
               </h2>
               <p className="mt-1 text-sm text-slate-500">
-                View the full collection of books on AuroraLib.
+                View all the books you have added on AuroraLib.
               </p>
             </div>
           </Link>
