@@ -43,8 +43,6 @@ const GENRES = [
 
 const STATUSES = ["Available", "Unavailable", "Coming Soon"];
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 function Field({ icon, label, required, children }) {
   return (
     <div>
@@ -132,10 +130,13 @@ export default function AddBookForm() {
     try {
       const formData = new FormData();
       formData.append("image", coverFile);
-      const res = await fetch(`${API_URL}/api/upload-image`, {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/upload-image`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
       const data = await res.json();
       if (!res.ok || !data.success)
         throw new Error(data.message || "Upload failed");
@@ -191,7 +192,6 @@ export default function AddBookForm() {
       />
       <div className="min-h-screen bg-slate-950 px-4 py-10">
         <div className="mx-auto max-w-5xl">
-          {/* Header */}
           <div className="mb-8 flex items-center gap-4">
             <button
               type="button"
@@ -266,7 +266,7 @@ export default function AddBookForm() {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="group flex aspect-[2/3] w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-700 bg-slate-800/50 transition-all hover:border-sky-500/50 hover:bg-slate-800"
+                      className="group flex aspect-2/3 w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-700 bg-slate-800/50 transition-all hover:border-sky-500/50 hover:bg-slate-800"
                     >
                       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-700 transition group-hover:bg-sky-500/10">
                         <MdCloudUpload className="text-3xl text-slate-500 transition group-hover:text-sky-400" />
