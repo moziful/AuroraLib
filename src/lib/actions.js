@@ -1,12 +1,18 @@
 export const addBook = async (bookData) => {
+    // Retrieve your token (adjust based on how you store it, e.g., localStorage)
+    const token = localStorage.getItem('token');
+
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` // Add this line
+        },
         body: JSON.stringify(bookData),
     });
+
     if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || `API error: ${res.status}`);
+        // ... rest of your error handling
     }
     return res.json();
 };

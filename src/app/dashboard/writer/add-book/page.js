@@ -1,4 +1,4 @@
-import AddBookForm from "@/components/Dashboards/AddBookForm";
+import AddBookChecked from "./AddBookChecked";
 
 export const metadata = {
   title: "Add Book",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function AddBookPage() {
-  return <AddBookForm />;
+  return <AddBookChecked />;
 }
