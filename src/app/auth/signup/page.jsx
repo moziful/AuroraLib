@@ -276,14 +276,14 @@ export default function SignUp() {
                 <button
                   type="button"
                   disabled={loading}
-                  onClick={() => handleRoleSelect("user")}
+                  onClick={() => handleRoleSelect("reader")}
                   className="group flex flex-col items-center justify-center rounded-xl border border-slate-800 bg-slate-950 p-6 text-center transition-all duration-200 hover:border-sky-400/40 hover:bg-slate-900 disabled:opacity-50"
                 >
                   <div className="mb-3 rounded-full bg-sky-400/10 p-3 text-sky-400 group-hover:scale-110 transition-transform">
                     <MdMenuBook className="h-6 w-6" />
                   </div>
                   <h3 className="text-sm font-bold text-slate-200">
-                    Reader (User)
+                    Reader
                   </h3>
                   <p className="mt-1 text-xs text-slate-500">
                     Discover, purchase, and read premium ebooks.

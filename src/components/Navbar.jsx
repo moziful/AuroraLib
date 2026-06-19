@@ -38,7 +38,7 @@ export default function Navbar() {
       icon: <MdBook className="text-xl" />,
     },
     {
-      href: "/dashboard",
+      href: `/dashboard/${user?.role}`,
       label: "Dashboard",
       icon: <MdDashboard className="text-xl" />,
     },
