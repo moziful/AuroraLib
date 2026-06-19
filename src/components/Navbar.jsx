@@ -14,6 +14,7 @@ import {
   MdLogout,
 } from "react-icons/md";
 import { authClient } from "@/lib/auth-client";
+import Image from "next/image";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -32,8 +33,8 @@ export default function Navbar() {
   const baseNavItems = [
     { href: "/", label: "Home", icon: <MdHome className="text-xl" /> },
     {
-      href: "/ebooks",
-      label: "Browse Ebooks",
+      href: "/books",
+      label: "Browse Books",
       icon: <MdBook className="text-xl" />,
     },
     {
@@ -45,9 +46,10 @@ export default function Navbar() {
 
   const linkClass = (href) => `
     px-3 py-2 text-xs font-bold rounded-lg transition-all duration-200 flex items-center gap-2 border
-    ${pathname.startsWith(href) && (href !== "/" || pathname === "/")
-      ? "bg-slate-900 text-sky-400 border-sky-400/20 shadow-md shadow-sky-400/5"
-      : "border-transparent text-slate-400 hover:text-sky-300"
+    ${
+      pathname.startsWith(href) && (href !== "/" || pathname === "/")
+        ? "bg-slate-900 text-sky-400 border-sky-400/20 shadow-md shadow-sky-400/5"
+        : "border-transparent text-slate-400 hover:text-sky-300"
     }
   `;
 
@@ -60,17 +62,17 @@ export default function Navbar() {
       .toUpperCase();
   const AuthSection = () => {
     if (isPending) {
-      return (
-        <div className="h-8 w-24 animate-pulse rounded-lg bg-slate-800" />
-      );
+      return <div className="h-8 w-24 animate-pulse rounded-lg bg-slate-800" />;
     }
     if (user) {
       return (
         <div className="flex items-center gap-2">
           {user.image ? (
-            <img
+            <Image
               src={user.image}
               alt={user.name}
+              width={32}
+              height={32}
               className="h-8 w-8 rounded-full object-cover ring-2 ring-sky-400/30"
             />
           ) : (
@@ -80,7 +82,7 @@ export default function Navbar() {
               </span>
             </div>
           )}
-          <span className="max-w-[100px] truncate text-xs font-bold text-slate-200">
+          <span className="max-w-25 truncate text-xs font-bold text-slate-200">
             {/* {user.name?.split(" ")[0]} */}
             {user.name}
           </span>
@@ -121,10 +123,12 @@ export default function Navbar() {
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-950 px-4 py-3">
             {user.image ? (
-              <img
+              <Image
                 src={user.image}
                 alt={user.name}
-                className="h-9 w-9 rounded-full object-cover ring-2 ring-sky-400/30"
+                width={32}
+                height={32}
+                className="h-8 w-8 rounded-full object-cover ring-2 ring-sky-400/30"
               />
             ) : (
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sky-400/20 ring-2 ring-sky-400/30">
@@ -169,16 +173,27 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950 px-4 py-4 sm:px-6 lg:px-8">
+    <nav className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950 px-4 py-2 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <Link
           href="/"
           className="flex items-center gap-2 text-2xl font-black tracking-wider transition-opacity hover:opacity-90"
           onClick={() => setMobileMenuOpen(false)}
         >
-          <span className="text-white drop-shadow-[0_2px_10px_rgba(56,189,248,0.2)]">
-            <span className="text-sky-400">Aurora</span>Lib
-          </span>
+          <div className="flex items-center gap-2">
+            <Image
+              src="/logo.png"
+              alt="AuroraLib Logo"
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-sm object-cover"
+            />
+            <span>
+              <span className="text-white drop-shadow-[0_2px_10px_rgba(56,189,248,0.2)]">
+                <span className="text-sky-400">Aurora</span>Lib
+              </span>
+            </span>
+          </div>
         </Link>
         <div className="hidden items-center bg-slate-900/60 border border-slate-800 p-1 rounded-xl gap-3 md:flex">
           <div className="flex items-center gap-1">
