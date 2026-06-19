@@ -130,13 +130,10 @@ export default function AddBookForm() {
     try {
       const formData = new FormData();
       formData.append("image", coverFile);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/upload-image`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
+      const res = await fetch("/api/upload-image", {
+        method: "POST",
+        body: formData,
+      });
       const data = await res.json();
       if (!res.ok || !data.success)
         throw new Error(data.message || "Upload failed");
