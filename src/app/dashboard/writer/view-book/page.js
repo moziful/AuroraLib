@@ -95,6 +95,9 @@ export default function ViewBookPage() {
                 <div>
                   <h2 className="text-xl font-bold text-white">{book.title}</h2>
                   <p className="mt-1 text-sm text-slate-400">{book.genre}</p>
+                  <p className={`mt-1 text-xs border rounded-full w-fit px-2 py-1 ${book.status === "Available" ? "bg-green-500 text-black" : book.status === "Coming Soon" ? "bg-yellow-500 text-black" : "bg-red-500 text-white"} text-slate-900`}>
+                    {book.status}
+                  </p>
                 </div>
                 <p className="line-clamp-3 text-sm text-slate-300">
                   {book.description || "No description provided."}
