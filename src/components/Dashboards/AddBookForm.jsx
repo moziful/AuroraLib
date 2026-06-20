@@ -23,10 +23,8 @@ import { MdVerified } from "react-icons/md";
 import { addBook } from "@/lib/actions";
 
 async function fetchAuthToken() {
-  const res = await fetch("/api/auth/token");
-  if (!res.ok) throw new Error("Failed to retrieve auth token. Are you signed in?");
-  const data = await res.json();
-  if (!data.success || !data.token) throw new Error(data.message || "No token returned.");
+  const { data, error } = await authClient.getToken();
+  if (error || !data?.token) throw new Error(error?.message || "Failed to retrieve auth token. Are you signed in?");
   return data.token;
 }
 
