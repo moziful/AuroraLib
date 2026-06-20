@@ -23,9 +23,9 @@ import { MdVerified } from "react-icons/md";
 import { addBook } from "@/lib/actions";
 
 async function fetchAuthToken() {
-  const { data, error } = await authClient.getToken();
-  if (error || !data?.token) throw new Error(error?.message || "Failed to retrieve auth token. Are you signed in?");
-  return data.token;
+  const token = await authClient.getToken();
+  if (!token) throw new Error("Failed to retrieve auth token. Are you signed in?");
+  return token;
 }
 
 const GENRES = [
