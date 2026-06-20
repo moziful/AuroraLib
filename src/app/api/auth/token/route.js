@@ -1,33 +1,29 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { SignJWT } from "jose";
 
 export async function GET() {
     try {
-        const session = await auth.api.getSession({
+        // Use Better Auth's jwt plugin server-side API to get the token.
+        // This returns an Ed25519-signed JWT using the key stored in MongoDB (jwks collection).
+        // The backend verifies it via /api/auth/jwks — no shared secret needed.
+        const result = await auth.api.getToken({
             headers: await headers(),
         });
-        if (!session?.user) {
-            return NextResponse.json({ success: false, message: "Not authenticated" }, { status: 401 });
+
+        if (!result?.token) {
+            return NextResponse.json(
+                { success: false, message: "Not authenticated" },
+                { status: 401 }
+            );
         }
-        const secret = process.env.BETTER_AUTH_SECRET;
-        if (!secret) {
-            return NextResponse.json({ success: false, message: "Server misconfiguration" }, { status: 500 });
-        }
-        const secretKey = new TextEncoder().encode(secret);
-        const token = await new SignJWT({
-            email: session.user.email,
-            role: session.user.role,
-            name: session.user.name,
-        })
-            .setProtectedHeader({ alg: "HS256" })
-            .setIssuedAt()
-            .setExpirationTime("1h")
-            .sign(secretKey);
-        return NextResponse.json({ success: true, token });
+
+        return NextResponse.json({ success: true, token: result.token });
     } catch (err) {
         console.error("[/api/auth/token] Error:", err);
-        return NextResponse.json({ success: false, message: "Failed to issue token" }, { status: 500 });
+        return NextResponse.json(
+            { success: false, message: "Failed to issue token" },
+            { status: 500 }
+        );
     }
 }
