@@ -1,3 +1,7 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+
 export const addBook = async (bookData, token) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     if (!apiUrl) throw new Error("API URL is not configured.");
@@ -19,3 +23,8 @@ export const addBook = async (bookData, token) => {
 
     return data;
 };
+
+export async function revalidateBooks() {
+    revalidatePath("/books");
+    revalidatePath("/dashboard/writer/view-book");
+}

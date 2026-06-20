@@ -20,7 +20,7 @@ import {
   MdPublish,
 } from "react-icons/md";
 import { MdVerified } from "react-icons/md";
-import { addBook } from "@/lib/actions";
+import { addBook, revalidateBooks } from "@/lib/actions";
 
 async function fetchAuthToken() {
   const res = await fetch("/api/auth/token");
@@ -184,6 +184,7 @@ export default function AddBookForm() {
         token
       );
       toast.success("Book published successfully!");
+      await revalidateBooks();
       setTimeout(() => router.push("/dashboard/writer"), 1500);
     } catch (err) {
       toast.error("Failed to publish: " + err.message);
