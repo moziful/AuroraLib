@@ -22,6 +22,14 @@ import {
 import { MdVerified } from "react-icons/md";
 import { addBook } from "@/lib/actions";
 
+async function fetchAuthToken() {
+  const res = await fetch("/api/auth/token");
+  if (!res.ok) throw new Error("Failed to retrieve auth token. Are you signed in?");
+  const data = await res.json();
+  if (!data.success || !data.token) throw new Error(data.message || "No token returned.");
+  return data.token;
+}
+
 const GENRES = [
   "Fiction",
   "Non-Fiction",
@@ -165,11 +173,16 @@ export default function AddBookForm() {
         }
       }
 
-      await addBook({
-        ...form,
-        coverImage,
-        price: parseFloat(form.price) || 0,
-      });
+      const token = await fetchAuthToken();
+
+      await addBook(
+        {
+          ...form,
+          coverImage,
+          price: parseFloat(form.price) || 0,
+        },
+        token
+      );
       toast.success("Book published successfully!");
       setTimeout(() => router.push("/dashboard/writer"), 1500);
     } catch (err) {

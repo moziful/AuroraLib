@@ -1,18 +1,21 @@
-export const addBook = async (bookData) => {
-    // Retrieve your token (adjust based on how you store it, e.g., localStorage)
-    const token = localStorage.getItem('token');
+export const addBook = async (bookData, token) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) throw new Error("API URL is not configured.");
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
+    const res = await fetch(`${apiUrl}/books`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` // Add this line
+            ...(token ? { "Authorization": `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(bookData),
     });
 
+    const data = await res.json().catch(() => ({}));
+
     if (!res.ok) {
-        // ... rest of your error handling
+        throw new Error(data.message || `Request failed with status ${res.status}`);
     }
-    return res.json();
+
+    return data;
 };
