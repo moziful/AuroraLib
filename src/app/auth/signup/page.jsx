@@ -29,7 +29,9 @@ export default function SignUp() {
   useEffect(() => {
     if (!isPending && session?.user) {
       const role = session.user.role;
-      router.replace(role === "writer" ? "/dashboard/writer" : "/dashboard/reader");
+      router.replace(
+        role === "writer" ? "/dashboard/writer" : "/dashboard/reader",
+      );
     }
   }, [session, isPending, router]);
   if (isPending || session?.user) {
@@ -117,21 +119,6 @@ export default function SignUp() {
               transition={{ duration: 0.2 }}
               className="space-y-6"
             >
-              <button
-                type="button"
-                className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm font-semibold text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
-              >
-                <FcGoogle className="h-5 w-5" />
-                Sign up with Google
-              </button>
-              <div className="relative flex items-center justify-center">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-800"></div>
-                </div>
-                <span className="relative bg-slate-950 px-3 text-xs rounded-full font-bold uppercase tracking-widest text-slate-500">
-                  Or register with email
-                </span>
-              </div>
               <form className="space-y-4" onSubmit={handleNextStep}>
                 <div className="space-y-2">
                   <label
@@ -251,7 +238,9 @@ export default function SignUp() {
                       className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3"
                     >
                       <MdErrorOutline className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
-                      <p className="text-xs font-medium leading-relaxed text-red-300">{error}</p>
+                      <p className="text-xs font-medium leading-relaxed text-red-300">
+                        {error}
+                      </p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -262,6 +251,21 @@ export default function SignUp() {
                   Continue
                 </button>
               </form>
+              <div className="relative flex items-center justify-center">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-slate-800"></div>
+                </div>
+                <span className="relative bg-slate-950 px-3 text-xs rounded-full font-bold uppercase tracking-widest text-slate-500">
+                  Or continue with
+                </span>
+              </div>
+              <button
+                type="button"
+                className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm font-semibold text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
+              >
+                <FcGoogle className="h-5 w-5" />
+                Sign up with Google
+              </button>
             </motion.div>
           ) : (
             <motion.div
@@ -282,9 +286,7 @@ export default function SignUp() {
                   <div className="mb-3 rounded-full bg-sky-400/10 p-3 text-sky-400 group-hover:scale-110 transition-transform">
                     <MdMenuBook className="h-6 w-6" />
                   </div>
-                  <h3 className="text-sm font-bold text-slate-200">
-                    Reader
-                  </h3>
+                  <h3 className="text-sm font-bold text-slate-200">Reader</h3>
                   <p className="mt-1 text-xs text-slate-500">
                     Discover, purchase, and read premium ebooks.
                   </p>
@@ -314,7 +316,9 @@ export default function SignUp() {
                     className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3"
                   >
                     <MdErrorOutline className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
-                    <p className="text-xs font-medium leading-relaxed text-red-300">{error}</p>
+                    <p className="text-xs font-medium leading-relaxed text-red-300">
+                      {error}
+                    </p>
                   </motion.div>
                 )}
               </AnimatePresence>

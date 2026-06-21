@@ -62,23 +62,6 @@ export default function SignIn() {
                         Discover &amp; read your favorite books
                     </p>
                 </div>
-                <div className="">
-                    <button
-                        type="button"
-                        className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm font-semibold text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
-                    >
-                        <FcGoogle className="h-5 w-5" />
-                        Sign in with Google
-                    </button>
-                </div>
-                <div className="relative flex items-center justify-center ">
-                    <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-slate-800"></div>
-                    </div>
-                    <span className="relative bg-slate-950 rounded-full px-3 text-xs font-bold uppercase tracking-widest text-slate-500">
-                        Or continue with
-                    </span>
-                </div>
                 <form className="space-y-5 " onSubmit={handleSubmit}>
                     {/* Email Input */}
                     <div className="space-y-2">
@@ -164,6 +147,23 @@ export default function SignIn() {
                         )}
                     </motion.button>
                 </form>
+                <div className="relative flex items-center justify-center ">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-slate-800"></div>
+                    </div>
+                    <span className="relative bg-slate-950 rounded-full px-3 text-xs font-bold uppercase tracking-widest text-slate-500">
+                        Or continue with
+                    </span>
+                </div>
+                <div className="">
+                    <button
+                        type="button"
+                        className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm font-semibold text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
+                    >
+                        <FcGoogle className="h-5 w-5" />
+                        Sign in with Google
+                    </button>
+                </div>
                 <p className=" text-center text-xs text-slate-400">
                     Don&apos;t have an account?{" "}
                     <Link href="/auth/signup" className="font-bold text-sky-400 hover:underline">
