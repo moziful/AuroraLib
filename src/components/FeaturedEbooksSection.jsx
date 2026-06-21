@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
 import { getAllBooks, booksdata } from "@/lib/data";
 import BookCard from "@/components/BookCard";
+import SectionHeader from "@/components/SectionHeader";
 
 
 
@@ -26,19 +27,14 @@ export default async function FeaturedEbooksSection() {
   return (
     <section className="bg-slate-950 px-4 py-10 sm:py-12">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.28em] text-sky-300">
-              Featured Ebooks
-            </p>
-            <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl">
-              Latest picks from the library
-            </h2>
-          </div>
-
+        <div className="flex flex-col items-center gap-2 lg:flex-row lg:justify-between">
+          <SectionHeader
+            eyebrow="Featured Ebooks"
+            heading="Latest picks from the library"
+          />
           <Link
             href="/books"
-            className="hidden items-center gap-2 text-sm font-bold text-sky-300 transition-colors hover:text-sky-200 sm:inline-flex"
+            className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-sky-300 transition-colors hover:text-sky-200 shrink-0"
           >
             View all
             <FaArrowRight />
@@ -59,16 +55,6 @@ export default async function FeaturedEbooksSection() {
             No ebooks are available yet.
           </div>
         )}
-
-        <div className="mt-6 sm:hidden">
-          <Link
-            href="/books"
-            className="inline-flex items-center gap-2 text-sm font-bold text-sky-300 transition-colors hover:text-sky-200"
-          >
-            View all ebooks
-            <FaArrowRight />
-          </Link>
-        </div>
       </div>
     </section>
   );

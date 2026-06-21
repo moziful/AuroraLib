@@ -3,15 +3,14 @@ import Link from "next/link";
 
 export default function BookCard({ book }) {
   return (
-    <div className="bg-slate-800 rounded-xl shadow-md overflow-hidden flex flex-col items-center relative">
+    <div className="bg-slate-800 rounded-xl shadow-md overflow-hidden flex flex-col items-center relative transition-all duration-300 hover:-translate-y-1">
       <span
-        className={`absolute top-0 right-0 uppercase leading-loose text-xs font-semibold px-2 rounded-bl-xl ${
-          book.status === "Available"
-            ? "text-green-600 bg-green-100"
-            : book.status === "Unavailable"
-              ? "text-red-600 bg-red-200"
-              : "text-orange-500 bg-orange-100"
-        }`}
+        className={`absolute top-0 right-0 uppercase leading-loose text-xs font-semibold px-2 rounded-bl-xl ${book.status === "Available"
+          ? "text-green-600 bg-green-100"
+          : book.status === "Unavailable"
+            ? "text-red-600 bg-red-200"
+            : "text-orange-500 bg-orange-100"
+          }`}
       >
         {book.status}
       </span>
