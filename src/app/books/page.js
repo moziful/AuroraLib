@@ -27,7 +27,7 @@ export default function EbooksPage() {
   };
 
   return (
-    <div className="flex flex-col max-w-7xl w-full mx-auto min-h-[calc(100vh-4rem)]">
+    <div className="p-4 xl:p-0 flex flex-col max-w-7xl w-full mx-auto min-h-[calc(100vh-4rem)]">
       <div className="text-4xl font-bold text-sky-400 mb-4">
         <h1>
           Books: {books.length}
