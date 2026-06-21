@@ -1,9 +1,9 @@
-import Image from "next/image";
+import HeroCarousel from "@/components/HeroCarousel";
 
-export default function Homeom() {
+export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950 font-sans">
-      <h1 className="text-4xl font-bold text-[#38bdf8]">AuroraLib -- Home</h1>
+    <div className="min-h-[calc(100vh-4rem)] bg-slate-950">
+      <HeroCarousel />
     </div>
   );
 }

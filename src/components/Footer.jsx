@@ -30,10 +30,10 @@ export default function Footer() {
             <span className="text-sky-400">Aurora</span>Lib
           </h2>
           <p className="mt-3 max-w-sm text-sm leading-6 text-slate-400">
-            A calm place to discover, read, and keep track of your favorite
-            books.
+            A calm place to discover, read, and keep track of your favorite books.
           </p>
         </div>
+
         <div>
           <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">
             Quick Links
@@ -51,6 +51,7 @@ export default function Footer() {
             ))}
           </ul>
         </div>
+
         <div>
           <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">
             Follow
@@ -74,13 +75,13 @@ export default function Footer() {
             })}
           </div>
         </div>
+
         <div>
           <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">
             Newsletter
           </h3>
           <p className="mt-4 text-sm leading-6 text-slate-400">
-            Subscribe newsletter to get update about new features, offers and
-            promotions.
+            Subscribe newsletter to get update about new features, offers and promotions.
           </p>
           <form className="mt-4 flex gap-2">
             <input
@@ -98,6 +99,7 @@ export default function Footer() {
           </form>
         </div>
       </div>
+
       <div className="mx-auto mt-10 flex max-w-7xl flex-col gap-2 border-t border-slate-800 pt-6 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
         <p>© {new Date().getFullYear()} AuroraLib. All rights reserved.</p>
         <p>Made for readers, writers, and everyone in between.</p>
