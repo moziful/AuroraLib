@@ -1,5 +1,6 @@
 import HeroCarousel from "@/components/HeroCarousel";
 import FeaturedEbooksSection from "@/components/FeaturedEbooksSection";
+import TopWritersSection from "@/components/TopWritersSection";
 import GenresSection from "@/components/GenresSection";
 
 export default async function HomePage() {
@@ -7,6 +8,7 @@ export default async function HomePage() {
     <div className="min-h-[calc(100vh-4rem)] bg-slate-950">
       <HeroCarousel />
       <FeaturedEbooksSection />
+      <TopWritersSection />
       <GenresSection />
     </div>
   );
