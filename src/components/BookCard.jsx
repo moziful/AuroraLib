@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function BookCard({ book }) {
   return (
-    <Link href={`/books/${book._id}`}>
+    <Link href={`/books/id/${book._id}`}>
       <div className="bg-slate-800 rounded-xl shadow-md overflow-hidden flex flex-col items-center relative transition-all duration-300 hover:-translate-y-1">
         <span
           className={`absolute top-0 right-0 uppercase leading-loose text-xs font-semibold px-2 rounded-bl-xl ${

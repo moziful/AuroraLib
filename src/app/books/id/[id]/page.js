@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAllBooks } from "@/lib/data";
+import { getBookById } from "@/lib/data";
 import { FaChevronLeft } from "react-icons/fa";
 
 const formatDate = (date) =>
@@ -13,20 +13,15 @@ const formatDate = (date) =>
 
 const getStatusStyles = (status) => {
   switch (status) {
-    case "Available":
-      return "border-emerald-500/20 bg-emerald-500/10 text-emerald-300";
-    case "Unavailable":
-      return "border-rose-500/20 bg-rose-500/10 text-rose-300";
-    default:
-      return "border-amber-500/20 bg-amber-500/10 text-amber-300";
+    case "Available": return "border-emerald-500/20 bg-emerald-500/10 text-emerald-300";
+    case "Unavailable": return "border-rose-500/20 bg-rose-500/10 text-rose-300";
+    default: return "border-amber-500/20 bg-amber-500/10 text-amber-300";
   }
 };
 
-const books = await getAllBooks();
-
 export default async function BookDetailsPage({ params }) {
-  const { slug } = await params;
-  const book = books.find((item) => item.slug === slug);
+  const { id } = await params;
+  const book = await getBookById(id);
 
   if (!book) {
     notFound();
@@ -51,7 +46,7 @@ export default async function BookDetailsPage({ params }) {
           {/* Left side content */}
           <Image
             src={book.coverImage || "/placeholder-cover.png"}
-            alt={book.title}
+            alt={"Book Image"}
             width={800}
             height={1000}
             className="h-full min-h-0 w-full object-cover"
@@ -103,7 +98,8 @@ export default async function BookDetailsPage({ params }) {
                 <div>
                   <p className="text-sm text-slate-500">Purchase</p>
                   <p className="mt-1 text-2xl font-black text-white">
-                    $ {book.price.toFixed(2)}
+                    {/* Use Number() to ensure it's a number, and provide a fallback */}
+                    $ {typeof book?.price === 'number' ? book.price.toFixed(2) : "0.00"}
                   </p>
                 </div>
                 <button

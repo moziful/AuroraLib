@@ -18,7 +18,7 @@ export const getAllBooks = async () => {
 export const getBooksByEmail = async (email) => {
     try {
         const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/books/${encodeURIComponent(email)}`
+            `${process.env.NEXT_PUBLIC_API_URL}/books/email/${encodeURIComponent(email)}`
         );
 
         if (!res.ok) {
@@ -30,6 +30,22 @@ export const getBooksByEmail = async (email) => {
     } catch (error) {
         console.error("Failed to fetch books by email:", error);
         return [];
+    }
+};
+
+export const getBookById = async (id) => {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books/${id}`);
+
+        if (!res.ok) {
+            console.error(`API error: ${res.status} ${res.statusText}`);
+            return null;
+        }
+
+        return await res.json();
+    } catch (error) {
+        console.error("Failed to fetch book by ID:", error);
+        return null;
     }
 };
 

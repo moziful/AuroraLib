@@ -6,17 +6,14 @@ import SectionHeader from "@/components/SectionHeader";
 
 const pickFeaturedBooks = (books) => {
   const source = Array.isArray(books) ? books : [];
-  const featured = source.filter((book) => book?.isFeatured);
-  const pool = featured.length ? featured : source;
-
-  return [...pool]
+  return [...source]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 6);
 };
 
 async function getFeaturedBooks() {
   const books = await getAllBooks();
-  return pickFeaturedBooks(books.length ? books : booksdata);
+  return pickFeaturedBooks(books);
 }
 
 export default async function FeaturedEbooksSection() {
