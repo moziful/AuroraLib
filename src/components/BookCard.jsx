@@ -53,3 +53,22 @@ export default function BookCard({ book }) {
     </div>
   );
 }
+
+export function BookCardSkeleton() {
+  return (
+    <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900 shadow-md">
+      <div className="h-60 w-full animate-pulse bg-slate-800" />
+      <div className="flex flex-col gap-4 p-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="h-7 w-2/3 animate-pulse rounded-md bg-slate-800" />
+          <div className="h-6 w-16 animate-pulse rounded-md bg-slate-800" />
+        </div>
+        <div className="space-y-2">
+          <div className="h-4 w-3/4 animate-pulse rounded-md bg-slate-800" />
+          <div className="h-4 w-1/2 animate-pulse rounded-md bg-slate-800" />
+        </div>
+        <div className="h-10 w-full animate-pulse rounded-lg bg-slate-800" />
+      </div>
+    </div>
+  );
+}

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { booksdata } from "@/lib/data";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import BookCard from "@/components/BookCard";
+import BookCard, { BookCardSkeleton } from "@/components/BookCard";
 
 const itemsPerPage = 6;
 
@@ -37,10 +37,16 @@ export default function EbooksPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-        {currentBooks.map((book) => (
-          // Change the key to _id for production -----------------------------------------------------------
-          <BookCard key={book.slug || book.price} book={book} />
-        ))}
+        {currentBooks.length ? (
+          currentBooks.map((book) => (
+            // Change the key to _id for production -----------------------------------------------------------
+            <BookCard key={book.slug || book.price} book={book} />
+          ))
+        ) : (
+          Array.from({ length: itemsPerPage }).map((_, index) => (
+            <BookCardSkeleton key={index} />
+          ))
+        )}
       </div>
 
       {totalPages > 1 && (

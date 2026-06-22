@@ -20,6 +20,13 @@ import { authClient } from "@/lib/auth-client";
 export default function SignUp() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "",
+  });
 
   const [step, setStep] = useState(1); // Step 1: Account Creation, Step 2: Role Assignment
   const [showPassword, setShowPassword] = useState(false);
@@ -41,13 +48,6 @@ export default function SignUp() {
       </div>
     );
   }
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    role: "",
-  });
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (error) setError(""); // Clear error on input change

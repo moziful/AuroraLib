@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { toast, ToastContainer } from "react-toastify";
@@ -85,15 +85,12 @@ export default function AddBookForm() {
     isFeatured: false,
   });
 
-  useEffect(() => {
-    if (user) {
-      setForm((prev) => ({
-        ...prev,
-        writerName: user.name || prev.writerName,
-        writerEmail: user.email || prev.writerEmail,
-      }));
-    }
-  }, [user]);
+  const writerDefaults = user
+    ? {
+        writerName: user.name || "",
+        writerEmail: user.email || "",
+      }
+    : null;
 
   const [coverFile, setCoverFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
@@ -406,8 +403,8 @@ export default function AddBookForm() {
                           <input
                             type="text"
                             name="writerName"
-                            value={form.writerName}
-                            onChange={handleChange}
+                        value={writerDefaults?.writerName || form.writerName}
+                        onChange={handleChange}
                             placeholder="e.g. Nathan Clarke"
                             className={inputCls}
                             required
@@ -419,7 +416,7 @@ export default function AddBookForm() {
                           <input
                             type="email"
                             name="writerEmail"
-                            value={form.writerEmail}
+                            value={writerDefaults?.writerEmail || form.writerEmail}
                             onChange={handleChange}
                             placeholder="e.g. nathan@auroralib.com"
                             className={inputCls}
