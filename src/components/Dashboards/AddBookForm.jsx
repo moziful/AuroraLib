@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { toast, ToastContainer } from "react-toastify";
@@ -91,6 +91,16 @@ export default function AddBookForm() {
         writerEmail: user.email || "",
       }
     : null;
+
+  useEffect(() => {
+    if (user) {
+      setForm((prev) => ({
+        ...prev,
+        writerName: prev.writerName || user.name || "",
+        writerEmail: prev.writerEmail || user.email || "",
+      }));
+    }
+  }, [user]);
 
   const [coverFile, setCoverFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
@@ -183,6 +193,17 @@ export default function AddBookForm() {
         token,
       );
       toast.success("Book published successfully!");
+      setForm({
+        title: "",
+        description: "",
+        price: "",
+        genre: "",
+        writerName: user?.name || "",
+        writerEmail: user?.email || "",
+        status: "Available",
+        isFeatured: false,
+      });
+      handleRemoveCover();
       await revalidateBooks();
       setTimeout(() => router.push("/dashboard/writer"), 1500);
     } catch (err) {
