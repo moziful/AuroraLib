@@ -66,6 +66,13 @@ export default function SignUp() {
     }
     setStep(2);
   };
+  const handleGoogleSignIn = async () => {
+    try {
+      await authClient.signIn.social({ provider: "google" });
+    } catch (error) {
+      toast.error("Google sign up failed");
+    }
+  };
   const handleRoleSelect = async (selectedRole) => {
     setLoading(true);
     setError("");
@@ -261,6 +268,7 @@ export default function SignUp() {
               </div>
               <button
                 type="button"
+                onClick={handleGoogleSignIn}
                 className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm font-semibold text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
               >
                 <FcGoogle className="h-5 w-5" />

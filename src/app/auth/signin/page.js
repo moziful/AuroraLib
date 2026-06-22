@@ -47,6 +47,13 @@ export default function SignIn() {
         const role = data?.user?.role;
         window.location.href = role === "writer" ? "/dashboard/writer" : "/dashboard/reader";
     };
+    const handleGoogleSignIn = async () => {
+        try {
+            await authClient.signIn.social({ provider: "google" });
+        } catch (error) {
+            toast.error("Google sign in failed");
+        }
+    };
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-12 sm:px-6 lg:px-8">
@@ -158,6 +165,7 @@ export default function SignIn() {
                 <div className="">
                     <button
                         type="button"
+                        onClick={handleGoogleSignIn}
                         className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm font-semibold text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
                     >
                         <FcGoogle className="h-5 w-5" />
