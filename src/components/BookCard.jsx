@@ -37,11 +37,14 @@ export default function BookCard({ book }) {
             <p>
               {book.genre || "Unknown Genre"} •{" "}
               <span>
-                {new Date(book?.createdAt || Date.now()).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                {new Date(book?.createdAt || Date.now()).toLocaleDateString(
+                  "en-US",
+                  {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  },
+                )}
               </span>
             </p>
           </span>
