@@ -163,194 +163,198 @@ export default function AdminDashboard() {
           borderColorClass="border-rose-500/20"
         />
 
-        <DashboardTabs
-          tabs={tabsConfig}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
+        <div className="mt-6 grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
+          <div className="lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:self-start">
+            <DashboardTabs
+              tabs={tabsConfig}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+          </div>
 
-        <div className="mt-6 w-full">
-          {activeTab === "home" && (
-            <div className="space-y-10">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <AnalyticsStatCard
-                  title="Total Users"
-                  value={sessionLoading ? "..." : totalUsersCount}
-                  description="Active reader accounts"
-                  icon={MdPeople}
-                  colorClass="text-sky-400"
-                />
-                <AnalyticsStatCard
-                  title="Total Writers"
-                  value={totalWritersCount}
-                  description="Approved platform creators"
-                  icon={MdPeople}
-                  colorClass="text-violet-400"
-                />
-                <AnalyticsStatCard
-                  title="Ebooks Sold"
-                  value={totalEbooksSold}
-                  description="Successful volume purchases"
-                  icon={MdBook}
-                  colorClass="text-amber-400"
-                />
-                <AnalyticsStatCard
-                  title="Total Revenue"
-                  value={`$${totalRevenueVal.toFixed(2)}`}
-                  description="Aggregated systems revenue"
-                  icon={MdTrendingUp}
-                  colorClass="text-emerald-400"
-                />
+          <div className="w-full min-w-0">
+            {activeTab === "home" && (
+              <div className="space-y-10">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <AnalyticsStatCard
+                    title="Total Users"
+                    value={sessionLoading ? "..." : totalUsersCount}
+                    description="Active reader accounts"
+                    icon={MdPeople}
+                    colorClass="text-sky-400"
+                  />
+                  <AnalyticsStatCard
+                    title="Total Writers"
+                    value={totalWritersCount}
+                    description="Approved platform creators"
+                    icon={MdPeople}
+                    colorClass="text-violet-400"
+                  />
+                  <AnalyticsStatCard
+                    title="Ebooks Sold"
+                    value={totalEbooksSold}
+                    description="Successful volume purchases"
+                    icon={MdBook}
+                    colorClass="text-amber-400"
+                  />
+                  <AnalyticsStatCard
+                    title="Total Revenue"
+                    value={`$${totalRevenueVal.toFixed(2)}`}
+                    description="Aggregated systems revenue"
+                    icon={MdTrendingUp}
+                    colorClass="text-emerald-400"
+                  />
+                </div>
+
+                <DashboardCharts />
               </div>
-
-              <DashboardCharts />
-            </div>
-          )}
-          {activeTab === "users" && (
-            <div>
-              <h2 className="mb-6 text-xl font-bold text-white">
-                Manage System Accounts
-              </h2>
-              <DataTable
-                headers={["Name", "Email Address", "Current Role", "Actions"]}
-                data={users}
-                emptyMessage="No registered users found."
-                renderRow={(u) => (
-                  <tr
-                    key={u.id}
-                    className="hover:bg-slate-800/30 transition-colors"
-                  >
-                    <td className="px-6 py-4 font-medium text-white">
-                      {u.name}
-                    </td>
-                    <td className="px-6 py-4 text-slate-400">{u.email}</td>
-                    <td className="px-6 py-4">
-                      <select
-                        value={u.role}
-                        onChange={(e) => changeUserRole(u.id, e.target.value)}
-                        className="bg-slate-950 text-xs font-semibold text-slate-300 border border-slate-800 rounded-lg px-2 py-1 focus:outline-none focus:border-rose-500"
-                      >
-                        <option value="User">User</option>
-                        <option value="Writer">Writer</option>
-                        <option value="Admin">Admin</option>
-                      </select>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => deleteUser(u.id)}
-                        className="p-1.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-md hover:bg-rose-500 hover:text-white transition-all"
-                      >
-                        <MdDelete />
-                      </button>
-                    </td>
-                  </tr>
-                )}
-              />
-            </div>
-          )}
-          {activeTab === "ebooks" && (
-            <div>
-              <h2 className="mb-6 text-xl font-bold text-white">
-                Manage Global Catalog
-              </h2>
-              <DataTable
-                headers={["Book Title", "Writer", "Price", "Status", "Actions"]}
-                data={ebooks}
-                emptyMessage="No ebooks available in the system."
-                renderRow={(book) => (
-                  <tr
-                    key={book.id}
-                    className="hover:bg-slate-800/30 transition-colors"
-                  >
-                    <td className="px-6 py-4 font-medium text-white">
-                      {book.title}
-                    </td>
-                    <td className="px-6 py-4 text-slate-400">
-                      {book.writerName}
-                    </td>
-                    <td className="px-6 py-4 text-rose-400 font-semibold">
-                      {book.price}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
-                          book.status === "published"
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                            : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                        }`}
-                      >
-                        {book.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => toggleBookPublish(book.id)}
-                          className="text-slate-400 hover:text-white text-xl p-1 transition-colors"
+            )}
+            {activeTab === "users" && (
+              <div>
+                <h2 className="mb-6 text-xl font-bold text-white">
+                  Manage System Accounts
+                </h2>
+                <DataTable
+                  headers={["Name", "Email Address", "Current Role", "Actions"]}
+                  data={users}
+                  emptyMessage="No registered users found."
+                  renderRow={(u) => (
+                    <tr
+                      key={u.id}
+                      className="hover:bg-slate-800/30 transition-colors"
+                    >
+                      <td className="px-6 py-4 font-medium text-white">
+                        {u.name}
+                      </td>
+                      <td className="px-6 py-4 text-slate-400">{u.email}</td>
+                      <td className="px-6 py-4">
+                        <select
+                          value={u.role}
+                          onChange={(e) => changeUserRole(u.id, e.target.value)}
+                          className="bg-slate-950 text-xs font-semibold text-slate-300 border border-slate-800 rounded-lg px-2 py-1 focus:outline-none focus:border-rose-500"
                         >
-                          {book.status === "published" ? (
-                            <MdToggleOn className="text-emerald-400 text-2xl" />
-                          ) : (
-                            <MdToggleOff className="text-slate-600 text-2xl" />
-                          )}
-                        </button>
+                          <option value="User">User</option>
+                          <option value="Writer">Writer</option>
+                          <option value="Admin">Admin</option>
+                        </select>
+                      </td>
+                      <td className="px-6 py-4">
                         <button
-                          onClick={() => deleteBook(book.id)}
+                          onClick={() => deleteUser(u.id)}
                           className="p-1.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-md hover:bg-rose-500 hover:text-white transition-all"
                         >
                           <MdDelete />
                         </button>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              />
-            </div>
-          )}
-          {activeTab === "transactions" && (
-            <div>
-              <h2 className="mb-6 text-xl font-bold text-white">
-                Platform Audit Ledger
-              </h2>
-              <DataTable
-                headers={[
-                  "Transaction ID",
-                  "Type",
-                  "Email Address",
-                  "Amount",
-                  "Execution Date",
-                ]}
-                data={transactions}
-                emptyMessage="No transaction entries recorded."
-                renderRow={(tx) => (
-                  <tr
-                    key={tx.id}
-                    className="hover:bg-slate-800/30 transition-colors"
-                  >
-                    <td className="px-6 py-4 font-semibold text-slate-300">
-                      {tx.id}
-                    </td>
-                    <td className="px-6 py-4 uppercase text-xs tracking-wider">
-                      <span
-                        className={`px-2 py-0.5 rounded border ${
-                          tx.type === "purchase"
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                            : "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                        }`}
-                      >
-                        {tx.type}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-slate-400">{tx.email}</td>
-                    <td className="px-6 py-4 text-emerald-400 font-bold">
-                      {tx.amount}
-                    </td>
-                    <td className="px-6 py-4 text-slate-500">{tx.date}</td>
-                  </tr>
-                )}
-              />
-            </div>
-          )}
+                      </td>
+                    </tr>
+                  )}
+                />
+              </div>
+            )}
+            {activeTab === "ebooks" && (
+              <div>
+                <h2 className="mb-6 text-xl font-bold text-white">
+                  Manage Global Catalog
+                </h2>
+                <DataTable
+                  headers={["Book Title", "Writer", "Price", "Status", "Actions"]}
+                  data={ebooks}
+                  emptyMessage="No ebooks available in the system."
+                  renderRow={(book) => (
+                    <tr
+                      key={book.id}
+                      className="hover:bg-slate-800/30 transition-colors"
+                    >
+                      <td className="px-6 py-4 font-medium text-white">
+                        {book.title}
+                      </td>
+                      <td className="px-6 py-4 text-slate-400">
+                        {book.writerName}
+                      </td>
+                      <td className="px-6 py-4 text-rose-400 font-semibold">
+                        {book.price}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
+                            book.status === "published"
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                          }`}
+                        >
+                          {book.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => toggleBookPublish(book.id)}
+                            className="text-slate-400 hover:text-white text-xl p-1 transition-colors"
+                          >
+                            {book.status === "published" ? (
+                              <MdToggleOn className="text-emerald-400 text-2xl" />
+                            ) : (
+                              <MdToggleOff className="text-slate-600 text-2xl" />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => deleteBook(book.id)}
+                            className="p-1.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-md hover:bg-rose-500 hover:text-white transition-all"
+                          >
+                            <MdDelete />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                />
+              </div>
+            )}
+            {activeTab === "transactions" && (
+              <div>
+                <h2 className="mb-6 text-xl font-bold text-white">
+                  Platform Audit Ledger
+                </h2>
+                <DataTable
+                  headers={[
+                    "Transaction ID",
+                    "Type",
+                    "Email Address",
+                    "Amount",
+                    "Execution Date",
+                  ]}
+                  data={transactions}
+                  emptyMessage="No transaction entries recorded."
+                  renderRow={(tx) => (
+                    <tr
+                      key={tx.id}
+                      className="hover:bg-slate-800/30 transition-colors"
+                    >
+                      <td className="px-6 py-4 font-semibold text-slate-300">
+                        {tx.id}
+                      </td>
+                      <td className="px-6 py-4 uppercase text-xs tracking-wider">
+                        <span
+                          className={`px-2 py-0.5 rounded border ${
+                            tx.type === "purchase"
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              : "bg-purple-500/10 text-purple-400 border-purple-500/20"
+                          }`}
+                        >
+                          {tx.type}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-slate-400">{tx.email}</td>
+                      <td className="px-6 py-4 text-emerald-400 font-bold">
+                        {tx.amount}
+                      </td>
+                      <td className="px-6 py-4 text-slate-500">{tx.date}</td>
+                    </tr>
+                  )}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

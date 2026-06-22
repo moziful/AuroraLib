@@ -185,6 +185,7 @@ function StackCarousel({ slides, active, direction }) {
 export default function HeroCarousel() {
   const [active, setActive] = useState(0);
   const [[page, direction], setPage] = useState([0, 1]);
+  const [mounted, setMounted] = useState(false);
 
   const prevActiveRef = useRef(active);
 
@@ -206,6 +207,8 @@ export default function HeroCarousel() {
   };
 
   useEffect(() => {
+    setMounted(true);
+
     const timer = window.setInterval(() => {
       const nextIndex = (active + 1) % slides.length;
       handlePageChange(nextIndex);
@@ -214,7 +217,13 @@ export default function HeroCarousel() {
     return () => window.clearInterval(timer);
   }, [active]);
 
-  const current = slides[active];
+  if (!mounted) {
+    return (
+      <section className="relative overflow-hidden bg-slate-950 px-4">
+        <div className="mx-auto min-h-[calc(100vh-8rem)] max-w-7xl" />
+      </section>
+    );
+  }
 
   return (
     <section className="relative overflow-hidden bg-slate-950 px-4">

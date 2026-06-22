@@ -203,13 +203,6 @@ export default function AddBookForm() {
       <div className="min-h-screen bg-slate-950 px-4 py-10">
         <div className="mx-auto max-w-5xl">
           <div className="mb-8 flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-semibold text-slate-400 transition-all hover:border-sky-500/40 hover:text-sky-400"
-            >
-              <MdArrowBack className="text-lg" /> Back
-            </button>
             <div>
               <h1 className="text-3xl font-black text-white">
                 Add a New <span className="text-sky-400">Book</span>
@@ -403,8 +396,10 @@ export default function AddBookForm() {
                           <input
                             type="text"
                             name="writerName"
-                        value={writerDefaults?.writerName || form.writerName}
-                        onChange={handleChange}
+                            value={
+                              writerDefaults?.writerName || form.writerName
+                            }
+                            onChange={handleChange}
                             placeholder="e.g. Nathan Clarke"
                             className={inputCls}
                             required
@@ -416,7 +411,9 @@ export default function AddBookForm() {
                           <input
                             type="email"
                             name="writerEmail"
-                            value={writerDefaults?.writerEmail || form.writerEmail}
+                            value={
+                              writerDefaults?.writerEmail || form.writerEmail
+                            }
                             onChange={handleChange}
                             placeholder="e.g. nathan@auroralib.com"
                             className={inputCls}

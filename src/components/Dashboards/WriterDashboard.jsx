@@ -56,12 +56,19 @@ export default function WriterDashboard() {
   const user = session?.user;
 
   // Active dashboard tab state
-  const [activeTab, setActiveTab] = useState("manage");
+  const [activeTab, setActiveTab] = useState("overview");
   const [books, setBooks] = useState([]);
   const [sales, setSales] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
 
+  const totalEbooks = books.length;
+  const grossEarnings = sales.reduce((total, sale) => {
+    const value = parseFloat(String(sale.amount || "").replace("$", ""));
+    return total + (Number.isNaN(value) ? 0 : value);
+  }, 0);
+
   const tabsConfig = [
+    { id: "overview", label: "Overview", icon: MdDashboard },
     { id: "manage", label: "Manage Ebooks", icon: MdBook },
     { id: "add-book", label: "Add Ebook", icon: MdAddCircle },
     { id: "bookmarks", label: "Bookmarks", icon: MdBookmark },
@@ -124,163 +131,176 @@ export default function WriterDashboard() {
           bgColorClass="bg-violet-500/10"
           borderColorClass="border-violet-500/20"
         />
-        <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <AnalyticsStatCard
-            title="Total Ebooks"
-            value={isPending ? "..." : books.length}
-            description="Books managed on AuroraLib"
-            icon={MdBook}
-            colorClass="text-violet-400"
-          />
-          <AnalyticsStatCard
-            title="Gross Earnings"
-            value="$29.00"
-            description="Accumulated revenue details"
-            icon={MdTrendingUp}
-            colorClass="text-emerald-400"
-          />
-        </div>
-        <DashboardTabs
-          tabs={tabsConfig}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
-        <div className="mt-6 w-full">
-          {activeTab === "manage" && (
-            <div>
-              <h2 className="mb-6 text-xl font-bold text-white">
-                Your Publications
-              </h2>
-              <DataTable
-                headers={[
-                  "Book Details",
-                  "Genre",
-                  "Price",
-                  "Status",
-                  "Actions",
-                ]}
-                data={books}
-                emptyMessage="You haven't uploaded any books yet."
-                renderRow={(book) => (
-                  <tr
-                    key={book.id || book.slug}
-                    className="hover:bg-slate-800/30 transition-colors"
-                  >
-                    <td className="px-6 py-4 flex items-center gap-3">
-                      <Image
-                        src={book.cover || "https://via.placeholder.com/150"}
-                        alt=""
-                        className="h-12 w-9 rounded object-cover bg-slate-800"
-                      />
-                      <span className="font-medium text-white">
-                        {book.title}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-slate-400">
-                      {book.genre || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 text-violet-400 font-semibold">
-                      {book.price}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
-                          book.status === "published"
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                            : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                        }`}
-                      >
-                        {book.status || "published"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          onClick={() => togglePublish(book.id)}
-                          className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors"
+        <div className="mt-6 grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
+          <div className="lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:self-start">
+            <DashboardTabs
+              tabs={tabsConfig}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+          </div>
+          <div className="w-full min-w-0">
+            {activeTab === "overview" && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="mb-6 text-xl font-bold text-white">
+                    Overview
+                  </h2>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <AnalyticsStatCard
+                    title="Total Ebooks"
+                    value={isPending ? "..." : totalEbooks}
+                    description="Books managed on AuroraLib"
+                    icon={MdBook}
+                    colorClass="text-violet-400"
+                  />
+                  <AnalyticsStatCard
+                    title="Gross Earnings"
+                    value={isPending ? "..." : `$${grossEarnings.toFixed(2)}`}
+                    description="Accumulated revenue details"
+                    icon={MdTrendingUp}
+                    colorClass="text-emerald-400"
+                  />
+                  </div>
+                </div>
+              </div>
+            )}
+            {activeTab === "manage" && (
+              <div>
+                <h2 className="mb-6 text-xl font-bold text-white">
+                  Your Publications
+                </h2>
+                <DataTable
+                  headers={[
+                    "Book Details",
+                    "Genre",
+                    "Price",
+                    "Status",
+                    "Actions",
+                  ]}
+                  data={books}
+                  emptyMessage="You haven't uploaded any books yet."
+                  renderRow={(book) => (
+                    <tr
+                      key={book.id || book.slug}
+                      className="hover:bg-slate-800/30 transition-colors"
+                    >
+                      <td className="px-6 py-4 flex items-center gap-3">
+                        <Image
+                          src={book.cover || "https://via.placeholder.com/150"}
+                          alt=""
+                          className="h-12 w-9 rounded object-cover bg-slate-800"
+                        />
+                        <span className="font-medium text-white">
+                          {book.title}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-slate-400">
+                        {book.genre || "N/A"}
+                      </td>
+                      <td className="px-6 py-4 text-violet-400 font-semibold">
+                        {book.price}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
+                            book.status === "published"
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                          }`}
                         >
-                          {book.status === "published"
-                            ? "Unpublish"
-                            : "Publish"}
-                        </button>
-                        <button
-                          onClick={() => setActiveTab("add-book")}
-                          className="p-1 bg-violet-500/10 border border-violet-500/20 text-violet-400 rounded hover:bg-violet-500 hover:text-white transition-all"
-                        >
-                          <MdEdit />
-                        </button>
-                        <button
-                          onClick={() => deleteBook(book.id)}
-                          className="p-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded hover:bg-rose-500 hover:text-white transition-all"
-                        >
-                          <MdDelete />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              />
-            </div>
-          )}
-          {activeTab === "add-book" && (
-            <div className="w-full">
-              <AddBookForm />
-            </div>
-          )}
-          {activeTab === "bookmarks" && (
-            <div>
-              <h2 className="mb-6 text-xl font-bold text-white">
-                Bookmarked References
-              </h2>
-              <EbookGallery
-                books={bookmarks}
-                emptyMessage="No references bookmarked."
-                actionLabel="View Details"
-                hoverBorderClass="hover:border-violet-500/30"
-                btnHoverClass="hover:bg-violet-500"
-              />
-            </div>
-          )}
-          {activeTab === "sales" && (
-            <div>
-              <h2 className="mb-6 text-xl font-bold text-white">
-                Sales Logs & Distributions
-              </h2>
-              <DataTable
-                headers={[
-                  "Ebook Title",
-                  "Buyer Name",
-                  "Purchase Date",
-                  "Amount",
-                ]}
-                data={sales}
-                emptyMessage="No items have been purchased yet."
-                renderRow={(sale) => (
-                  <tr
-                    key={sale.id}
-                    className="hover:bg-slate-800/30 transition-colors"
-                  >
-                    <td className="px-6 py-4 font-medium text-white">
-                      {sale.title}
-                    </td>
-                    <td className="px-6 py-4 text-slate-400">{sale.buyer}</td>
-                    <td className="px-6 py-4 text-slate-400">{sale.date}</td>
-                    <td className="px-6 py-4 text-emerald-400 font-semibold">
-                      {sale.amount}
-                    </td>
-                  </tr>
-                )}
-              />
-            </div>
-          )}
-          {activeTab === "profile" && (
-            <div>
-              <h2 className="mb-6 text-xl font-bold text-white">
-                Profile Management
-              </h2>
-              <UserProfile user={user} role="Writer" />
-            </div>
-          )}
+                          {book.status || "published"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() => togglePublish(book.id)}
+                            className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors"
+                          >
+                            {book.status === "published"
+                              ? "Unpublish"
+                              : "Publish"}
+                          </button>
+                          <button
+                            onClick={() => setActiveTab("add-book")}
+                            className="p-1 bg-violet-500/10 border border-violet-500/20 text-violet-400 rounded hover:bg-violet-500 hover:text-white transition-all"
+                          >
+                            <MdEdit />
+                          </button>
+                          <button
+                            onClick={() => deleteBook(book.id)}
+                            className="p-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded hover:bg-rose-500 hover:text-white transition-all"
+                          >
+                            <MdDelete />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                />
+              </div>
+            )}
+            {activeTab === "add-book" && (
+              <div className="w-full">
+                <AddBookForm />
+              </div>
+            )}
+            {activeTab === "bookmarks" && (
+              <div>
+                <h2 className="mb-6 text-xl font-bold text-white">
+                  Bookmarked References
+                </h2>
+                <EbookGallery
+                  books={bookmarks}
+                  emptyMessage="No references bookmarked."
+                  actionLabel="View Details"
+                  hoverBorderClass="hover:border-violet-500/30"
+                  btnHoverClass="hover:bg-violet-500"
+                />
+              </div>
+            )}
+            {activeTab === "sales" && (
+              <div>
+                <h2 className="mb-6 text-xl font-bold text-white">
+                  Sales Logs & Distributions
+                </h2>
+                <DataTable
+                  headers={[
+                    "Ebook Title",
+                    "Buyer Name",
+                    "Purchase Date",
+                    "Amount",
+                  ]}
+                  data={sales}
+                  emptyMessage="No items have been purchased yet."
+                  renderRow={(sale) => (
+                    <tr
+                      key={sale.id}
+                      className="hover:bg-slate-800/30 transition-colors"
+                    >
+                      <td className="px-6 py-4 font-medium text-white">
+                        {sale.title}
+                      </td>
+                      <td className="px-6 py-4 text-slate-400">{sale.buyer}</td>
+                      <td className="px-6 py-4 text-slate-400">{sale.date}</td>
+                      <td className="px-6 py-4 text-emerald-400 font-semibold">
+                        {sale.amount}
+                      </td>
+                    </tr>
+                  )}
+                />
+              </div>
+            )}
+            {activeTab === "profile" && (
+              <div>
+                <h2 className="mb-6 text-xl font-bold text-white">
+                  Profile Management
+                </h2>
+                <UserProfile user={user} role="Writer" />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
