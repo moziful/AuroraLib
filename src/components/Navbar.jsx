@@ -37,12 +37,18 @@ export default function Navbar() {
       label: "Browse Books",
       icon: <MdBook className="text-xl" />,
     },
-    // {
-    //   href: `/dashboard/${user?.role}`,
-    //   label: "Dashboard",
-    //   icon: <MdDashboard className="text-xl" />,
-    // },
   ];
+
+  const navItems = user
+    ? [
+        ...baseNavItems,
+        {
+          href: `/dashboard/${user.role || "reader"}`,
+          label: "Dashboard",
+          icon: <MdDashboard className="text-xl" />,
+        },
+      ]
+    : baseNavItems;
 
   const linkClass = (href) => `
     px-3 py-2 text-xs font-bold rounded-lg transition-all duration-200 flex items-center gap-2 border
@@ -197,7 +203,7 @@ export default function Navbar() {
         </Link>
         <div className="hidden items-center bg-slate-900/60 p-1 rounded-xl gap-3 md:flex">
           <div className="flex items-center gap-1">
-            {baseNavItems.map((item) => (
+            {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -235,7 +241,7 @@ export default function Navbar() {
             className="absolute left-0 right-0 top-full border-b border-slate-800 bg-slate-950 px-4 py-6 shadow-2xl md:hidden z-50"
           >
             <div className="flex flex-col gap-3 bg-slate-900 border border-slate-800 p-2 rounded-xl">
-              {baseNavItems.map((item) => (
+              {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
