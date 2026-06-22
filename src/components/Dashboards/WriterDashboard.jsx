@@ -1,102 +1,286 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { MdAdd, MdMenuBook, MdDashboard } from "react-icons/md";
+import {
+  MdDashboard,
+  MdBook,
+  MdAddCircle,
+  MdBookmark,
+  MdAttachMoney,
+  MdPerson,
+  MdEdit,
+  MdDelete,
+  MdTrendingUp,
+} from "react-icons/md";
 import { authClient } from "@/lib/auth-client";
 import { getBooksByEmail } from "@/lib/data";
+
+// Reusable Dashboard Sub-components
+import DashboardHeader from "../Dashboards/DashboardHeader";
+import DashboardTabs from "../Dashboards/DashboardTabs";
+import EbookGallery from "../Dashboards/EbookGallery";
+import DataTable from "../Dashboards/DataTable";
+import UserProfile from "../Dashboards/UserProfile";
+import AnalyticsStatCard from "./AnalyticsStatCard";
+
+// Your custom standalone AddBookForm component exactly as you built it
+import AddBookForm from "./AddBookForm";
+import Image from "next/image";
+
+// Mock data fetchers for auxiliary views
+async function getSalesHistory(email) {
+  return [
+    {
+      id: "s1",
+      title: "Mastering Next.js Architecture",
+      buyer: "John Doe",
+      date: "2026-06-15",
+      amount: "$29.00",
+    },
+  ];
+}
+
+async function getBookmarkedReferences(email) {
+  return [
+    {
+      id: "b1",
+      title: "Database Sharding Patterns",
+      cover: "https://via.placeholder.com/150",
+      slug: "database-sharding-patterns",
+    },
+  ];
+}
 
 export default function WriterDashboard() {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
+
+  // Active dashboard tab state
+  const [activeTab, setActiveTab] = useState("manage");
   const [books, setBooks] = useState([]);
+  const [sales, setSales] = useState([]);
+  const [bookmarks, setBookmarks] = useState([]);
+
+  const tabsConfig = [
+    { id: "manage", label: "Manage Ebooks", icon: MdBook },
+    { id: "add-book", label: "Add Ebook", icon: MdAddCircle },
+    { id: "bookmarks", label: "Bookmarks", icon: MdBookmark },
+    { id: "sales", label: "Sales History", icon: MdAttachMoney },
+    { id: "profile", label: "Profile Management", icon: MdPerson },
+  ];
 
   useEffect(() => {
     let alive = true;
 
-    const loadBooks = async () => {
-      if (!user?.email) {
-        setBooks([]);
-        return;
-      }
+    const loadWriterData = async () => {
+      if (!user?.email) return;
 
-      const writerBooks = await getBooksByEmail(user.email);
+      const [writerBooks, salesData, bookmarksData] = await Promise.all([
+        getBooksByEmail(user.email),
+        getSalesHistory(user.email),
+        getBookmarkedReferences(user.email),
+      ]);
+
       if (alive) {
-        setBooks(writerBooks);
+        setBooks(writerBooks || []);
+        setSales(salesData || []);
+        setBookmarks(bookmarksData || []);
       }
     };
 
-    loadBooks();
-
+    loadWriterData();
     return () => {
       alive = false;
     };
   }, [user?.email]);
 
+  const togglePublish = (id) => {
+    setBooks(
+      books.map((b) =>
+        b.id === id
+          ? {
+              ...b,
+              status: b.status === "published" ? "unpublished" : "published",
+            }
+          : b,
+      ),
+    );
+  };
+
+  const deleteBook = (id) => {
+    if (confirm("Are you sure you want to delete this ebook?")) {
+      setBooks(books.filter((b) => b.id !== id));
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-10">
+    <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100">
       <div className="mx-auto max-w-5xl">
-        <div className="mb-10">
-          <div className="flex items-center gap-3 border-5 border-white">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10 border border-sky-500/20">
-              <MdDashboard className="text-xl text-sky-400" />
-            </div>
+        <DashboardHeader
+          roleTitle="Writer Dashboard"
+          subtitle="Manage your books, upload contributions, and monitor distribution metrics."
+          icon={MdDashboard}
+          iconColorClass="text-violet-400"
+          bgColorClass="bg-violet-500/10"
+          borderColorClass="border-violet-500/20"
+        />
+        <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <AnalyticsStatCard
+            title="Total Ebooks"
+            value={isPending ? "..." : books.length}
+            description="Books managed on AuroraLib"
+            icon={MdBook}
+            colorClass="text-violet-400"
+          />
+          <AnalyticsStatCard
+            title="Gross Earnings"
+            value="$29.00"
+            description="Accumulated revenue details"
+            icon={MdTrendingUp}
+            colorClass="text-emerald-400"
+          />
+        </div>
+        <DashboardTabs
+          tabs={tabsConfig}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
+        <div className="mt-6 w-full">
+          {activeTab === "manage" && (
             <div>
-              <h1 className="text-3xl font-black text-white">
-                Writer <span className="text-sky-400">Dashboard</span>
-              </h1>
-              <p className="text-sm text-slate-500">
-                Manage your books and contributions
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="mb-10">
-          <h2 className="text-2xl font-bold text-white">Analytics</h2>
-          <p className="text-sm text-slate-500">
-            View insights about your books and contributions.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 border-5 border-white">
-          <Link
-            href="/dashboard/writer/add-book"
-            className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-6 transition-all duration-300 hover:border-sky-500/40 hover:bg-slate-900/80 hover:shadow-lg hover:shadow-sky-500/5"
-          >
-            <div className="absolute inset-0 bg-linear-to-br from-sky-500/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            <div className="relative">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10 border border-sky-500/20 transition-colors group-hover:bg-sky-500/20">
-                <MdAdd className="text-2xl text-sky-400" />
-              </div>
-              <h2 className="text-base font-bold text-white group-hover:text-sky-300 transition-colors">
-                Add New Book
+              <h2 className="mb-6 text-xl font-bold text-white">
+                Your Publications
               </h2>
-              <p className="mt-1 text-sm text-slate-500">
-                Upload a new book with cover image, description, and PDF link.
-              </p>
+              <DataTable
+                headers={[
+                  "Book Details",
+                  "Genre",
+                  "Price",
+                  "Status",
+                  "Actions",
+                ]}
+                data={books}
+                emptyMessage="You haven't uploaded any books yet."
+                renderRow={(book) => (
+                  <tr
+                    key={book.id || book.slug}
+                    className="hover:bg-slate-800/30 transition-colors"
+                  >
+                    <td className="px-6 py-4 flex items-center gap-3">
+                      <Image
+                        src={book.cover || "https://via.placeholder.com/150"}
+                        alt=""
+                        className="h-12 w-9 rounded object-cover bg-slate-800"
+                      />
+                      <span className="font-medium text-white">
+                        {book.title}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-slate-400">
+                      {book.genre || "N/A"}
+                    </td>
+                    <td className="px-6 py-4 text-violet-400 font-semibold">
+                      {book.price}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
+                          book.status === "published"
+                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                            : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                        }`}
+                      >
+                        {book.status || "published"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          onClick={() => togglePublish(book.id)}
+                          className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors"
+                        >
+                          {book.status === "published"
+                            ? "Unpublish"
+                            : "Publish"}
+                        </button>
+                        <button
+                          onClick={() => setActiveTab("add-book")}
+                          className="p-1 bg-violet-500/10 border border-violet-500/20 text-violet-400 rounded hover:bg-violet-500 hover:text-white transition-all"
+                        >
+                          <MdEdit />
+                        </button>
+                        <button
+                          onClick={() => deleteBook(book.id)}
+                          className="p-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded hover:bg-rose-500 hover:text-white transition-all"
+                        >
+                          <MdDelete />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              />
             </div>
-          </Link>
-          <Link
-            href="/dashboard/writer/view-book"
-            className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-6 transition-all duration-300 hover:border-violet-500/40 hover:bg-slate-900/80 hover:shadow-lg hover:shadow-violet-500/5"
-          >
-            <div className="absolute inset-0 bg-linear-to-br from-violet-500/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            <div className="relative">
-              <div className="mb-4 flex justify-between items-center text-base font-bold text-white">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/10 border border-violet-500/20 transition-colors group-hover:bg-violet-500/20">
-                  <MdMenuBook className="text-2xl text-violet-400" />
-                </div>
-                <span className="text-lg font-bold text-sky-400">
-                  {isPending ? "..." : `${books.length} Books`}
-                </span>
-              </div>
-              <h2 className="text-base font-bold text-white group-hover:text-violet-300 transition-colors">
-                Browse All of Your Books
+          )}
+          {activeTab === "add-book" && (
+            <div className="w-full">
+              <AddBookForm />
+            </div>
+          )}
+          {activeTab === "bookmarks" && (
+            <div>
+              <h2 className="mb-6 text-xl font-bold text-white">
+                Bookmarked References
               </h2>
-              <p className="mt-1 text-sm text-slate-500">
-                View all the books you have added on AuroraLib.
-              </p>
+              <EbookGallery
+                books={bookmarks}
+                emptyMessage="No references bookmarked."
+                actionLabel="View Details"
+                hoverBorderClass="hover:border-violet-500/30"
+                btnHoverClass="hover:bg-violet-500"
+              />
             </div>
-          </Link>
+          )}
+          {activeTab === "sales" && (
+            <div>
+              <h2 className="mb-6 text-xl font-bold text-white">
+                Sales Logs & Distributions
+              </h2>
+              <DataTable
+                headers={[
+                  "Ebook Title",
+                  "Buyer Name",
+                  "Purchase Date",
+                  "Amount",
+                ]}
+                data={sales}
+                emptyMessage="No items have been purchased yet."
+                renderRow={(sale) => (
+                  <tr
+                    key={sale.id}
+                    className="hover:bg-slate-800/30 transition-colors"
+                  >
+                    <td className="px-6 py-4 font-medium text-white">
+                      {sale.title}
+                    </td>
+                    <td className="px-6 py-4 text-slate-400">{sale.buyer}</td>
+                    <td className="px-6 py-4 text-slate-400">{sale.date}</td>
+                    <td className="px-6 py-4 text-emerald-400 font-semibold">
+                      {sale.amount}
+                    </td>
+                  </tr>
+                )}
+              />
+            </div>
+          )}
+          {activeTab === "profile" && (
+            <div>
+              <h2 className="mb-6 text-xl font-bold text-white">
+                Profile Management
+              </h2>
+              <UserProfile user={user} role="Writer" />
+            </div>
+          )}
         </div>
       </div>
     </div>

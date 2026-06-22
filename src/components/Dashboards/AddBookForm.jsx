@@ -24,9 +24,11 @@ import { addBook, revalidateBooks } from "@/lib/actions";
 
 async function fetchAuthToken() {
   const res = await fetch("/api/auth/token");
-  if (!res.ok) throw new Error("Failed to retrieve auth token. Are you signed in?");
+  if (!res.ok)
+    throw new Error("Failed to retrieve auth token. Are you signed in?");
   const data = await res.json();
-  if (!data.success || !data.token) throw new Error(data.message || "No token returned.");
+  if (!data.success || !data.token)
+    throw new Error(data.message || "No token returned.");
   return data.token;
 }
 
@@ -181,7 +183,7 @@ export default function AddBookForm() {
           coverImage,
           price: parseFloat(form.price) || 0,
         },
-        token
+        token,
       );
       toast.success("Book published successfully!");
       await revalidateBooks();
