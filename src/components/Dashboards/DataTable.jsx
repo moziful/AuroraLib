@@ -1,3 +1,5 @@
+import { Fragment } from "react";
+
 export default function DataTable({
   headers,
   data,
@@ -17,7 +19,11 @@ export default function DataTable({
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-800/50">
-          {data.map((item, index) => renderRow(item, index))}
+          {data.map((item, index) => (
+            <Fragment key={item?.id ?? index}>
+              {renderRow(item, index)}
+            </Fragment>
+          ))}
         </tbody>
       </table>
       {data.length === 0 && (

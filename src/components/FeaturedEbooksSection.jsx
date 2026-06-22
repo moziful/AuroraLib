@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
-import { getAllBooks, booksdata } from "@/lib/data";
+import { getAllBooks } from "@/lib/data";
 import BookCard, { BookCardSkeleton } from "@/components/BookCard";
 import SectionHeader from "@/components/SectionHeader";
-
-
 
 const pickFeaturedBooks = (books) => {
   const source = Array.isArray(books) ? books : [];
@@ -42,18 +40,16 @@ export default async function FeaturedEbooksSection() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {books.length ? (
-            books.map((book) => (
-              <BookCard
-                key={book.slug || `${book.title}-${book.createdAt}`}
-                book={book}
-              />
-            ))
-          ) : (
-            Array.from({ length: 6 }).map((_, index) => (
-              <BookCardSkeleton key={index} />
-            ))
-          )}
+          {books.length
+            ? books.map((book) => (
+                <BookCard
+                  key={book.slug || `${book.title}-${book.createdAt}`}
+                  book={book}
+                />
+              ))
+            : Array.from({ length: 6 }).map((_, index) => (
+                <BookCardSkeleton key={index} />
+              ))}
         </div>
 
         {!books.length && (

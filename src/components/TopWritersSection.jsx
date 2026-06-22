@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { booksdata, getAllBooks } from "@/lib/data";
+import { getAllBooks } from "@/lib/data";
 import SectionHeader from "@/components/SectionHeader";
 import { FaBookOpen, FaDollarSign, FaTrophy } from "react-icons/fa";
 
@@ -49,37 +49,43 @@ const rankConfig = [
 ];
 
 const getTopWriters = (books) => {
-  const map = {};
-  books.forEach((book) => {
+  const data = Array.isArray(books) ? books : [];
+
+  const writerStats = data.reduce((acc, book) => {
     const key = book.writerEmail || book.writerName;
-    if (!map[key]) {
-      map[key] = {
-        name: book.writerName,
-        email: book.writerEmail,
-        avatar: book.writerAvatar || null,
+    if (!key) return acc;
+
+    if (!acc[key]) {
+      acc[key] = {
+        email: book.writerEmail || null,
+        name: book.writerName || key,
         bookCount: 0,
         totalSales: 0,
         genres: {},
       };
     }
-    map[key].bookCount += 1;
-    map[key].totalSales += book.price || 0;
-    const g = book.genre || "General";
-    map[key].genres[g] = (map[key].genres[g] || 0) + 1;
-  });
 
-  return Object.values(map)
+    acc[key].bookCount += 1;
+    acc[key].totalSales += Number(book.price || 0);
+    const g = book.genre || "General";
+    acc[key].genres[g] = (acc[key].genres[g] || 0) + 1;
+    return acc;
+  }, {});
+
+  return Object.values(writerStats)
     .sort((a, b) => b.totalSales - a.totalSales)
     .slice(0, 3)
     .map((w) => ({
       ...w,
-      topGenre: Object.entries(w.genres).sort((a, b) => b[1] - a[1])[0][0],
+      topGenre:
+        Object.entries(w.genres).sort((a, b) => b[1] - a[1])[0]?.[0] ||
+        "General",
     }));
 };
 
 async function fetchTopWriters() {
   const apiBooks = await getAllBooks();
-  const books = apiBooks.length ? apiBooks : booksdata;
+  const books = Array.isArray(apiBooks) ? apiBooks : [];
   return getTopWriters(books);
 }
 
@@ -106,11 +112,15 @@ export default async function TopWritersSection() {
                 key={writer.email || writer.name}
                 className={`group relative flex flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:border-slate-700 hover:shadow-2xl ${rank.glow} ${isFirst ? "sm:-mt-4" : ""}`}
               >
-                <div className={`relative h-24 bg-gradient-to-b ${rank.banner}`}>
-                  <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${rank.bannerLine}`} />
+                <div className={`relative h-24 bg-linear-to-b ${rank.banner}`}>
+                  <div
+                    className={`absolute inset-x-0 top-0 h-1 bg-linear-to-r ${rank.bannerLine}`}
+                  />
                   <div className="absolute left-4 top-4 flex items-center gap-2">
                     <FaTrophy className={`text-sm ${rank.statIcon}`} />
-                    <span className={`text-xs font-black uppercase tracking-widest ${rank.statIcon}`}>
+                    <span
+                      className={`text-xs font-black uppercase tracking-widest ${rank.statIcon}`}
+                    >
                       {rank.place} Place
                     </span>
                   </div>
@@ -120,7 +130,9 @@ export default async function TopWritersSection() {
                 </div>
 
                 <div className="relative -mt-10 flex justify-center">
-                  <div className={`h-20 w-20 overflow-hidden rounded-full ring-4 ${rank.ring} bg-slate-900 shadow-lg transition-transform duration-300 group-hover:scale-105 flex items-center justify-center`}>
+                  <div
+                    className={`h-20 w-20 overflow-hidden rounded-full ring-4 ${rank.ring} bg-slate-900 shadow-lg transition-transform duration-300 group-hover:scale-105 flex items-center justify-center`}
+                  >
                     {writer.avatar ? (
                       <Image
                         src={writer.avatar}
@@ -138,27 +150,41 @@ export default async function TopWritersSection() {
                 </div>
                 <div className="flex flex-1 flex-col items-center gap-3 px-5 pb-6 pt-3 text-center">
                   <div>
-                    <h3 className="text-lg font-black leading-tight text-white">{writer.name}</h3>
-                    <span className={`mt-2 inline-block rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${rank.genrePill}`}>
+                    <h3 className="text-lg font-black leading-tight text-white">
+                      {writer.name}
+                    </h3>
+                    <span
+                      className={`mt-2 inline-block rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${rank.genrePill}`}
+                    >
                       {writer.topGenre}
                     </span>
                   </div>
-                  <div className={`h-px w-full bg-gradient-to-r from-transparent ${rank.divider} to-transparent`} />
+                  <div
+                    className={`h-px w-full bg-linear-to-r from-transparent ${rank.divider} to-transparent`}
+                  />
                   <div className="flex w-full items-center justify-around">
                     <div className="flex flex-col items-center gap-1">
                       <div className="flex items-center gap-2">
                         <FaBookOpen className={`text-xs ${rank.statIcon}`} />
-                        <span className="text-xl font-black text-white">{writer.bookCount}</span>
+                        <span className="text-xl font-black text-white">
+                          {writer.bookCount}
+                        </span>
                       </div>
-                      <p className="text-[11px] font-medium text-slate-500">Books</p>
+                      <p className="text-[11px] font-medium text-slate-500">
+                        Books
+                      </p>
                     </div>
                     <div className="h-8 w-px bg-slate-800" />
                     <div className="flex flex-col items-center gap-1">
                       <div className="flex items-center gap-1">
                         <FaDollarSign className={`text-xs ${rank.statIcon}`} />
-                        <span className="text-xl font-black text-white">{writer.totalSales.toFixed(0)}</span>
+                        <span className="text-xl font-black text-white">
+                          {writer.totalSales.toFixed(0)}
+                        </span>
                       </div>
-                      <p className="text-[11px] font-medium text-slate-500">Total Sales</p>
+                      <p className="text-[11px] font-medium text-slate-500">
+                        Total Sales
+                      </p>
                     </div>
                   </div>
                 </div>

@@ -3,12 +3,14 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { booksdata } from "@/lib/data";
+import { getAllBooks } from "@/lib/data";
 import { FaArrowRight } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 
-const slides = booksdata.slice(0, 6).map((book) => ({
+const books = await getAllBooks();
+
+const slides = books.slice(0, 6).map((book) => ({
   ...book,
   subtitle: book.description,
 }));

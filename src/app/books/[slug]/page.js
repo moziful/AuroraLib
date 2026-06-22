@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { booksdata } from "@/lib/data";
+import { getAllBooks } from "@/lib/data";
 import { FaChevronLeft } from "react-icons/fa";
 
 const formatDate = (date) =>
@@ -22,9 +22,11 @@ const getStatusStyles = (status) => {
   }
 };
 
+const books = await getAllBooks();
+
 export default async function BookDetailsPage({ params }) {
   const { slug } = await params;
-  const book = booksdata.find((item) => item.slug === slug);
+  const book = books.find((item) => item.slug === slug);
 
   if (!book) {
     notFound();

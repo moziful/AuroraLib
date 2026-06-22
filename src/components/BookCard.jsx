@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function BookCard({ book }) {
   return (
-    <Link href={`/books/${book.slug}`}>
+    <Link href={`/books/${book._id}`}>
       <div className="bg-slate-800 rounded-xl shadow-md overflow-hidden flex flex-col items-center relative transition-all duration-300 hover:-translate-y-1">
         <span
           className={`absolute top-0 right-0 uppercase leading-loose text-xs font-semibold px-2 rounded-bl-xl ${
@@ -48,10 +48,7 @@ export default function BookCard({ book }) {
               </span>
             </p>
           </span>
-          <div
-            href={`/books/${book.slug}`}
-            className="w-full px-3 py-2 bg-sky-400 cursor-pointer text-black rounded-lg font-semibold hover:bg-sky-500 transition-opacity duration-300 text-center"
-          >
+          <div className="w-full px-3 py-2 bg-sky-400 cursor-pointer text-black rounded-lg font-semibold hover:bg-sky-500 transition-opacity duration-300 text-center">
             View Details
           </div>
         </div>

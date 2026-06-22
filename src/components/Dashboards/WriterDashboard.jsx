@@ -45,7 +45,7 @@ async function getBookmarkedReferences(email) {
     {
       id: "b1",
       title: "Database Sharding Patterns",
-      cover: "https://via.placeholder.com/150",
+      cover: "/not-found-image.png",
       slug: "database-sharding-patterns",
     },
   ];
@@ -147,20 +147,20 @@ export default function WriterDashboard() {
                     Overview
                   </h2>
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <AnalyticsStatCard
-                    title="Total Ebooks"
-                    value={isPending ? "..." : totalEbooks}
-                    description="Books managed on AuroraLib"
-                    icon={MdBook}
-                    colorClass="text-violet-400"
-                  />
-                  <AnalyticsStatCard
-                    title="Gross Earnings"
-                    value={isPending ? "..." : `$${grossEarnings.toFixed(2)}`}
-                    description="Accumulated revenue details"
-                    icon={MdTrendingUp}
-                    colorClass="text-emerald-400"
-                  />
+                    <AnalyticsStatCard
+                      title="Total Ebooks"
+                      value={totalEbooks}
+                      description="Books managed on AuroraLib"
+                      icon={MdBook}
+                      colorClass="text-violet-400"
+                    />
+                    <AnalyticsStatCard
+                      title="Gross Earnings"
+                      value={`$${grossEarnings.toFixed(2)}`}
+                      description="Accumulated revenue details"
+                      icon={MdTrendingUp}
+                      colorClass="text-emerald-400"
+                    />
                   </div>
                 </div>
               </div>
@@ -186,11 +186,14 @@ export default function WriterDashboard() {
                       className="hover:bg-slate-800/30 transition-colors"
                     >
                       <td className="px-6 py-4 flex items-center gap-3">
-                        <Image
-                          src={book.cover || "https://via.placeholder.com/150"}
-                          alt=""
-                          className="h-12 w-9 rounded object-cover bg-slate-800"
-                        />
+                        <div className="relative h-12 w-9 overflow-hidden rounded-xl bg-slate-800">
+                          <Image
+                            src={book.cover || "/not-found-image.png"}
+                            alt=""
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
                         <span className="font-medium text-white">
                           {book.title}
                         </span>

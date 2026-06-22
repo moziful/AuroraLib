@@ -19,11 +19,12 @@ export default function EbookGallery({
           key={book.id || book.slug}
           className={`group rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-all ${hoverBorderClass}`}
         >
-          <div className="aspect-3/4 overflow-hidden rounded-xl bg-slate-800 mb-3">
+          <div className="relative aspect-3/4 overflow-hidden rounded-xl bg-slate-800 mb-3">
             <Image
-              src={book.cover || "https://via.placeholder.com/150"}
+              src={book.cover || "/not-found-image.png"}
               alt={book.title}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
           </div>
           <h3 className="line-clamp-1 font-bold text-sm text-white group-hover:text-slate-300 transition-colors">
