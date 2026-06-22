@@ -255,13 +255,13 @@ export default function HeroCarousel() {
               direction={direction}
             />
           </div>
-          <div className="relative z-40 flex flex-col items-center gap-4">
+          {/* <div className="relative z-40 flex flex-col items-center gap-4">
             <SlideDots
               active={active}
               count={slides.length}
               onChange={handlePageChange}
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

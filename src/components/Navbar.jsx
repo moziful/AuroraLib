@@ -37,11 +37,11 @@ export default function Navbar() {
       label: "Browse Books",
       icon: <MdBook className="text-xl" />,
     },
-    {
-      href: `/dashboard/${user?.role}`,
-      label: "Dashboard",
-      icon: <MdDashboard className="text-xl" />,
-    },
+    // {
+    //   href: `/dashboard/${user?.role}`,
+    //   label: "Dashboard",
+    //   icon: <MdDashboard className="text-xl" />,
+    // },
   ];
 
   const linkClass = (href) => `
@@ -195,7 +195,7 @@ export default function Navbar() {
             </span>
           </div>
         </Link>
-        <div className="hidden items-center bg-slate-900/60 border border-slate-800 p-1 rounded-xl gap-3 md:flex">
+        <div className="hidden items-center bg-slate-900/60 p-1 rounded-xl gap-3 md:flex">
           <div className="flex items-center gap-1">
             {baseNavItems.map((item) => (
               <Link
