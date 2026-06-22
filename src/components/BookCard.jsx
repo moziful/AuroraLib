@@ -26,18 +26,18 @@ export default function BookCard({ book }) {
         <div className="p-4 pt-0 w-full flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-semibold text-sky-400 truncate mr-4">
-              {book.title}
+              {book.title || "Untitled Book"}
             </h2>
             <p className="text-lg font-bold text-white whitespace-nowrap shrink-0 text-right">
-              $ {book.price.toFixed(2)}
+              $ {Number(book?.price ?? 0).toFixed(2)}
             </p>
           </div>
           <span className="text-white flex flex-col gap-2">
-            <p>Author: {book.writerName}</p>
+            <p>Author: {book.writerName || "Unknown Author"}</p>
             <p>
-              {book.genre} •{" "}
+              {book.genre || "Unknown Genre"} •{" "}
               <span>
-                {new Date(book.createdAt).toLocaleDateString("en-US", {
+                {new Date(book?.createdAt || Date.now()).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
