@@ -96,6 +96,22 @@ export default function WriterDashboard() {
     return total + (Number.isNaN(value) ? 0 : value);
   }, 0);
 
+  const monthlySalesMap = {};
+  sales.forEach((s) => {
+    if (!s.date) return;
+    const month = new Date(s.date).toLocaleString("default", { month: "short" });
+    const val = parseFloat(String(s.amount || "").replace("$", "")) || 0;
+    monthlySalesMap[month] = (monthlySalesMap[month] || 0) + val;
+  });
+  const barData = Object.keys(monthlySalesMap).map(k => ({ name: k, value: monthlySalesMap[k] }));
+
+  const genreMap = {};
+  books.forEach((b) => {
+    const g = b.genre || "Unknown";
+    genreMap[g] = (genreMap[g] || 0) + 1;
+  });
+  const pieData = Object.keys(genreMap).map(k => ({ name: k, value: genreMap[k] }));
+
   const tabsConfig = [
     { id: "overview", label: "Overview", icon: MdDashboard },
     { id: "manage", label: "Manage Ebooks", icon: MdBook },
@@ -273,7 +289,12 @@ export default function WriterDashboard() {
                       </div>
 
                       <div className="mt-8">
-                        <DashboardCharts />
+                      <DashboardCharts 
+                        title1="Monthly Sales Volume"
+                        title2="Ebooks by Genre"
+                        barData={barData}
+                        pieData={pieData}
+                      />
                       </div>
                     </div>
                   </div>

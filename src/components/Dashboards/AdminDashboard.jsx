@@ -140,7 +140,6 @@ export default function AdminDashboard() {
       setEbooks(ebooks.filter((b) => b.id !== id));
     }
   };
-
   const totalUsersCount = users.filter((u) => u.role === "User").length;
   const totalWritersCount = users.filter((u) => u.role === "Writer").length;
   const totalEbooksSold = transactions.filter(
@@ -150,6 +149,22 @@ export default function AdminDashboard() {
     (acc, t) => acc + parseFloat(t.amount.replace("$", "")),
     0,
   );
+
+  const monthlySalesMap = {};
+  transactions.forEach((t) => {
+    if (!t.date || t.type !== "purchase") return;
+    const month = new Date(t.date).toLocaleString("default", { month: "short" });
+    const val = parseFloat(String(t.amount || "").replace("$", "")) || 0;
+    monthlySalesMap[month] = (monthlySalesMap[month] || 0) + val;
+  });
+  const barData = Object.keys(monthlySalesMap).map(k => ({ name: k, value: monthlySalesMap[k] }));
+
+  const statusMap = {};
+  ebooks.forEach((b) => {
+    const s = b.status || "Unknown";
+    statusMap[s] = (statusMap[s] || 0) + 1;
+  });
+  const pieData = Object.keys(statusMap).map(k => ({ name: k, value: statusMap[k] }));
 
   return (
     <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100">
@@ -206,7 +221,12 @@ export default function AdminDashboard() {
                   />
                 </div>
 
-                <DashboardCharts />
+                <DashboardCharts 
+                  title1="Platform Revenue"
+                  title2="Ebooks by Status"
+                  barData={barData}
+                  pieData={pieData}
+                />
               </div>
             )}
             {activeTab === "users" && (

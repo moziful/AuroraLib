@@ -18,8 +18,15 @@ export default function SignIn() {
     const [error, setError] = useState("");
     useEffect(() => {
         if (!isPending && session?.user) {
-            const role = session.user.role;
-            router.replace(role === "writer" ? "/dashboard/writer" : "/dashboard/reader");
+            const role = (session.user.role || "user").toLowerCase();
+
+            if (role === "admin") {
+                router.replace("/dashboard/admin");
+            } else if (role === "writer") {
+                router.replace("/dashboard/writer");
+            } else {
+                router.replace("/dashboard/reader");
+            }
         }
     }, [session, isPending, router]);
     if (isPending || session?.user) {
@@ -45,7 +52,7 @@ export default function SignIn() {
             return;
         }
         const role = data?.user?.role;
-        window.location.href = role === "writer" ? "/dashboard/writer" : "/dashboard/reader";
+        window.location.href = role === "admin" ? "/dashboard/admin" : role === "writer" ? "/dashboard/writer" : "/dashboard/reader";
     };
     const handleGoogleSignIn = async () => {
         try {
