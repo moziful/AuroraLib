@@ -1,6 +1,10 @@
-export const getAllBooks = async () => {
+export const getAllBooks = async (params = {}) => {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books`);
+        const queryParams = new URLSearchParams(
+            Object.entries(params).filter(([_, v]) => v != null && v !== "")
+        ).toString();
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/books${queryParams ? `?${queryParams}` : ''}`;
+        const res = await fetch(url);
 
         if (!res.ok) {
             console.error(`API error: ${res.status} ${res.statusText}`);
