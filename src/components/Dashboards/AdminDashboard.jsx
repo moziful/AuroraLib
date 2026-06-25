@@ -13,6 +13,7 @@ import {
   MdTrendingUp,
   MdPerson,
   MdEdit,
+  MdAddCircle,
 } from "react-icons/md";
 import { authClient } from "@/lib/auth-client";
 
