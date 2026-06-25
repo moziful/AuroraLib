@@ -259,10 +259,10 @@ export default function AdminDashboard() {
 
   const totalBooksCount = ebooks.length;
   const publishedBooksCount = ebooks.filter(
-    (b) => b.status === "published" || b.status === "Available",
+    (b) => b.status === "Available",
   ).length;
   const unpublishedBooksCount = ebooks.filter(
-    (b) => b.status === "unpublished" || b.status === "Unavailable",
+    (b) => b.status === "Unavailable",
   ).length;
 
   const totalEbooksSold = transactions.filter(

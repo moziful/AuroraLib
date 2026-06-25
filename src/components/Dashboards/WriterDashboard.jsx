@@ -90,13 +90,13 @@ export default function WriterDashboard() {
 
   const totalEbooks = books.length;
   const publishedBooks = books.filter(
-    (b) => b.status === "Available" || b.status === "published",
+    (b) => b.status === "Available",
   ).length;
   const unpublishedBooks = books.filter(
-    (b) => b.status === "Unavailable" || b.status === "unpublished",
+    (b) => b.status === "Unavailable",
   ).length;
   const upcomingBooks = books.filter(
-    (b) => b.status === "Coming Soon" || b.status === "upcoming",
+    (b) => b.status === "Coming Soon",
   ).length;
 
   const grossEarnings = sales.reduce((total, sale) => {
@@ -367,14 +367,12 @@ export default function WriterDashboard() {
                         </td>
                         <td className="px-6 py-4">
                           <span
-                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
-                              book.status === "Available" ||
-                              book.status === "published"
+                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${book.status === "Available"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                 : book.status === "Coming Soon"
                                   ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
                                   : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                            }`}
+                              }`}
                           >
                             {book.status || "Available"}
                           </span>
