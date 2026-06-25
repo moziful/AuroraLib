@@ -527,7 +527,7 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4">
                           <div className="flex flex-wrap gap-2">
                             <button type="button"
-                              onClick={() => promptStatusChange(book)}
+                              onClick={() => toggleBookPublish(book)}
                               className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors"
                             >
                               {book.status === "Available"
@@ -543,7 +543,7 @@ export default function AdminDashboard() {
                               <MdEdit />
                             </button>
                             <button
-                              onClick={() => promptDeleteBook(book)}
+                              onClick={() => deleteBook(book.id || book._id)}
                               className="p-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded hover:bg-rose-500 hover:text-white transition-all"
                             >
                               <MdDelete />
