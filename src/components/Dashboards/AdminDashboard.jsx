@@ -198,9 +198,11 @@ const [editingBookData, setEditingBookData] = useState(null);
   }
 
   const toggleBookPublish = async (book) => {
-    const isPublished =
-      book.status === "published" || book.status === "Available";
-    const newStatus = isPublished ? "Unavailable" : "Available";
+    // Normalize status to lower‑case for consistent checks
+    const normalizedStatus = (book.status || "").toLowerCase();
+    const isPublished = normalizedStatus === "published" || normalizedStatus === "available";
+    // Use lower‑case values that the backend stores
+    const newStatus = isPublished ? "unavailable" : "available";
 
     setConfirmConfig({
       isOpen: true,
@@ -210,6 +212,7 @@ const [editingBookData, setEditingBookData] = useState(null);
         try {
           const token = await fetchAuthToken();
           await updateBookStatus(book.id, newStatus, token);
+          // Update local state with the normalized status
           setEbooks(
             ebooks.map((b) =>
               b.id === book.id ? { ...b, status: newStatus } : b,
@@ -222,6 +225,7 @@ const [editingBookData, setEditingBookData] = useState(null);
         setConfirmConfig({ ...confirmConfig, isOpen: false });
       },
     });
+  }
   };
 
   // Delete book with authentication token
