@@ -526,7 +526,7 @@ const [editingBookData, setEditingBookData] = useState(null);
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex flex-wrap gap-2">
-                            <button
+                            <button type="button"
                               onClick={() => toggleBookPublish(book)}
                               className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors"
                             >
