@@ -5,6 +5,7 @@ import { getBookById } from "@/lib/data";
 import { FaChevronLeft } from "react-icons/fa";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import PurchaseButton from "@/components/PurchaseButton";
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-US", {
@@ -108,30 +109,13 @@ export default async function BookDetailsPage({ params }) {
                     $ {typeof book?.price === 'number' ? book.price.toFixed(2) : "0.00"}
                   </p>
                 </div>
-                <form action="/api/checkout_sessions" method="POST">
-                  <input type="hidden" name="title" value={book.title} />
-                  <input type="hidden" name="price" value={book.price} />
-                  <input type="hidden" name="bookId" value={book._id.toString()} />
-                  <section>
-                    <button
-                      type="submit"
-                      role="link"
-                      disabled={!isAvailable}
-                      className={`inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-black transition-all duration-200 ${isAvailable
-                        ? "bg-sky-400 text-slate-950 hover:bg-sky-300"
-                        : isOwned
-                          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 cursor-not-allowed"
-                          : "cursor-not-allowed bg-slate-800 text-slate-500"
-                        }`}
-                    >
-                      {isOwned
-                        ? "Owned"
-                        : isAvailable
-                          ? "Purchase Now"
-                          : "Unavailable for Purchase"}
-                    </button>
-                  </section>
-                </form>
+                <PurchaseButton
+                  bookId={book._id.toString()}
+                  title={book.title}
+                  price={book.price}
+                  isAvailable={isAvailable}
+                  isOwned={isOwned}
+                />
               </div>
             </div>
           </div>

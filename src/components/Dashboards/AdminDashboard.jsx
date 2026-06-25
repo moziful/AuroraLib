@@ -16,6 +16,7 @@ import {
   MdAddCircle,
 } from "react-icons/md";
 import { authClient } from "@/lib/auth-client";
+import { ImSpinner2 } from "react-icons/im";
 
 import DashboardHeader from "../Dashboards/DashboardHeader";
 import DashboardTabs from "../Dashboards/DashboardTabs";
@@ -67,6 +68,7 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [ebooks, setEbooks] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [actionLoading, setActionLoading] = useState({}); // { [bookId]: 'publishing' | 'deleting' | null }
 
   // Modal states for User Edit
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -200,21 +202,20 @@ export default function AdminDashboard() {
   }
 
   const toggleBookPublish = async (book) => {
-    // Normalize status to lower‑case for consistent checks
     const isAvailable = book.status === "Available";
-    // Toggle between Available and Unavailable
     const newStatus = isAvailable ? "Unavailable" : "Available";
+    const bookId = book._id || book.id || book.slug;
 
     setConfirmConfig({
       isOpen: true,
       title: "Change Status",
       message: `Are you sure you want to mark this book as ${newStatus}?`,
       onConfirm: async () => {
+        setActionLoading((prev) => ({ ...prev, [bookId]: "publishing" }));
+        setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
         try {
           const token = await fetchAuthToken();
-          const bookId = book._id || book.id || book.slug;
           await updateBookStatus(bookId, newStatus, token);
-          // Update local state with the normalized status using the same identifier logic
           setEbooks(
             ebooks.map((b) =>
               (b._id || b.id || b.slug) === bookId
@@ -225,28 +226,31 @@ export default function AdminDashboard() {
           toast.success(`Book marked as ${newStatus}.`);
         } catch (e) {
           toast.error(`Failed to update status: ${e.message}`);
+        } finally {
+          setActionLoading((prev) => ({ ...prev, [bookId]: null }));
         }
-        setConfirmConfig({ ...confirmConfig, isOpen: false });
       },
     });
   };
 
-  // Delete book with authentication token
   const deleteBook = async (id) => {
     setConfirmConfig({
       isOpen: true,
       title: "Delete Ebook",
       message: "Are you sure you want to delete this ebook from the platform?",
       onConfirm: async () => {
+        setActionLoading((prev) => ({ ...prev, [id]: "deleting" }));
+        setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
         try {
           const token = await fetchAuthToken();
           await deleteBookAction(id, token);
-          setEbooks(ebooks.filter((b) => b.id !== id));
+          setEbooks(ebooks.filter((b) => (b.id || b._id) !== id));
           toast.success("Book deleted successfully!");
         } catch (e) {
           toast.error(`Failed to delete book: ${e.message}`);
+        } finally {
+          setActionLoading((prev) => ({ ...prev, [id]: null }));
         }
-        setConfirmConfig({ ...confirmConfig, isOpen: false });
       },
     });
   };
@@ -533,8 +537,12 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => toggleBookPublish(book)}
-                              className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors"
+                              disabled={actionLoading[book._id || book.id] === "publishing" || actionLoading[book._id || book.id] === "deleting"}
+                              className="inline-flex items-center gap-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors disabled:opacity-50"
                             >
+                              {actionLoading[book._id || book.id] === "publishing" && (
+                                <ImSpinner2 className="animate-spin text-xs" />
+                              )}
                               {book.status === "Available"
                                 ? "Unpublish"
                                 : book.status === "Unavailable"
@@ -549,9 +557,14 @@ export default function AdminDashboard() {
                             </button>
                             <button
                               onClick={() => deleteBook(book.id || book._id)}
-                              className="p-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded hover:bg-rose-500 hover:text-white transition-all"
+                              disabled={actionLoading[book._id || book.id] === "publishing" || actionLoading[book._id || book.id] === "deleting"}
+                              className="p-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded hover:bg-rose-500 hover:text-white transition-all disabled:opacity-50"
                             >
-                              <MdDelete />
+                              {actionLoading[book._id || book.id] === "deleting" ? (
+                                <ImSpinner2 className="animate-spin text-sm" />
+                              ) : (
+                                <MdDelete />
+                              )}
                             </button>
                           </div>
                         </td>
