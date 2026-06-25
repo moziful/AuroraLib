@@ -18,6 +18,12 @@ import DataTable from "./DataTable";
 import UserProfile from "./UserProfile";
 import AnalyticsStatCard from "./AnalyticsStatCard";
 import DashboardCharts from "./DashboardCharts";
+import LibraryBookCard from "./LibraryBookCard";
+import {
+  getPurchasedBooks,
+  getBookmarkedBooks,
+  getTransactionHistory,
+} from "@/lib/user-actions";
 
 export default function UserDashboard() {
   const { data: session, isPending } = authClient.useSession();
@@ -27,6 +33,7 @@ export default function UserDashboard() {
   const [history, setHistory] = useState([]);
   const [books, setBooks] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const tabsConfig = [
     { id: "overview", label: "Overview", icon: MdDashboard },
@@ -36,7 +43,28 @@ export default function UserDashboard() {
     { id: "profile", label: "Profile Management", icon: MdPerson },
   ];
 
-  useEffect(() => {}, [user?.email]);
+  useEffect(() => {
+    if (user?.email) {
+      setLoading(true);
+      const fetchData = async () => {
+        try {
+          const [purchased, bookmarked, txHistory] = await Promise.all([
+            getPurchasedBooks(user.email),
+            getBookmarkedBooks(user.email),
+            getTransactionHistory(user.email),
+          ]);
+          setBooks(purchased);
+          setBookmarks(bookmarked);
+          setHistory(txHistory);
+        } catch (err) {
+          console.error("Failed to fetch dashboard data:", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchData();
+    }
+  }, [user?.email]);
 
   const totalBooks = books.length;
   const totalBookmarks = bookmarks.length;
@@ -95,7 +123,7 @@ export default function UserDashboard() {
                   <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                     Overview
                   </h2>
-                  <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                  <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       <AnalyticsStatCard
                         title="Purchased Books"
@@ -137,12 +165,27 @@ export default function UserDashboard() {
                 <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Purchased Ebooks
                 </h2>
-                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                  <EbookGallery
-                    books={books}
-                    emptyMessage="You haven't purchased any ebooks yet."
-                    actionLabel="Read Details"
-                  />
+                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+                  {loading ? (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div
+                          key={i}
+                          className="animate-pulse rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-4 h-80"
+                        />
+                      ))}
+                    </div>
+                  ) : books.length === 0 ? (
+                    <p className="text-slate-600 dark:text-slate-500 text-sm">
+                      You haven't purchased any ebooks yet.
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                      {books.map((book) => (
+                        <LibraryBookCard key={book._id} book={book} />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -152,7 +195,7 @@ export default function UserDashboard() {
                 <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Bookmarked Ebooks
                 </h2>
-                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <EbookGallery
                     books={bookmarks}
                     emptyMessage="You haven't bookmarked any ebooks yet."
@@ -169,7 +212,7 @@ export default function UserDashboard() {
                 <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Transaction Logs
                 </h2>
-                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <DataTable
                     headers={[
                       "Ebook Name",
@@ -211,7 +254,7 @@ export default function UserDashboard() {
                 <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Profile Management
                 </h2>
-                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <UserProfile user={user} role="User" />
                 </div>
               </div>

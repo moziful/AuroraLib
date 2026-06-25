@@ -18,11 +18,12 @@ export default function SignIn() {
     const [error, setError] = useState("");
     useEffect(() => {
         if (!isPending && session?.user) {
-            const role = (session.user.role || "user").toLowerCase();
+            const role = (session.user.role || "reader").toLowerCase();
+            const normalizedRole = role === "user" ? "reader" : role;
 
-            if (role === "admin") {
+            if (normalizedRole === "admin") {
                 router.replace("/dashboard/admin");
-            } else if (role === "writer") {
+            } else if (normalizedRole === "writer") {
                 router.replace("/dashboard/writer");
             } else {
                 router.replace("/dashboard/reader");

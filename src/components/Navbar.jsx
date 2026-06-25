@@ -141,7 +141,7 @@ function MobileAuthSection({
             <p className="truncate text-xs text-slate-600 dark:text-slate-500">{user.email}</p>
             {user.role && (
               <span className="mt-1 inline-block text-[10px] font-black uppercase tracking-wider text-sky-600 dark:text-sky-400 bg-sky-400/10 border border-sky-400/20 px-2 py-0.5 rounded">
-                {user.role}
+                {user.role === "user" ? "reader" : user.role}
               </span>
             )}
           </div>
@@ -203,11 +203,12 @@ export default function Navbar() {
     },
   ];
 
+  const displayRole = user?.role === "user" ? "reader" : (user?.role || "reader");
   const navItems = user
     ? [
       ...baseNavItems,
       {
-        href: `/dashboard/${user.role || "reader"}`,
+        href: `/dashboard/${displayRole}`,
         label: "Dashboard",
         icon: <MdDashboard className="text-xl" />,
       },

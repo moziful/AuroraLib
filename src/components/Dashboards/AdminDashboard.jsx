@@ -148,11 +148,11 @@ export default function AdminDashboard() {
               users.map((u) =>
                 u.id === selectedUserForEdit.id
                   ? {
-                    ...u,
-                    role: editForm.role,
-                    name: editForm.name,
-                    email: editForm.email,
-                  }
+                      ...u,
+                      role: editForm.role,
+                      name: editForm.name,
+                      email: editForm.email,
+                    }
                   : u,
               ),
             );
@@ -191,9 +191,11 @@ export default function AdminDashboard() {
   // Helper to get auth token for privileged actions
   async function fetchAuthToken() {
     const res = await fetch("/api/auth/token");
-    if (!res.ok) throw new Error("Failed to retrieve auth token. Are you signed in?");
+    if (!res.ok)
+      throw new Error("Failed to retrieve auth token. Are you signed in?");
     const data = await res.json();
-    if (!data.success || !data.token) throw new Error(data.message || "No token returned.");
+    if (!data.success || !data.token)
+      throw new Error(data.message || "No token returned.");
     return data.token;
   }
 
@@ -215,7 +217,9 @@ export default function AdminDashboard() {
           // Update local state with the normalized status using the same identifier logic
           setEbooks(
             ebooks.map((b) =>
-              (b._id || b.id || b.slug) === bookId ? { ...b, status: newStatus } : b,
+              (b._id || b.id || b.slug) === bookId
+                ? { ...b, status: newStatus }
+                : b,
             ),
           );
           toast.success(`Book marked as ${newStatus}.`);
@@ -248,7 +252,7 @@ export default function AdminDashboard() {
   };
   const totalAccounts = users.length;
   const totalReadersCount = users.filter(
-    (u) => u.role === "reader" || u.role === "User",
+    (u) => u.role === "reader" || u.role === "user" || u.role === "User",
   ).length;
   const totalWritersCount = users.filter(
     (u) => u.role === "writer" || u.role === "Writer",
@@ -433,7 +437,7 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-6 py-4">
                           <span className="bg-slate-100 dark:bg-slate-950 text-xs font-semibold text-slate-900 dark:text-slate-300 border border-slate-300 dark:border-slate-800 rounded-lg px-3 py-1.5">
-                            {u.role}
+                            {u.role === "user" ? "reader" : u.role}
                           </span>
                         </td>
                         <td className="px-6 py-4">
@@ -512,20 +516,22 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-6 py-4">
                           <span
-                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${book.status === "Available" ||
+                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
+                              book.status === "Available" ||
                               book.status === "published"
-                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                              : book.status === "Coming Soon"
-                                ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
-                                : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                              }`}
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                : book.status === "Coming Soon"
+                                  ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
+                                  : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                            }`}
                           >
                             {book.status || "Available"}
                           </span>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex gap-2">
-                            <button type="button"
+                            <button
+                              type="button"
                               onClick={() => toggleBookPublish(book)}
                               className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors"
                             >
@@ -595,10 +601,11 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-6 py-4 uppercase text-xs tracking-wider">
                           <span
-                            className={`px-2 py-0.5 rounded border ${tx.type === "purchase"
-                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                              : "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                              }`}
+                            className={`px-2 py-0.5 rounded border ${
+                              tx.type === "purchase"
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                : "bg-purple-500/10 text-purple-400 border-purple-500/20"
+                            }`}
                           >
                             {tx.type}
                           </span>

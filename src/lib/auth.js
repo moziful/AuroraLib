@@ -40,4 +40,16 @@ export const auth = betterAuth({
             },
         },
     },
+    databaseHooks: {
+        user: {
+            create: {
+                before: async (userData) => {
+                    if (!userData.role || userData.role === "user") {
+                        return { data: { ...userData, role: "reader" } };
+                    }
+                    return { data: userData };
+                },
+            },
+        },
+    },
 });
