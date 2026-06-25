@@ -93,7 +93,7 @@ export default async function TopWritersSection() {
   const writers = await fetchTopWriters();
 
   return (
-    <section className="relative overflow-hidden bg-slate-950 px-4 py-12 sm:py-16">
+    <section className="relative overflow-hidden bg-white dark:bg-slate-950 px-4 py-12 sm:py-16">
       <div className="pointer-events-none absolute -left-32 top-0 h-72 w-72 rounded-full bg-sky-500/5 blur-3xl" />
       <div className="pointer-events-none absolute -right-32 bottom-0 h-72 w-72 rounded-full bg-violet-500/5 blur-3xl" />
       <div className="relative mx-auto max-w-7xl">
@@ -110,7 +110,7 @@ export default async function TopWritersSection() {
             return (
               <div
                 key={writer.email || writer.name}
-                className={`group relative flex flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:border-slate-700 hover:shadow-2xl ${rank.glow} ${isFirst ? "sm:-mt-4" : ""}`}
+                className={`group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:border-slate-300 hover:dark:border-slate-700 hover:shadow-2xl ${rank.glow} ${isFirst ? "sm:-mt-4" : ""}`}
               >
                 <div className={`relative h-24 bg-linear-to-b ${rank.banner}`}>
                   <div
@@ -131,7 +131,7 @@ export default async function TopWritersSection() {
 
                 <div className="relative -mt-10 flex justify-center">
                   <div
-                    className={`h-20 w-20 overflow-hidden rounded-full ring-4 ${rank.ring} bg-slate-900 shadow-lg transition-transform duration-300 group-hover:scale-105 flex items-center justify-center`}
+                    className={`h-20 w-20 overflow-hidden rounded-full ring-4 ${rank.ring} bg-white dark:bg-slate-900 shadow-lg transition-transform duration-300 group-hover:scale-105 flex items-center justify-center`}
                   >
                     {writer.avatar ? (
                       <Image
@@ -150,7 +150,7 @@ export default async function TopWritersSection() {
                 </div>
                 <div className="flex flex-1 flex-col items-center gap-3 px-5 pb-6 pt-3 text-center">
                   <div>
-                    <h3 className="text-lg font-black leading-tight text-white">
+                    <h3 className="text-lg font-black leading-tight text-slate-800 dark:text-white">
                       {writer.name}
                     </h3>
                     <span
@@ -166,7 +166,7 @@ export default async function TopWritersSection() {
                     <div className="flex flex-col items-center gap-1">
                       <div className="flex items-center gap-2">
                         <FaBookOpen className={`text-xs ${rank.statIcon}`} />
-                        <span className="text-xl font-black text-white">
+                        <span className="text-xl font-black text-slate-800 dark:text-white">
                           {writer.bookCount}
                         </span>
                       </div>
@@ -178,7 +178,7 @@ export default async function TopWritersSection() {
                     <div className="flex flex-col items-center gap-1">
                       <div className="flex items-center gap-1">
                         <FaDollarSign className={`text-xs ${rank.statIcon}`} />
-                        <span className="text-xl font-black text-white">
+                        <span className="text-xl font-black text-slate-800 dark:text-white">
                           {writer.totalSales.toFixed(0)}
                         </span>
                       </div>

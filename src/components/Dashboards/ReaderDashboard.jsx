@@ -36,31 +36,42 @@ export default function UserDashboard() {
     { id: "profile", label: "Profile Management", icon: MdPerson },
   ];
 
-  useEffect(() => {
-  }, [user?.email]);
+  useEffect(() => {}, [user?.email]);
 
   const totalBooks = books.length;
   const totalBookmarks = bookmarks.length;
-  const totalSpent = history.reduce((sum, item) => sum + parseFloat(String(item.price || "").replace("$", "") || 0), 0);
+  const totalSpent = history.reduce(
+    (sum, item) =>
+      sum + parseFloat(String(item.price || "").replace("$", "") || 0),
+    0,
+  );
 
   const monthlyPurchasesMap = {};
   history.forEach((h) => {
     if (!h.date) return;
-    const month = new Date(h.date).toLocaleString("default", { month: "short" });
+    const month = new Date(h.date).toLocaleString("default", {
+      month: "short",
+    });
     const val = parseFloat(String(h.price || "").replace("$", "")) || 0;
     monthlyPurchasesMap[month] = (monthlyPurchasesMap[month] || 0) + val;
   });
-  const barData = Object.keys(monthlyPurchasesMap).map(k => ({ name: k, value: monthlyPurchasesMap[k] }));
+  const barData = Object.keys(monthlyPurchasesMap).map((k) => ({
+    name: k,
+    value: monthlyPurchasesMap[k],
+  }));
 
   const genreMap = {};
   books.forEach((b) => {
     const g = b.genre || "Unknown";
     genreMap[g] = (genreMap[g] || 0) + 1;
   });
-  const pieData = Object.keys(genreMap).map(k => ({ name: k, value: genreMap[k] }));
+  const pieData = Object.keys(genreMap).map((k) => ({
+    name: k,
+    value: genreMap[k],
+  }));
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100">
+    <div className="min-h-screen bg-white dark:bg-slate-950 px-4 py-10 text-slate-900 dark:text-slate-100">
       <div className="mx-auto max-w-7xl">
         <DashboardHeader
           roleTitle="User Dashboard"
@@ -81,7 +92,7 @@ export default function UserDashboard() {
             {activeTab === "overview" && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="mb-6 text-xl font-bold text-white">
+                  <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                     Overview
                   </h2>
                   <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -123,7 +134,7 @@ export default function UserDashboard() {
 
             {activeTab === "purchased" && (
               <div>
-                <h2 className="mb-6 text-xl font-bold text-white">
+                <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Purchased Ebooks
                 </h2>
                 <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -138,7 +149,7 @@ export default function UserDashboard() {
 
             {activeTab === "bookmarks" && (
               <div>
-                <h2 className="mb-6 text-xl font-bold text-white">
+                <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Bookmarked Ebooks
                 </h2>
                 <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -155,7 +166,7 @@ export default function UserDashboard() {
 
             {activeTab === "history" && (
               <div>
-                <h2 className="mb-6 text-xl font-bold text-white">
+                <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Transaction Logs
                 </h2>
                 <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -171,13 +182,15 @@ export default function UserDashboard() {
                     renderRow={(item) => (
                       <tr
                         key={item.id}
-                        className="hover:bg-slate-800/30 transition-colors"
+                        className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
                       >
-                        <td className="px-6 py-4 font-medium text-white">
+                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
                           {item.name}
                         </td>
-                        <td className="px-6 py-4">{item.writer}</td>
-                        <td className="px-6 py-4 text-sky-400 font-semibold">
+                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
+                          {item.writer}
+                        </td>
+                        <td className="px-6 py-4 text-sky-600 dark:text-sky-400 font-semibold">
                           {item.price}
                         </td>
                         <td className="px-6 py-4">{item.date}</td>
@@ -195,7 +208,7 @@ export default function UserDashboard() {
 
             {activeTab === "profile" && (
               <div>
-                <h2 className="mb-6 text-xl font-bold text-white">
+                <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Profile Management
                 </h2>
                 <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">

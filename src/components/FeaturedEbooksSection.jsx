@@ -20,7 +20,7 @@ export default async function FeaturedEbooksSection() {
   const books = await getFeaturedBooks();
 
   return (
-    <section className="bg-slate-950 px-4 py-10 sm:py-12">
+    <section className="bg-white dark:bg-slate-950 px-4 py-10 sm:py-12">
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col items-center gap-2 lg:flex-row lg:justify-between">
           <SectionHeader
@@ -48,9 +48,8 @@ export default async function FeaturedEbooksSection() {
                 <BookCardSkeleton key={index} />
               ))}
         </div>
-
         {!books.length && (
-          <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-900/30 p-8 text-center text-slate-300">
+          <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900/30 p-8 text-center text-slate-800 dark:text-slate-300">
             No ebooks are available yet.
           </div>
         )}

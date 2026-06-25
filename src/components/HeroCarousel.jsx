@@ -26,7 +26,7 @@ function SlideDots({ active, count, onChange }) {
           className={`h-3 w-3 rounded-full border cursor-pointer transition-all duration-300 ${
             index === active
               ? "scale-110 border-sky-400 bg-sky-400"
-              : "border-sky-400/45 bg-transparent hover:border-sky-400 hover:bg-sky-400/20"
+              : "border-sky-400/45 dark:border-sky-400/45 bg-transparent hover:border-sky-400 hover:bg-sky-400/20 dark:hover:border-sky-400 dark:hover:bg-sky-400/20"
           }`}
           aria-label={`Go to slide ${index + 1}`}
         />
@@ -41,7 +41,7 @@ function HeroButton({ href, variant = "primary", children }) {
   const styles =
     variant === "primary"
       ? "bg-sky-400 text-slate-950 hover:bg-sky-300"
-      : "border border-slate-700 bg-slate-900 text-slate-200 hover:border-sky-400/30 hover:text-sky-300";
+      : "border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-200 hover:border-sky-400 dark:hover:border-sky-400/30 hover:text-sky-500 dark:hover:text-sky-300";
 
   return (
     <Link href={href} className={`${base} ${styles}`}>
@@ -53,11 +53,11 @@ function HeroButton({ href, variant = "primary", children }) {
 function BookCard({ book, active = false }) {
   return (
     <article
-      className={`h-full rounded-xl border border-white/15 bg-white/10 p-2 shadow-2xl backdrop-blur-md transition-all duration-700 ${
+      className={`h-full rounded-xl border border-slate-200/30 dark:border-white/15 bg-slate-50/50 dark:bg-white/10 p-2 shadow-2xl backdrop-blur-md transition-all duration-700 ${
         active ? "scale-100 opacity-100" : "scale-[0.96] opacity-75"
       }`}
     >
-      <div className="overflow-hidden rounded-lg border border-white/10 bg-slate-950">
+      <div className="overflow-hidden rounded-lg border border-slate-200/20 dark:border-white/10 bg-slate-100 dark:bg-slate-950">
         <div className="relative h-60 sm:h-72 lg:h-90 w-full">
           <Image
             src={book.coverImage || "/placeholder-cover.png"}
@@ -67,27 +67,27 @@ function BookCard({ book, active = false }) {
             className="object-cover"
             priority={active}
           />
-          <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/5 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-slate-100 dark:from-slate-950 via-slate-100/5 dark:via-slate-950/5 to-transparent" />
         </div>
 
         <div className="p-4">
           <div className="flex items-center justify-between gap-3">
-            <span className="rounded-full border border-sky-400/20 bg-sky-400/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.25em] text-sky-300">
+            <span className="rounded-full border border-sky-400/20 dark:border-sky-400/20 bg-sky-400/10 dark:bg-sky-400/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.25em] text-sky-600 dark:text-sky-300">
               {book.genre}
             </span>
-            <span className="text-sm font-black text-white">
+            <span className="text-sm font-black text-slate-900 dark:text-white">
               $ {book.price.toFixed(2)}
             </span>
           </div>
 
-          <h2 className="mt-4 text-xl font-black leading-tight text-white line-clamp-1">
+          <h2 className="mt-4 text-xl font-black leading-tight text-slate-900 dark:text-white line-clamp-1">
             {book.title}
           </h2>
-          <p className="mt-2 text-sm leading-6 text-slate-300 line-clamp-2">
+          <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300 line-clamp-2">
             {book.subtitle}
           </p>
 
-          <div className="mt-4 flex items-center justify-between gap-3 text-xs text-slate-400">
+          <div className="mt-4 flex items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
             <span className="truncate">{book.writerName}</span>
             <span className="shrink-0 flex items-center">
               <span
@@ -221,27 +221,27 @@ export default function HeroCarousel() {
 
   if (!mounted) {
     return (
-      <section className="relative overflow-hidden bg-slate-950 px-4">
+      <section className="relative overflow-hidden bg-white dark:bg-slate-950 px-4">
         <div className="mx-auto min-h-[calc(100vh-8rem)] max-w-7xl" />
       </section>
     );
   }
 
   return (
-    <section className="relative overflow-hidden bg-slate-950 px-4">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.16),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(168,85,247,0.14),transparent_34%)]" />
-      <div className="absolute inset-0 opacity-30 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-size-[72px_72px]" />
+    <section className="relative overflow-hidden bg-white dark:bg-slate-950 px-4">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.08),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(168,85,247,0.07),transparent_34%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.16),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(168,85,247,0.14),transparent_34%)]" />
+      <div className="absolute inset-0 opacity-10 dark:opacity-30 bg-[linear-gradient(rgba(0,0,0,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.025)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-size-[72px_72px]" />
 
       <div className="relative mx-auto flex flex-col-reverse lg:grid min-h-[calc(100vh-8rem)] max-w-7xl gap-10 lg:grid-cols-[0.4fr_0.6fr] lg:items-center">
         {" "}
         <div className="w-full text-center lg:text-left lg:max-w-xl lg:pr-6">
-          <p className="inline-flex rounded-full border border-sky-400/20 bg-sky-400/10 px-4 py-2 text-[10px] lg:text-xs font-black uppercase tracking-[0.25em] text-sky-300">
+          <p className="inline-flex rounded-full border border-sky-400/20 dark:border-sky-400/20 bg-sky-400/10 dark:bg-sky-400/10 px-4 py-2 text-[10px] lg:text-xs font-black uppercase tracking-[0.25em] text-sky-600 dark:text-sky-300">
             Lighten your heart by reading books.
           </p>
-          <h1 className="mt-6  text-2xl font-black leading-tight text-white sm:text-4xl lg:text-6xl">
+          <h1 className="mt-6  text-2xl font-black leading-tight text-slate-900 dark:text-white sm:text-4xl lg:text-6xl">
             Discover & Read Original Ebooks
           </h1>
-          <p className="mt-4 text-base leading-7 text-slate-300 sm:text-lg">
+          <p className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
             Explore curated literature masterpieces handpicked by our librarians
             for readers chasing dynamic modern stories.
           </p>
@@ -258,7 +258,7 @@ export default function HeroCarousel() {
           </div>
         </div>
         <div className="relative w-full">
-          <div className="absolute inset-0 rounded-4xl bg-sky-500/10 blur-3xl" />
+          <div className="absolute inset-0 rounded-4xl bg-sky-500/5 dark:bg-sky-500/10 blur-3xl" />
           <div className="relative">
             <StackCarousel
               slides={slides}

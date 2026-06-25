@@ -25,7 +25,11 @@ import Modal from "./Modal";
 import Image from "next/image";
 
 import { getAllBooks } from "@/lib/data";
-import { deleteBookAction, updateBookStatus, updateUserDetails } from "@/lib/actions";
+import {
+  deleteBookAction,
+  updateBookStatus,
+  updateUserDetails,
+} from "@/lib/actions";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -64,7 +68,11 @@ export default function AdminDashboard() {
   // Modal states for User Edit
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUserForEdit, setSelectedUserForEdit] = useState(null);
-  const [editForm, setEditForm] = useState({ name: "", email: "", role: "reader" });
+  const [editForm, setEditForm] = useState({
+    name: "",
+    email: "",
+    role: "reader",
+  });
 
   // Generic Confirm Modal
   const [confirmConfig, setConfirmConfig] = useState({
@@ -90,11 +98,14 @@ export default function AdminDashboard() {
       }
     });
 
-    authClient.admin.listUsers({ query: { limit: 100 } }).then((res) => {
-      if (active && res?.data?.users) {
-        setUsers(res.data.users);
-      }
-    }).catch(err => console.error("Failed to fetch users:", err));
+    authClient.admin
+      .listUsers({ query: { limit: 100 } })
+      .then((res) => {
+        if (active && res?.data?.users) {
+          setUsers(res.data.users);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch users:", err));
 
     return () => {
       active = false;
@@ -117,26 +128,33 @@ export default function AdminDashboard() {
           try {
             await authClient.admin.setRole({
               userId: selectedUserForEdit.id,
-              role: editForm.role
+              role: editForm.role,
             });
             await updateUserDetails(selectedUserForEdit.id, {
               name: editForm.name,
-              email: editForm.email
+              email: editForm.email,
             });
             setUsers(
               users.map((u) =>
-                u.id === selectedUserForEdit.id ? { ...u, role: editForm.role, name: editForm.name, email: editForm.email } : u
-              )
+                u.id === selectedUserForEdit.id
+                  ? {
+                      ...u,
+                      role: editForm.role,
+                      name: editForm.name,
+                      email: editForm.email,
+                    }
+                  : u,
+              ),
             );
             setIsEditModalOpen(false);
             setSelectedUserForEdit(null);
             toast.success("User profile updated successfully!");
-          } catch(err) {
+          } catch (err) {
             console.error(err);
             toast.error("Failed to update user.");
           }
           setConfirmConfig({ ...confirmConfig, isOpen: false });
-        }
+        },
       });
     }
   };
@@ -151,17 +169,18 @@ export default function AdminDashboard() {
           await authClient.admin.removeUser({ userId: id });
           setUsers(users.filter((u) => u.id !== id));
           toast.success("User deleted successfully!");
-        } catch(err) {
+        } catch (err) {
           console.error(err);
           toast.error("Failed to delete user.");
         }
         setConfirmConfig({ ...confirmConfig, isOpen: false });
-      }
+      },
     });
   };
 
   const toggleBookPublish = (book) => {
-    const isPublished = book.status === "published" || book.status === "Available";
+    const isPublished =
+      book.status === "published" || book.status === "Available";
     const newStatus = isPublished ? "Unavailable" : "Available";
 
     setConfirmConfig({
@@ -173,15 +192,15 @@ export default function AdminDashboard() {
           await updateBookStatus(book.id, newStatus);
           setEbooks(
             ebooks.map((b) =>
-              b.id === book.id ? { ...b, status: newStatus } : b
-            )
+              b.id === book.id ? { ...b, status: newStatus } : b,
+            ),
           );
           toast.success(`Book marked as ${newStatus}.`);
         } catch (e) {
           toast.error("Failed to update status.");
         }
         setConfirmConfig({ ...confirmConfig, isOpen: false });
-      }
+      },
     });
   };
 
@@ -199,17 +218,27 @@ export default function AdminDashboard() {
           toast.error("Failed to delete book.");
         }
         setConfirmConfig({ ...confirmConfig, isOpen: false });
-      }
+      },
     });
   };
   const totalAccounts = users.length;
-  const totalReadersCount = users.filter((u) => u.role === "reader" || u.role === "User").length;
-  const totalWritersCount = users.filter((u) => u.role === "writer" || u.role === "Writer").length;
-  const totalAdminsCount = users.filter((u) => u.role === "admin" || u.role === "Admin").length;
+  const totalReadersCount = users.filter(
+    (u) => u.role === "reader" || u.role === "User",
+  ).length;
+  const totalWritersCount = users.filter(
+    (u) => u.role === "writer" || u.role === "Writer",
+  ).length;
+  const totalAdminsCount = users.filter(
+    (u) => u.role === "admin" || u.role === "Admin",
+  ).length;
 
   const totalBooksCount = ebooks.length;
-  const publishedBooksCount = ebooks.filter((b) => b.status === "published" || b.status === "Available").length;
-  const unpublishedBooksCount = ebooks.filter((b) => b.status === "unpublished" || b.status === "Unavailable").length;
+  const publishedBooksCount = ebooks.filter(
+    (b) => b.status === "published" || b.status === "Available",
+  ).length;
+  const unpublishedBooksCount = ebooks.filter(
+    (b) => b.status === "unpublished" || b.status === "Unavailable",
+  ).length;
 
   const totalEbooksSold = transactions.filter(
     (t) => t.type === "purchase",
@@ -222,21 +251,29 @@ export default function AdminDashboard() {
   const monthlySalesMap = {};
   transactions.forEach((t) => {
     if (!t.date || t.type !== "purchase") return;
-    const month = new Date(t.date).toLocaleString("default", { month: "short" });
+    const month = new Date(t.date).toLocaleString("default", {
+      month: "short",
+    });
     const val = parseFloat(String(t.amount || "").replace("$", "")) || 0;
     monthlySalesMap[month] = (monthlySalesMap[month] || 0) + val;
   });
-  const barData = Object.keys(monthlySalesMap).map(k => ({ name: k, value: monthlySalesMap[k] }));
+  const barData = Object.keys(monthlySalesMap).map((k) => ({
+    name: k,
+    value: monthlySalesMap[k],
+  }));
 
   const statusMap = {};
   ebooks.forEach((b) => {
     const s = b.status || "Unknown";
     statusMap[s] = (statusMap[s] || 0) + 1;
   });
-  const pieData = Object.keys(statusMap).map(k => ({ name: k, value: statusMap[k] }));
+  const pieData = Object.keys(statusMap).map((k) => ({
+    name: k,
+    value: statusMap[k],
+  }));
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100">
+    <div className="min-h-screen bg-white dark:bg-slate-950 px-4 py-10 text-slate-900 dark:text-slate-100">
       <ToastContainer position="bottom-right" theme="dark" />
       <div className="mx-auto max-w-7xl">
         <DashboardHeader
@@ -261,7 +298,7 @@ export default function AdminDashboard() {
             {activeTab === "overview" && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="mb-6 text-xl font-bold text-white">
+                  <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                     Overview
                   </h2>
                   <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -345,25 +382,32 @@ export default function AdminDashboard() {
             )}
             {activeTab === "users" && (
               <div>
-                <h2 className="mb-6 text-xl font-bold text-white">
+                <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Manage System Accounts
                 </h2>
                 <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   <DataTable
-                    headers={["Name", "Email Address", "Current Role", "Actions"]}
+                    headers={[
+                      "Name",
+                      "Email Address",
+                      "Current Role",
+                      "Actions",
+                    ]}
                     data={users}
                     emptyMessage="No registered users found."
                     renderRow={(u) => (
                       <tr
                         key={u.id}
-                        className="hover:bg-slate-800/30 transition-colors"
+                        className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
                       >
-                        <td className="px-6 py-4 font-medium text-white">
+                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
                           {u.name}
                         </td>
-                        <td className="px-6 py-4 text-slate-400">{u.email}</td>
+                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
+                          {u.email}
+                        </td>
                         <td className="px-6 py-4">
-                          <span className="bg-slate-950 text-xs font-semibold text-slate-300 border border-slate-800 rounded-lg px-3 py-1.5">
+                          <span className="bg-slate-100 dark:bg-slate-950 text-xs font-semibold text-slate-900 dark:text-slate-300 border border-slate-300 dark:border-slate-800 rounded-lg px-3 py-1.5">
                             {u.role}
                           </span>
                         </td>
@@ -391,7 +435,7 @@ export default function AdminDashboard() {
             )}
             {activeTab === "ebooks" && (
               <div>
-                <h2 className="mb-6 text-xl font-bold text-white">
+                <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Manage Global Catalog
                 </h2>
                 <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -410,41 +454,47 @@ export default function AdminDashboard() {
                     renderRow={(book, index) => (
                       <tr
                         key={book._id || book.id || book.slug}
-                        className="hover:bg-slate-800/30 transition-colors"
+                        className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
                       >
-                        <td className="px-6 py-4 text-slate-400 font-medium">
+                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400 font-medium">
                           {index + 1}
                         </td>
                         <td className="px-6 py-4 flex items-center gap-3">
-                          <div className="relative h-12 w-9 overflow-hidden rounded-xl bg-slate-800 shrink-0">
+                          <div className="relative h-12 w-9 overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 shrink-0">
                             <Image
-                              src={book.coverImage || book.cover || "/not-found-image.png"}
+                              src={
+                                book.coverImage ||
+                                book.cover ||
+                                "/not-found-image.png"
+                              }
                               alt=""
                               fill
                               className="object-cover"
                             />
                           </div>
-                          <span className="font-medium text-white max-w-[150px] truncate">
+                          <span className="font-medium text-slate-900 dark:text-white max-w-[150px] truncate">
                             {book.title}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-slate-400">
+                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
                           {book.writerName}
                         </td>
-                        <td className="px-6 py-4 text-slate-400">
+                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
                           {book.genre || "N/A"}
                         </td>
-                        <td className="px-6 py-4 text-violet-400 font-semibold">
+                        <td className="px-6 py-4 text-violet-600 dark:text-violet-400 font-semibold">
                           ${book.price}
                         </td>
                         <td className="px-6 py-4">
                           <span
-                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${book.status === "Available" || book.status === "published"
-                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                              : book.status === "Coming Soon"
-                                ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
-                                : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                              }`}
+                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
+                              book.status === "Available" ||
+                              book.status === "published"
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                : book.status === "Coming Soon"
+                                  ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
+                                  : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                            }`}
                           >
                             {book.status || "Available"}
                           </span>
@@ -455,9 +505,11 @@ export default function AdminDashboard() {
                               onClick={() => toggleBookPublish(book)}
                               className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors"
                             >
-                              {book.status === "published" || book.status === "Available"
+                              {book.status === "published" ||
+                              book.status === "Available"
                                 ? "Unpublish"
-                                : book.status === "Unavailable" || book.status === "unpublished"
+                                : book.status === "Unavailable" ||
+                                    book.status === "unpublished"
                                   ? "Publish"
                                   : "Set Status"}
                             </button>
@@ -477,7 +529,7 @@ export default function AdminDashboard() {
             )}
             {activeTab === "transactions" && (
               <div>
-                <h2 className="mb-6 text-xl font-bold text-white">
+                <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Platform Audit Ledger
                 </h2>
                 <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -501,10 +553,11 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-6 py-4 uppercase text-xs tracking-wider">
                           <span
-                            className={`px-2 py-0.5 rounded border ${tx.type === "purchase"
+                            className={`px-2 py-0.5 rounded border ${
+                              tx.type === "purchase"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                 : "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                              }`}
+                            }`}
                           >
                             {tx.type}
                           </span>
@@ -546,28 +599,40 @@ export default function AdminDashboard() {
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-400 mb-1">Name</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1">
+              Name
+            </label>
             <input
               type="text"
               value={editForm.name}
-              onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+              onChange={(e) =>
+                setEditForm({ ...editForm, name: e.target.value })
+              }
               className="w-full bg-slate-950 text-sm text-slate-300 border border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-400 mb-1">Email Address</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1">
+              Email Address
+            </label>
             <input
               type="email"
               value={editForm.email}
-              onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+              onChange={(e) =>
+                setEditForm({ ...editForm, email: e.target.value })
+              }
               className="w-full bg-slate-950 text-sm text-slate-300 border border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-400 mb-1">Role</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1">
+              Role
+            </label>
             <select
               value={editForm.role}
-              onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
+              onChange={(e) =>
+                setEditForm({ ...editForm, role: e.target.value })
+              }
               className="w-full bg-slate-950 text-sm font-semibold text-slate-300 border border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
             >
               <option value="reader">User (Reader)</option>
@@ -584,7 +649,9 @@ export default function AdminDashboard() {
         actions={
           <>
             <button
-              onClick={() => setConfirmConfig({ ...confirmConfig, isOpen: false })}
+              onClick={() =>
+                setConfirmConfig({ ...confirmConfig, isOpen: false })
+              }
               className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white"
             >
               Cancel
@@ -598,9 +665,7 @@ export default function AdminDashboard() {
           </>
         }
       >
-        <p className="text-sm text-slate-300">
-          {confirmConfig.message}
-        </p>
+        <p className="text-sm text-slate-300">{confirmConfig.message}</p>
       </Modal>
     </div>
   );

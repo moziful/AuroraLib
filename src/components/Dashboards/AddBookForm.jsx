@@ -66,7 +66,7 @@ function Field({ icon, label, required, children }) {
   );
 }
 const inputCls =
-  "w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-200 outline-none placeholder:text-slate-600 focus:border-sky-500/60 focus:ring-2 focus:ring-sky-500/20 transition";
+  "w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm text-slate-900 dark:text-slate-200 outline-none placeholder:text-slate-500 dark:placeholder:text-slate-600 focus:border-sky-500/60 focus:ring-2 focus:ring-sky-500/20 transition";
 export default function AddBookForm({ initialData, onSuccess }) {
   const router = useRouter();
   const fileInputRef = useRef(null);
@@ -87,9 +87,9 @@ export default function AddBookForm({ initialData, onSuccess }) {
 
   const writerDefaults = user
     ? {
-      writerName: user.name || "",
-      writerEmail: user.email || "",
-    }
+        writerName: user.name || "",
+        writerEmail: user.email || "",
+      }
     : null;
 
   useEffect(() => {
@@ -229,7 +229,9 @@ export default function AddBookForm({ initialData, onSuccess }) {
       await revalidateBooks();
       setTimeout(() => router.push("/dashboard/writer"), 1500);
     } catch (err) {
-      toast.error(`Failed to ${initialData ? "update" : "publish"}: ` + err.message);
+      toast.error(
+        `Failed to ${initialData ? "update" : "publish"}: ` + err.message,
+      );
     } finally {
       setSubmitting(false);
     }
@@ -239,20 +241,20 @@ export default function AddBookForm({ initialData, onSuccess }) {
     <>
       <div className="w-full">
         <div className="w-full">
-          <h2 className="mb-6 text-xl font-bold text-white">
+          <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
             {initialData ? "Edit Book" : "Add a New Book"}
           </h2>
           <div className="w-full">
             <form onSubmit={handleSubmit} className="h-[calc(100vh-280px)]">
               <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 h-full">
                 <div className="lg:col-span-1 h-full">
-                  <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 h-full flex flex-col">
-                    <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500 flex-shrink-0">
+                  <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-5 h-full flex flex-col">
+                    <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-500 flex-shrink-0">
                       Cover Image
                     </p>
                     {coverPreview ? (
                       <div className="relative flex-grow min-h-0">
-                        <div className="relative h-full w-full overflow-hidden rounded-xl border border-slate-700">
+                        <div className="relative h-full w-full overflow-hidden rounded-xl border border-slate-300 dark:border-slate-700">
                           <Image
                             src={coverPreview}
                             alt="Cover preview"
@@ -268,7 +270,7 @@ export default function AddBookForm({ initialData, onSuccess }) {
                         <button
                           type="button"
                           onClick={handleRemoveCover}
-                          className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border border-slate-600 bg-slate-800 text-slate-400 transition hover:border-red-500/50 hover:text-red-400"
+                          className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 dark:border-slate-600 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 transition hover:border-red-500/50 hover:text-red-400"
                         >
                           <MdClose />
                         </button>
@@ -276,16 +278,16 @@ export default function AddBookForm({ initialData, onSuccess }) {
                           <button
                             type="button"
                             onClick={uploadCoverToImgBB}
-                            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 py-2 text-xs font-bold text-sky-400 transition hover:bg-sky-500/20"
+                            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 py-2 text-xs font-bold text-sky-600 dark:text-sky-400 transition hover:bg-sky-500/20"
                           >
                             <MdCloudUpload className="text-base" /> Upload to
                             ImgBB
                           </button>
                         )}
                         {uploadingCover && (
-                          <div className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-800 py-2">
+                          <div className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-200 dark:bg-slate-800 py-2">
                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />
-                            <span className="text-xs text-slate-400">
+                            <span className="text-xs text-slate-600 dark:text-slate-400">
                               Uploading…
                             </span>
                           </div>
@@ -300,7 +302,7 @@ export default function AddBookForm({ initialData, onSuccess }) {
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="group flex flex-grow min-h-0 w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-700 bg-slate-800/50 transition-all hover:border-sky-500/50 hover:bg-slate-800"
+                        className="group flex flex-grow min-h-0 w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-800/50 transition-all hover:border-sky-500/50 hover:bg-slate-200/50 dark:hover:bg-slate-800"
                       >
                         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-700 transition group-hover:bg-sky-500/10">
                           <MdCloudUpload className="text-3xl text-slate-500 transition group-hover:text-sky-400" />
@@ -325,8 +327,8 @@ export default function AddBookForm({ initialData, onSuccess }) {
                   </div>
                 </div>
                 <div className="lg:col-span-2 space-y-5 overflow-y-auto max-h-full pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                  <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 space-y-4">
-                    <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                  <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-6 space-y-4">
+                    <p className="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-500">
                       Book Info
                     </p>
                     <Field icon={<MdBook />} label="Title" required>
@@ -402,20 +404,20 @@ export default function AddBookForm({ initialData, onSuccess }) {
                       </select>
                     </Field>
                   </div>
-                  <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 space-y-4">
-                    <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                  <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-6 space-y-4">
+                    <p className="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-500">
                       Writer Info
                     </p>
                     {user && (
-                      <p className="flex items-center gap-1.5 text-xs text-slate-500">
+                      <p className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-500">
                         <MdVerified className="text-sky-400" />
                         Prefilled from your account info. You can modify these.
                       </p>
                     )}
                     {sessionLoading && (
-                      <div className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800/50 px-4 py-3">
+                      <div className="flex items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-200/50 dark:bg-slate-800/50 px-4 py-3">
                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-slate-600 dark:text-slate-500">
                           Loading session…
                         </span>
                       </div>

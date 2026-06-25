@@ -23,14 +23,15 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-800 bg-slate-950 px-4 py-10 text-slate-300">
+    <footer className="border-t border-slate-800 bg-white dark:bg-slate-950 px-4 py-10 text-slate-900 dark:text-slate-100">
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-2 xl:grid-cols-4">
         <div>
-          <h2 className="text-lg font-black text-white">
+          <h2 className="text-lg font-black text-slate-950 dark:text-white">
             <span className="text-sky-400">Aurora</span>Lib
           </h2>
-          <p className="mt-3 max-w-sm text-sm leading-6 text-slate-400">
-            A calm place to discover, read, and keep track of your favorite books.
+          <p className="mt-3 max-w-sm text-sm leading-6 text-slate-900 dark:text-slate-400">
+            A calm place to discover, read, and keep track of your favorite
+            books.
           </p>
         </div>
 
@@ -43,7 +44,7 @@ export default function Footer() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-sm text-slate-300 transition-colors hover:text-sky-300"
+                  className="text-sm text-slate-900 text-slate-900 dark:text-slate-400 transition-colors hover:text-sky-600 hover:dark:text-sky-300"
                 >
                   {link.label}
                 </Link>
@@ -56,7 +57,7 @@ export default function Footer() {
           <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">
             Follow
           </h3>
-          <p className="mt-4 text-sm leading-6 text-slate-400">
+          <p className="mt-4 text-sm leading-6 text-slate-900 dark:text-slate-400">
             Follow AuroraLib on your favourite social media to get updates.
           </p>
           <div className="mt-4 flex items-center gap-3">
@@ -67,7 +68,7 @@ export default function Footer() {
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-800 bg-slate-900 text-slate-300 transition-colors hover:border-sky-400/30 hover:text-sky-300"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-400 transition-colors hover:border-sky-400 hover:text-sky-600 hover:bg-sky-100 hover:dark:bg-sky-900"
                 >
                   <Icon className="text-sm" />
                 </a>
@@ -80,14 +81,15 @@ export default function Footer() {
           <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">
             Newsletter
           </h3>
-          <p className="mt-4 text-sm leading-6 text-slate-400">
-            Subscribe newsletter to get update about new features, offers and promotions.
+          <p className="mt-4 text-sm leading-6 text-slate-900 dark:text-slate-400">
+            Subscribe newsletter to get update about new features, offers and
+            promotions.
           </p>
           <form className="mt-4 flex gap-2">
             <input
               type="email"
               placeholder="Enter your email"
-              className="min-w-0 flex-1 rounded-xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition-colors focus:border-sky-400/40"
+              className="min-w-0 flex-1 rounded-xl border border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 text-sm placeholder:text-slate-500 dark:text-slate-300 outline-none transition-colors focus:border-sky-400/40"
             />
             <button
               type="submit"
@@ -100,7 +102,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto mt-10 flex max-w-7xl flex-col gap-2 border-t border-slate-800 pt-6 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
+      <div className="mx-auto mt-10 flex max-w-7xl flex-col gap-2 border-t border-slate-800 pt-6 text-sm text-slate-800 dark:text-slate-500 md:flex-row md:items-center md:justify-between">
         <p>© {new Date().getFullYear()} AuroraLib. All rights reserved.</p>
         <p>Made for readers, writers, and everyone in between.</p>
       </div>

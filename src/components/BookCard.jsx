@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function BookCard({ book }) {
   return (
     <Link href={`/books/id/${book._id}`}>
-      <div className="bg-slate-800 rounded-xl shadow-md overflow-hidden flex flex-col items-center relative transition-all duration-300 hover:-translate-y-1">
+      <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden flex flex-col items-center relative transition-all duration-300 hover:-translate-y-1">
         <span
           className={`absolute top-0 right-0 uppercase leading-loose text-xs font-semibold px-2 rounded-bl-xl ${
             book.status === "Available"
@@ -21,18 +21,18 @@ export default function BookCard({ book }) {
           alt={book.title}
           width={300}
           height={200}
-          className="w-full h-60 object-cover mb-4"
+          className="w-full h-60 border-b-2 border-slate-300 dark:border-none object-cover mb-4"
         />
         <div className="p-4 pt-0 w-full flex flex-col gap-2">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold text-sky-400 truncate mr-4">
+            <h2 className="text-2xl font-semibold text-sky-500 dark:text-sky-400 truncate mr-4">
               {book.title || "Untitled Book"}
             </h2>
-            <p className="text-lg font-bold text-white whitespace-nowrap shrink-0 text-right">
+            <p className="text-lg font-bold text-slate-800 dark:text-white whitespace-nowrap shrink-0 text-right">
               $ {Number(book?.price ?? 0).toFixed(2)}
             </p>
           </div>
-          <span className="text-white flex flex-col gap-2">
+          <span className="text-slate-500 dark:text-white flex flex-col gap-2">
             <p>Author: {book.writerName || "Unknown Author"}</p>
             <p>
               {book.genre || "Unknown Genre"} •{" "}

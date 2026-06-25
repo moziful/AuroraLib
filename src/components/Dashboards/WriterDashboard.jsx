@@ -59,9 +59,11 @@ async function getBookmarkedReferences(email) {
 
 async function fetchAuthToken() {
   const res = await fetch("/api/auth/token");
-  if (!res.ok) throw new Error("Failed to retrieve auth token. Are you signed in?");
+  if (!res.ok)
+    throw new Error("Failed to retrieve auth token. Are you signed in?");
   const data = await res.json();
-  if (!data.success || !data.token) throw new Error(data.message || "No token returned.");
+  if (!data.success || !data.token)
+    throw new Error(data.message || "No token returned.");
   return data.token;
 }
 
@@ -87,9 +89,15 @@ export default function WriterDashboard() {
   const [editingBookData, setEditingBookData] = useState(null);
 
   const totalEbooks = books.length;
-  const publishedBooks = books.filter(b => b.status === "Available" || b.status === "published").length;
-  const unpublishedBooks = books.filter(b => b.status === "Unavailable" || b.status === "unpublished").length;
-  const upcomingBooks = books.filter(b => b.status === "Coming Soon" || b.status === "upcoming").length;
+  const publishedBooks = books.filter(
+    (b) => b.status === "Available" || b.status === "published",
+  ).length;
+  const unpublishedBooks = books.filter(
+    (b) => b.status === "Unavailable" || b.status === "unpublished",
+  ).length;
+  const upcomingBooks = books.filter(
+    (b) => b.status === "Coming Soon" || b.status === "upcoming",
+  ).length;
 
   const grossEarnings = sales.reduce((total, sale) => {
     const value = parseFloat(String(sale.amount || "").replace("$", ""));
@@ -99,18 +107,26 @@ export default function WriterDashboard() {
   const monthlySalesMap = {};
   sales.forEach((s) => {
     if (!s.date) return;
-    const month = new Date(s.date).toLocaleString("default", { month: "short" });
+    const month = new Date(s.date).toLocaleString("default", {
+      month: "short",
+    });
     const val = parseFloat(String(s.amount || "").replace("$", "")) || 0;
     monthlySalesMap[month] = (monthlySalesMap[month] || 0) + val;
   });
-  const barData = Object.keys(monthlySalesMap).map(k => ({ name: k, value: monthlySalesMap[k] }));
+  const barData = Object.keys(monthlySalesMap).map((k) => ({
+    name: k,
+    value: monthlySalesMap[k],
+  }));
 
   const genreMap = {};
   books.forEach((b) => {
     const g = b.genre || "Unknown";
     genreMap[g] = (genreMap[g] || 0) + 1;
   });
-  const pieData = Object.keys(genreMap).map(k => ({ name: k, value: genreMap[k] }));
+  const pieData = Object.keys(genreMap).map((k) => ({
+    name: k,
+    value: genreMap[k],
+  }));
 
   const tabsConfig = [
     { id: "overview", label: "Overview", icon: MdDashboard },
@@ -186,7 +202,9 @@ export default function WriterDashboard() {
     if (book.status === "Coming Soon") {
       setSelectedStatus("Available"); // default choice
     } else {
-      setSelectedStatus(book.status === "Available" ? "Unavailable" : "Available");
+      setSelectedStatus(
+        book.status === "Available" ? "Unavailable" : "Available",
+      );
     }
     setStatusModalOpen(true);
   };
@@ -224,7 +242,7 @@ export default function WriterDashboard() {
         theme="dark"
         toastClassName="!bg-slate-800 !text-slate-100 !border !border-slate-700"
       />
-      <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100">
+      <div className="min-h-screen bg-white dark:bg-slate-950 px-4 py-10 text-slate-900 dark:text-slate-100">
         <div className="mx-auto max-w-7xl">
           <DashboardHeader
             roleTitle="Writer Dashboard"
@@ -246,55 +264,55 @@ export default function WriterDashboard() {
               {activeTab === "overview" && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="mb-6 text-xl font-bold text-white">
+                    <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                       Overview
                     </h2>
                     <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                      <AnalyticsStatCard
-                        title="Total Ebooks"
-                        value={totalEbooks}
-                        description="Books managed on AuroraLib"
-                        icon={MdBook}
-                        colorClass="text-violet-400"
-                      />
-                      <AnalyticsStatCard
-                        title="Published"
-                        value={publishedBooks}
-                        description="Currently available"
-                        icon={MdPublic}
-                        colorClass="text-emerald-400"
-                      />
-                      <AnalyticsStatCard
-                        title="Upcoming"
-                        value={upcomingBooks}
-                        description="Coming soon"
-                        icon={MdSchedule}
-                        colorClass="text-sky-400"
-                      />
-                      <AnalyticsStatCard
-                        title="Unpublished"
-                        value={unpublishedBooks}
-                        description="Currently unavailable"
-                        icon={MdVisibilityOff}
-                        colorClass="text-rose-400"
-                      />
-                      <AnalyticsStatCard
-                        title="Gross Earnings"
-                        value={`$${grossEarnings.toFixed(2)}`}
-                        description="Accumulated revenue details"
-                        icon={MdTrendingUp}
-                        colorClass="text-amber-400"
-                      />
+                        <AnalyticsStatCard
+                          title="Total Ebooks"
+                          value={totalEbooks}
+                          description="Books managed on AuroraLib"
+                          icon={MdBook}
+                          colorClass="text-violet-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Published"
+                          value={publishedBooks}
+                          description="Currently available"
+                          icon={MdPublic}
+                          colorClass="text-emerald-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Upcoming"
+                          value={upcomingBooks}
+                          description="Coming soon"
+                          icon={MdSchedule}
+                          colorClass="text-sky-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Unpublished"
+                          value={unpublishedBooks}
+                          description="Currently unavailable"
+                          icon={MdVisibilityOff}
+                          colorClass="text-rose-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Gross Earnings"
+                          value={`$${grossEarnings.toFixed(2)}`}
+                          description="Accumulated revenue details"
+                          icon={MdTrendingUp}
+                          colorClass="text-amber-400"
+                        />
                       </div>
 
                       <div className="mt-8">
-                      <DashboardCharts 
-                        title1="Monthly Sales Volume"
-                        title2="Ebooks by Genre"
-                        barData={barData}
-                        pieData={pieData}
-                      />
+                        <DashboardCharts
+                          title1="Monthly Sales Volume"
+                          title2="Ebooks by Genre"
+                          barData={barData}
+                          pieData={pieData}
+                        />
                       </div>
                     </div>
                   </div>
@@ -302,7 +320,7 @@ export default function WriterDashboard() {
               )}
               {activeTab === "manage" && (
                 <div>
-                  <h2 className="mb-6 text-xl font-bold text-white">
+                  <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                     Your Publications
                   </h2>
                   <DataTable
@@ -327,13 +345,17 @@ export default function WriterDashboard() {
                         <td className="px-6 py-4 flex items-center gap-3">
                           <div className="relative h-12 w-9 overflow-hidden rounded-xl bg-slate-800 shrink-0">
                             <Image
-                              src={book.coverImage || book.cover || "/not-found-image.png"}
+                              src={
+                                book.coverImage ||
+                                book.cover ||
+                                "/not-found-image.png"
+                              }
                               alt=""
                               fill
                               className="object-cover"
                             />
                           </div>
-                          <span className="font-medium text-white max-w-[150px] truncate">
+                          <span className="font-medium text-slate-900 dark:text-white max-w-[150px] truncate">
                             {book.title}
                           </span>
                         </td>
@@ -345,12 +367,14 @@ export default function WriterDashboard() {
                         </td>
                         <td className="px-6 py-4">
                           <span
-                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${book.status === "Available" || book.status === "published"
-                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                              : book.status === "Coming Soon"
-                                ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
-                                : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                              }`}
+                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
+                              book.status === "Available" ||
+                              book.status === "published"
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                : book.status === "Coming Soon"
+                                  ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
+                                  : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                            }`}
                           >
                             {book.status || "Available"}
                           </span>
@@ -399,7 +423,7 @@ export default function WriterDashboard() {
               )}
               {activeTab === "bookmarks" && (
                 <div>
-                  <h2 className="mb-6 text-xl font-bold text-white">
+                  <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                     Bookmarked References
                   </h2>
                   <EbookGallery
@@ -413,7 +437,7 @@ export default function WriterDashboard() {
               )}
               {activeTab === "sales" && (
                 <div>
-                  <h2 className="mb-6 text-xl font-bold text-white">
+                  <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                     Sales Logs & Distributions
                   </h2>
                   <DataTable
@@ -430,11 +454,15 @@ export default function WriterDashboard() {
                         key={sale.id}
                         className="hover:bg-slate-800/30 transition-colors"
                       >
-                        <td className="px-6 py-4 font-medium text-white">
+                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
                           {sale.title}
                         </td>
-                        <td className="px-6 py-4 text-slate-400">{sale.buyer}</td>
-                        <td className="px-6 py-4 text-slate-400">{sale.date}</td>
+                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
+                          {sale.buyer}
+                        </td>
+                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
+                          {sale.date}
+                        </td>
                         <td className="px-6 py-4 text-emerald-400 font-semibold">
                           {sale.amount}
                         </td>
@@ -445,7 +473,7 @@ export default function WriterDashboard() {
               )}
               {activeTab === "profile" && (
                 <div>
-                  <h2 className="mb-6 text-xl font-bold text-white">
+                  <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                     Profile Management
                   </h2>
                   <UserProfile user={user} role="Writer" />
@@ -477,8 +505,12 @@ export default function WriterDashboard() {
           </>
         }
       >
-        <p className="text-slate-400 text-sm">
-          Are you sure you want to delete <span className="text-sky-400 font-semibold">"{bookToDelete?.title}"</span>? This action cannot be undone.
+        <p className="text-slate-600 dark:text-slate-400 text-sm">
+          Are you sure you want to delete{" "}
+          <span className="text-sky-400 font-semibold">
+            "{bookToDelete?.title}"
+          </span>
+          ? This action cannot be undone.
         </p>
       </Modal>
       <Modal
@@ -489,7 +521,7 @@ export default function WriterDashboard() {
             <button
               onClick={() => setStatusModalOpen(false)}
               disabled={isUpdatingStatus}
-              className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:bg-slate-800 transition-colors disabled:opacity-50"
+              className="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
@@ -503,26 +535,51 @@ export default function WriterDashboard() {
           </>
         }
       >
-        <p className="text-slate-400 text-sm mb-4">
-          Update the status for <span className="text-sky-400 font-semibold">"{bookToStatus?.title}"</span>.
+        <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">
+          Update the status for{" "}
+          <span className="text-sky-400 font-semibold">
+            "{bookToStatus?.title}"
+          </span>
+          .
         </p>
 
         <div className="space-y-3">
           {bookToStatus?.status === "Coming Soon" ? (
             <>
-              <p className="text-xs text-amber-400 mb-2">Warning: Once changed from 'Coming Soon', it cannot be reverted back to 'Coming Soon'.</p>
-              <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
-                <input type="radio" name="status" value="Available" checked={selectedStatus === "Available"} onChange={(e) => setSelectedStatus(e.target.value)} className="accent-sky-400" />
+              <p className="text-xs text-amber-400 mb-2">
+                Warning: Once changed from 'Coming Soon', it cannot be reverted
+                back to 'Coming Soon'.
+              </p>
+              <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+                <input
+                  type="radio"
+                  name="status"
+                  value="Available"
+                  checked={selectedStatus === "Available"}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="accent-sky-400"
+                />
                 Available
               </label>
-              <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
-                <input type="radio" name="status" value="Unavailable" checked={selectedStatus === "Unavailable"} onChange={(e) => setSelectedStatus(e.target.value)} className="accent-sky-400" />
+              <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+                <input
+                  type="radio"
+                  name="status"
+                  value="Unavailable"
+                  checked={selectedStatus === "Unavailable"}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="accent-sky-400"
+                />
                 Unavailable
               </label>
             </>
           ) : (
-            <p className="text-sm text-slate-300">
-              Are you sure you want to make this book <span className="font-bold text-white">{selectedStatus}</span>?
+            <p className="text-sm text-slate-700 dark:text-slate-300">
+              Are you sure you want to make this book{" "}
+              <span className="font-bold text-slate-900 dark:text-white">
+                {selectedStatus}
+              </span>
+              ?
             </p>
           )}
         </div>

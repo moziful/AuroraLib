@@ -17,13 +17,17 @@ export default function DashboardHeader({
           <Icon className={`text-xl ${iconColorClass}`} />
         </div>
         <div>
-          <h1 className="text-3xl font-black text-white">
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white">
             {roleTitle.split(" ")[0]}{" "}
             <span className={iconColorClass}>
               {roleTitle.split(" ").slice(1).join(" ")}
             </span>
           </h1>
-          {subtitle && <p className="text-sm text-slate-500">{subtitle}</p>}
+          {subtitle && (
+            <p className="text-sm text-slate-600 dark:text-slate-500">
+              {subtitle}
+            </p>
+          )}
         </div>
       </div>
     </div>

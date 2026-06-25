@@ -70,28 +70,28 @@ export default function EbooksPage() {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
         <h1 className="text-4xl font-bold text-sky-400">
           Books: {books.length}
-          <span className="text-base font-normal text-slate-400 ml-3">
+          <span className="text-base font-normal text-slate-700 dark:text-slate-400 ml-3">
             (Page {activePage} of {totalPages})
           </span>
         </h1>
       </div>
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-8 flex flex-col lg:flex-row items-end lg:items-center gap-4 shadow-lg shadow-black/20">
+      <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-4 mb-8 flex flex-col lg:flex-row items-end lg:items-center gap-4 shadow-lg shadow-black/20">
         <div className="w-full lg:flex-1">
-          <label className="block text-xs text-slate-400 mb-1">Search (Title, Author, Genre)</label>
+          <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Search (Title, Author, Genre)</label>
           <input
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Type to search..."
-            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-400 transition-colors"
+            className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors placeholder:text-slate-500"
           />
         </div>
         <div className="w-full lg:w-auto">
-          <label className="block text-xs text-slate-400 mb-1">Status</label>
+          <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Status</label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-400 transition-colors"
+            className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors"
           >
             <option value="all">All</option>
             <option value="Available">Available</option>
@@ -100,11 +100,11 @@ export default function EbooksPage() {
           </select>
         </div>
         <div className="w-full lg:w-auto">
-          <label className="block text-xs text-slate-400 mb-1">Sort By</label>
+          <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Sort By</label>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-400 transition-colors"
+            className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors"
           >
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
@@ -115,7 +115,7 @@ export default function EbooksPage() {
         <button
           onClick={handleClearFilters}
           title="Clear Filters"
-          className="w-full lg:w-auto h-10 mt-auto px-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 rounded-lg text-slate-300 flex items-center justify-center gap-2 transition-colors text-sm font-medium"
+          className="w-full lg:w-auto h-10 mt-auto px-4 bg-white dark:bg-slate-800 hover:bg-slate-700 border border-slate-300 dark:border-slate-700 hover:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 transition-colors text-sm font-medium"
         >
           <FaTimes />
           <span className="lg:hidden">Clear Filters</span>
@@ -131,7 +131,7 @@ export default function EbooksPage() {
             <BookCard key={book._id || book.slug} book={book} />
           ))
         ) : (
-          <div className="col-span-full py-12 flex flex-col items-center justify-center text-slate-400 border border-slate-800 rounded-2xl bg-slate-900/50">
+          <div className="col-span-full py-12 flex flex-col items-center justify-center text-slate-700 dark:text-slate-400 border border-slate-800 rounded-2xl bg-white dark:bg-slate-900/50">
             <p className="text-lg font-medium text-slate-300">No books found.</p>
             <p className="text-sm">Try adjusting your filters to find what you're looking for.</p>
           </div>
@@ -142,7 +142,7 @@ export default function EbooksPage() {
           <button
             onClick={() => handlePageChange(activePage - 1)}
             disabled={activePage === 1}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-800 border border-slate-700 text-slate-300 disabled:opacity-30 disabled:pointer-events-none hover:border-sky-400 hover:text-sky-400 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 border border-slate-700 text-slate-700 dark:text-slate-300 disabled:opacity-30 disabled:pointer-events-none hover:border-sky-400 hover:text-sky-400 transition-colors"
           >
             <FaChevronLeft />
           </button>
@@ -152,7 +152,7 @@ export default function EbooksPage() {
               onClick={() => handlePageChange(pageNum)}
               className={`w-9 h-9 rounded-xl text-xs font-bold transition-all duration-200 ${activePage === pageNum
                 ? "bg-sky-400 text-black font-black shadow-lg shadow-sky-400/20"
-                : "bg-slate-800 border border-slate-700 text-slate-400 hover:text-sky-400 hover:border-sky-400"
+                : "bg-white dark:bg-slate-800 border border-slate-700 text-slate-700 dark:text-slate-400 hover:text-sky-400 hover:border-sky-400"
                 }`}
             >
               {pageNum}
@@ -161,7 +161,7 @@ export default function EbooksPage() {
           <button
             onClick={() => handlePageChange(activePage + 1)}
             disabled={activePage === totalPages}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-800 border border-slate-700 text-slate-300 disabled:opacity-30 disabled:pointer-events-none hover:border-sky-400 hover:text-sky-400 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 border border-slate-700 text-slate-700 dark:text-slate-300 disabled:opacity-30 disabled:pointer-events-none hover:border-sky-400 hover:text-sky-400 transition-colors"
           >
             <FaChevronRight />
           </button>
