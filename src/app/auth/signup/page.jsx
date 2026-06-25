@@ -78,11 +78,11 @@ export default function SignUp() {
     setError("");
 
     const { name, email, password } = formData;
+    // Sign up without a role – better‑auth will assign the default (reader)
     const { data, error: authError } = await authClient.signUp.email({
       name,
       email,
       password,
-      role: selectedRole,
     });
 
     if (authError) {
@@ -91,6 +91,41 @@ export default function SignUp() {
       return;
     }
 
+    // If the user chose writer, upgrade the role via our new endpoint
+    if (selectedRole === "writer") {
+      try {
+        let token = data?.accessToken || data?.session?.accessToken;
+        let userId = data?.id || data?.user?.id;
+        
+        if (!token) {
+          const { data: signInData, error: signInError } = await authClient.signIn.email({
+            email,
+            password,
+          });
+          if (!signInError) {
+            token = signInData?.accessToken || signInData?.session?.accessToken || signInData?.token;
+            userId = signInData?.id || signInData?.user?.id || userId;
+          }
+        }
+
+        if (token && userId) {
+          const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+          const url = `${apiBase}/users/${userId}/role`;
+          await fetch(url, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ role: "writer" }),
+          });
+        }
+      } catch (e) {
+        console.warn("Role upgrade failed:", e);
+      }
+    }
+
+    // Redirect to the appropriate dashboard
     window.location.href =
       selectedRole === "writer" ? "/dashboard/writer" : "/dashboard/reader";
   };
