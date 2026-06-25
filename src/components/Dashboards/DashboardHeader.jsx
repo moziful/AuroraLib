@@ -24,7 +24,7 @@ export default function DashboardHeader({
             </span>
           </h1>
           {subtitle && (
-            <p className="text-sm text-slate-600 dark:text-slate-500">
+            <p className="text-sm text-slate-600 dark:text-slate-500" suppressHydrationWarning>
               {subtitle}
             </p>
           )}

@@ -6,7 +6,7 @@ export default function EbookGallery({
   emptyMessage = "No ebooks found.",
   actionLabel = "View Details",
   hoverBorderClass = "hover:border-sky-500/30",
-  btnHoverClass = "hover:bg-sky-500",
+  btnHoverClass = "hover:bg-sky-500 dark:hover:bg-sky-400",
 }) {
   if (!books || books.length === 0) {
     return (
@@ -18,14 +18,15 @@ export default function EbookGallery({
 
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-      {books.map((book) => (
-        <div
-          key={book.id || book.slug}
-          className={`group rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-4 transition-all ${hoverBorderClass}`}
+      {books.map((book, index) => (
+        <Link
+          key={`${book._id || book.id || book.slug || "book"}-${index}`}
+          href={`/books/id/${book._id || book.id}`}
+          className={`group block rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-4 transition-all ${hoverBorderClass}`}
         >
           <div className="relative aspect-3/4 overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 mb-3">
             <Image
-              src={book.cover || "/not-found-image.png"}
+              src={book.coverImage || book.cover || "/placeholder-cover.png"}
               alt={book.title}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -39,13 +40,12 @@ export default function EbookGallery({
               {book.writer}
             </p>
           )}
-          <Link
-            href={`/books/${book.slug}`}
-            className={`mt-3 block text-center rounded-lg bg-slate-200 dark:bg-slate-800 py-1.5 text-xs font-semibold text-slate-900 dark:text-slate-300 transition-colors ${btnHoverClass} hover:text-slate-950 dark:hover:text-slate-950`}
+          <div
+            className="mt-3 block text-center rounded-lg bg-slate-200 dark:bg-slate-800 py-1.5 text-xs font-semibold text-slate-900 dark:text-slate-300 transition-colors group-hover:bg-sky-400 group-hover:text-slate-950"
           >
             {actionLabel}
-          </Link>
-        </div>
+          </div>
+        </Link>
       ))}
     </div>
   );

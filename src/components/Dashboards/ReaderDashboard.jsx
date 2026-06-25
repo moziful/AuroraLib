@@ -34,6 +34,7 @@ export default function UserDashboard() {
   const [books, setBooks] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const tabsConfig = [
     { id: "overview", label: "Overview", icon: MdDashboard },
@@ -42,6 +43,10 @@ export default function UserDashboard() {
     { id: "history", label: "Purchase History", icon: MdHistory },
     { id: "profile", label: "Profile Management", icon: MdPerson },
   ];
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (user?.email) {
@@ -103,7 +108,7 @@ export default function UserDashboard() {
       <div className="mx-auto max-w-7xl">
         <DashboardHeader
           roleTitle="User Dashboard"
-          subtitle={`Welcome back, ${isPending ? "Reader" : user?.name || "Reader"}`}
+          subtitle={`Welcome back, ${(!mounted || isPending) ? "Reader" : user?.name || "Reader"}`}
           icon={MdDashboard}
         />
 
@@ -200,8 +205,8 @@ export default function UserDashboard() {
                     books={bookmarks}
                     emptyMessage="You haven't bookmarked any ebooks yet."
                     actionLabel="View Details"
-                    hoverBorderClass="hover:border-amber-500/30"
-                    btnHoverClass="hover:bg-amber-500"
+                    hoverBorderClass="hover:border-sky-400/30"
+                    btnHoverClass="hover:bg-sky-400 dark:hover:bg-sky-400"
                   />
                 </div>
               </div>

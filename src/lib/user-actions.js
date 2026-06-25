@@ -81,6 +81,27 @@ export async function getBookmarkedBooks(email) {
     }
 }
 
+export async function toggleBookmarkAction(bookId, userEmail) {
+    try {
+        const response = await fetch(`${API_URL}/bookmarks/toggle`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ bookId, userEmail }),
+        });
+
+        if (!response.ok) {
+            return { success: false };
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Bookmark toggle failed via API:", error);
+        return { success: false };
+    }
+}
+
 export async function getTransactionHistory(email) {
     try {
         const response = await fetch(`${API_URL}/transactions/${encodeURIComponent(email)}`, {

@@ -1,18 +1,79 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { ImSpinner2 } from "react-icons/im";
+import { authClient } from "@/lib/auth-client";
+import { toggleBookmarkAction } from "@/lib/user-actions";
+import { toast } from "react-toastify";
 
 export default function BookCard({ book }) {
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user && book?.bookmarks) {
+      setIsBookmarked(book.bookmarks.includes(user.email));
+    } else {
+      setIsBookmarked(false);
+    }
+  }, [user, book?.bookmarks]);
+
+  const handleBookmarkToggle = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!user) {
+      toast.warning("Please sign in to bookmark books.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await toggleBookmarkAction(book._id || book.id, user.email);
+      if (res && res.success) {
+        setIsBookmarked(res.bookmarked);
+        toast.success(res.bookmarked ? "Added to bookmarks!" : "Removed from bookmarks.");
+      } else {
+        toast.error("Failed to update bookmark.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Link href={`/books/id/${book._id}`}>
       <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden flex flex-col items-center relative transition-all duration-300 hover:-translate-y-1">
+        <button
+          onClick={handleBookmarkToggle}
+          disabled={loading}
+          className="absolute top-3 left-3 z-10 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white transition-all backdrop-blur-sm"
+          title={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
+        >
+          {loading ? (
+            <ImSpinner2 className="animate-spin text-lg text-sky-400" />
+          ) : isBookmarked ? (
+            <FaHeart className="text-lg text-sky-400" />
+          ) : (
+            <FaRegHeart className="text-lg hover:scale-110 transition-transform" />
+          )}
+        </button>
         <span
-          className={`absolute top-0 right-0 uppercase leading-loose text-xs font-semibold px-2 rounded-bl-xl ${
-            book.status === "Available"
+          className={`absolute top-0 right-0 uppercase leading-loose text-xs font-semibold px-2 rounded-bl-xl ${book.status === "Available"
               ? "text-green-600 bg-green-100"
               : book.status === "Unavailable"
                 ? "text-red-600 bg-red-200"
                 : "text-orange-500 bg-orange-100"
-          }`}
+            }`}
         >
           {book.status}
         </span>
@@ -72,3 +133,4 @@ export function BookCardSkeleton() {
     </div>
   );
 }
+
