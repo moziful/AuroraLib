@@ -90,7 +90,7 @@ export default function AdminDashboard() {
     { id: "users", label: "Manage Users", icon: MdPeople },
     { id: "ebooks", label: "Manage All Ebooks", icon: MdBook },
     { id: "transactions", label: "View All Transactions", icon: MdReceipt },
-    { id: "add-book", label: "Add / Edit Ebook", icon: MdAddCircle },
+    { id: "add-book", label: "Add Ebook", icon: MdAddCircle },
   ];
 
   useEffect(() => {
@@ -524,7 +524,7 @@ export default function AdminDashboard() {
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="flex flex-wrap gap-2">
+                          <div className="flex gap-2">
                             <button type="button"
                               onClick={() => toggleBookPublish(book)}
                               className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors"
@@ -625,7 +625,7 @@ export default function AdminDashboard() {
           <>
             <button
               onClick={() => setIsEditModalOpen(false)}
-              className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white"
+              className="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white"
             >
               Cancel
             </button>
@@ -649,7 +649,7 @@ export default function AdminDashboard() {
               onChange={(e) =>
                 setEditForm({ ...editForm, name: e.target.value })
               }
-              className="w-full bg-slate-950 text-sm text-slate-300 border border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
+              className="w-full bg-white dark:bg-slate-950 text-sm text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
             />
           </div>
           <div>
@@ -662,7 +662,7 @@ export default function AdminDashboard() {
               onChange={(e) =>
                 setEditForm({ ...editForm, email: e.target.value })
               }
-              className="w-full bg-slate-950 text-sm text-slate-300 border border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
+              className="w-full bg-white dark:bg-slate-950 text-sm text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
             />
           </div>
           <div>
@@ -674,7 +674,7 @@ export default function AdminDashboard() {
               onChange={(e) =>
                 setEditForm({ ...editForm, role: e.target.value })
               }
-              className="w-full bg-slate-950 text-sm font-semibold text-slate-300 border border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
+              className="w-full bg-white dark:bg-slate-950 text-sm text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30"
             >
               <option value="reader">User (Reader)</option>
               <option value="writer">Writer</option>

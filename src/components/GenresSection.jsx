@@ -135,7 +135,7 @@ export default function GenresSection() {
               >
                 <Icon />
               </span>
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-white transition-colors">
+              <span className="text-sm font-bold text-slate-800 dark:text-slate-200 transition-colors">
                 {name}
               </span>
             </Link>
