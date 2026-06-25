@@ -225,7 +225,6 @@ const [editingBookData, setEditingBookData] = useState(null);
         setConfirmConfig({ ...confirmConfig, isOpen: false });
       },
     });
-  }
   };
 
   // Delete book with authentication token
