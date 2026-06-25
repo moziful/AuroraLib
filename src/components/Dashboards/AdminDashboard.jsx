@@ -63,7 +63,7 @@ export default function AdminDashboard() {
   const user = session?.user;
 
   const [activeTab, setActiveTab] = useState("overview"); // overview | users | ebooks | transactions | add-book
-const [editingBookData, setEditingBookData] = useState(null);
+  const [editingBookData, setEditingBookData] = useState(null);
   const [users, setUsers] = useState([]);
   const [ebooks, setEbooks] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -148,11 +148,11 @@ const [editingBookData, setEditingBookData] = useState(null);
               users.map((u) =>
                 u.id === selectedUserForEdit.id
                   ? {
-                      ...u,
-                      role: editForm.role,
-                      name: editForm.name,
-                      email: editForm.email,
-                    }
+                    ...u,
+                    role: editForm.role,
+                    name: editForm.name,
+                    email: editForm.email,
+                  }
                   : u,
               ),
             );
@@ -513,14 +513,13 @@ const [editingBookData, setEditingBookData] = useState(null);
                         </td>
                         <td className="px-6 py-4">
                           <span
-                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
-                              book.status === "Available" ||
-                              book.status === "published"
+                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${book.status === "Available" ||
+                                book.status === "published"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                 : book.status === "Coming Soon"
                                   ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
                                   : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                            }`}
+                              }`}
                           >
                             {book.status || "Available"}
                           </span>
@@ -528,14 +527,12 @@ const [editingBookData, setEditingBookData] = useState(null);
                         <td className="px-6 py-4">
                           <div className="flex flex-wrap gap-2">
                             <button type="button"
-                              onClick={() => toggleBookPublish(book)}
+                              onClick={() => promptStatusChange(book)}
                               className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors"
                             >
-                              {book.status === "published" ||
-                              book.status === "Available"
+                              {book.status === "Available"
                                 ? "Unpublish"
-                                : book.status === "Unavailable" ||
-                                    book.status === "unpublished"
+                                : book.status === "Unavailable"
                                   ? "Publish"
                                   : "Set Status"}
                             </button>
@@ -546,7 +543,7 @@ const [editingBookData, setEditingBookData] = useState(null);
                               <MdEdit />
                             </button>
                             <button
-                              onClick={() => deleteBook(book.id || book._id)}
+                              onClick={() => promptDeleteBook(book)}
                               className="p-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded hover:bg-rose-500 hover:text-white transition-all"
                             >
                               <MdDelete />
@@ -564,12 +561,12 @@ const [editingBookData, setEditingBookData] = useState(null);
                 <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   {editingBookData ? "Edit Ebook" : "Add New Ebook"}
                 </h2>
-                <AddBookForm 
-                    initialData={editingBookData} 
-                    onSuccess={() => {
-                        setEditingBookData(null);
-                        setActiveTab("ebooks");
-                    }} 
+                <AddBookForm
+                  initialData={editingBookData}
+                  onSuccess={() => {
+                    setEditingBookData(null);
+                    setActiveTab("ebooks");
+                  }}
                 />
               </div>
             )}
@@ -599,11 +596,10 @@ const [editingBookData, setEditingBookData] = useState(null);
                         </td>
                         <td className="px-6 py-4 uppercase text-xs tracking-wider">
                           <span
-                            className={`px-2 py-0.5 rounded border ${
-                              tx.type === "purchase"
+                            className={`px-2 py-0.5 rounded border ${tx.type === "purchase"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                 : "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                            }`}
+                              }`}
                           >
                             {tx.type}
                           </span>
