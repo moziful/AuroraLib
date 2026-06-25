@@ -202,7 +202,7 @@ export default function AdminDashboard() {
     const normalizedStatus = (book.status || "").toLowerCase();
     const isPublished = normalizedStatus === "published" || normalizedStatus === "available";
     // Use lower‑case values that the backend stores
-    const newStatus = isPublished ? "unavailable" : "available";
+    const newStatus = isPublished ? "unpublished" : "published";
 
     setConfirmConfig({
       isOpen: true,
