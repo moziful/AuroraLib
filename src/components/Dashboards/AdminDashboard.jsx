@@ -199,10 +199,9 @@ export default function AdminDashboard() {
 
   const toggleBookPublish = async (book) => {
     // Normalize status to lower‑case for consistent checks
-    const normalizedStatus = (book.status || "").toLowerCase();
-    const isPublished = normalizedStatus === "published" || normalizedStatus === "available";
-    // Use lower‑case values that the backend stores
-    const newStatus = isPublished ? "unpublished" : "published";
+    const isAvailable = book.status === "Available";
+    // Toggle between Available and Unavailable
+    const newStatus = isAvailable ? "Unavailable" : "Available";
 
     setConfirmConfig({
       isOpen: true,
@@ -514,11 +513,11 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4">
                           <span
                             className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${book.status === "Available" ||
-                                book.status === "published"
-                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                                : book.status === "Coming Soon"
-                                  ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
-                                  : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                              book.status === "published"
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              : book.status === "Coming Soon"
+                                ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
+                                : "bg-amber-500/10 text-amber-400 border-amber-500/20"
                               }`}
                           >
                             {book.status || "Available"}
@@ -597,8 +596,8 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4 uppercase text-xs tracking-wider">
                           <span
                             className={`px-2 py-0.5 rounded border ${tx.type === "purchase"
-                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                                : "bg-purple-500/10 text-purple-400 border-purple-500/20"
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              : "bg-purple-500/10 text-purple-400 border-purple-500/20"
                               }`}
                           >
                             {tx.type}
