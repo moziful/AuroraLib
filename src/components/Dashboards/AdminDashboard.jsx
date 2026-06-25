@@ -211,11 +211,12 @@ const [editingBookData, setEditingBookData] = useState(null);
       onConfirm: async () => {
         try {
           const token = await fetchAuthToken();
-          await updateBookStatus(book.id, newStatus, token);
-          // Update local state with the normalized status
+          const bookId = book._id || book.id || book.slug;
+          await updateBookStatus(bookId, newStatus, token);
+          // Update local state with the normalized status using the same identifier logic
           setEbooks(
             ebooks.map((b) =>
-              b.id === book.id ? { ...b, status: newStatus } : b,
+              (b._id || b.id || b.slug) === bookId ? { ...b, status: newStatus } : b,
             ),
           );
           toast.success(`Book marked as ${newStatus}.`);
