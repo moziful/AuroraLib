@@ -25,6 +25,7 @@ import Modal from "./Modal";
 import Image from "next/image";
 
 import { getAllBooks } from "@/lib/data";
+import AddBookForm from "./AddBookForm";
 import {
   deleteBookAction,
   updateBookStatus,
@@ -60,7 +61,8 @@ export default function AdminDashboard() {
   const { data: session, isPending: sessionLoading } = authClient.useSession();
   const user = session?.user;
 
-  const [activeTab, setActiveTab] = useState("overview"); // overview | users | ebooks | transactions
+  const [activeTab, setActiveTab] = useState("overview"); // overview | users | ebooks | transactions | add-book
+const [editingBookData, setEditingBookData] = useState(null);
   const [users, setUsers] = useState([]);
   const [ebooks, setEbooks] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -87,6 +89,7 @@ export default function AdminDashboard() {
     { id: "users", label: "Manage Users", icon: MdPeople },
     { id: "ebooks", label: "Manage All Ebooks", icon: MdBook },
     { id: "transactions", label: "View All Transactions", icon: MdReceipt },
+    { id: "add-book", label: "Add / Edit Ebook", icon: MdAddCircle },
   ];
 
   useEffect(() => {
@@ -112,9 +115,15 @@ export default function AdminDashboard() {
     };
   }, []);
 
-  const handleOpenEditModal = (u) => {
-    setSelectedUserForEdit(u);
-    setEditForm({ name: u.name, email: u.email, role: u.role });
+  // Reuse writer's edit handling for books
+  const handleEditClick = (book) => {
+    setEditingBookData(book);
+    setActiveTab("add-book");
+  };
+
+  const handleOpenEditModal = (user) => {
+    setSelectedUserForEdit(user);
+    setEditForm({ name: user.name, email: user.email, role: user.role });
     setIsEditModalOpen(true);
   };
 
@@ -178,7 +187,16 @@ export default function AdminDashboard() {
     });
   };
 
-  const toggleBookPublish = (book) => {
+  // Helper to get auth token for privileged actions
+  async function fetchAuthToken() {
+    const res = await fetch("/api/auth/token");
+    if (!res.ok) throw new Error("Failed to retrieve auth token. Are you signed in?");
+    const data = await res.json();
+    if (!data.success || !data.token) throw new Error(data.message || "No token returned.");
+    return data.token;
+  }
+
+  const toggleBookPublish = async (book) => {
     const isPublished =
       book.status === "published" || book.status === "Available";
     const newStatus = isPublished ? "Unavailable" : "Available";
@@ -189,7 +207,8 @@ export default function AdminDashboard() {
       message: `Are you sure you want to mark this book as ${newStatus}?`,
       onConfirm: async () => {
         try {
-          await updateBookStatus(book.id, newStatus);
+          const token = await fetchAuthToken();
+          await updateBookStatus(book.id, newStatus, token);
           setEbooks(
             ebooks.map((b) =>
               b.id === book.id ? { ...b, status: newStatus } : b,
@@ -197,25 +216,27 @@ export default function AdminDashboard() {
           );
           toast.success(`Book marked as ${newStatus}.`);
         } catch (e) {
-          toast.error("Failed to update status.");
+          toast.error(`Failed to update status: ${e.message}`);
         }
         setConfirmConfig({ ...confirmConfig, isOpen: false });
       },
     });
   };
 
-  const deleteBook = (id) => {
+  // Delete book with authentication token
+  const deleteBook = async (id) => {
     setConfirmConfig({
       isOpen: true,
       title: "Delete Ebook",
       message: "Are you sure you want to delete this ebook from the platform?",
       onConfirm: async () => {
         try {
-          await deleteBookAction(id);
+          const token = await fetchAuthToken();
+          await deleteBookAction(id, token);
           setEbooks(ebooks.filter((b) => b.id !== id));
           toast.success("Book deleted successfully!");
         } catch (e) {
-          toast.error("Failed to delete book.");
+          toast.error(`Failed to delete book: ${e.message}`);
         }
         setConfirmConfig({ ...confirmConfig, isOpen: false });
       },
@@ -514,6 +535,12 @@ export default function AdminDashboard() {
                                   : "Set Status"}
                             </button>
                             <button
+                              onClick={() => handleEditClick(book)}
+                              className="p-1 bg-violet-500/10 border border-violet-500/20 text-violet-400 rounded hover:bg-violet-500 hover:text-white transition-all"
+                            >
+                              <MdEdit />
+                            </button>
+                            <button
                               onClick={() => deleteBook(book.id || book._id)}
                               className="p-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded hover:bg-rose-500 hover:text-white transition-all"
                             >
@@ -525,6 +552,20 @@ export default function AdminDashboard() {
                     )}
                   />
                 </div>
+              </div>
+            )}
+            {activeTab === "add-book" && (
+              <div className="pb-10">
+                <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
+                  {editingBookData ? "Edit Ebook" : "Add New Ebook"}
+                </h2>
+                <AddBookForm 
+                    initialData={editingBookData} 
+                    onSuccess={() => {
+                        setEditingBookData(null);
+                        setActiveTab("ebooks");
+                    }} 
+                />
               </div>
             )}
             {activeTab === "transactions" && (
