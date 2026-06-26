@@ -39,7 +39,7 @@ export default async function BookDetailsPage({ params }) {
   const statusStyles = getStatusStyles(book.status);
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-hidden bg-white dark:bg-slate-950 px-4 py-6">
+    <div className="sm:h-[calc(100vh-4rem)] overflow-hidden bg-white dark:bg-slate-950 px-4 py-6">
       <div className="mx-auto flex h-full min-h-0 max-w-7xl flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <Link
@@ -50,7 +50,7 @@ export default async function BookDetailsPage({ params }) {
             Back to Books
           </Link>
         </div>
-        <div className="grid flex-1 min-h-0 grid-cols-3 gap-2 overflow-hidden rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 md:flex-row">
+        <div className="grid flex-1 min-h-0 grid-cols-1 sm:grid-cols-3 gap-2 overflow-hidden rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 md:flex-row">
           {/* Left side content */}
           <Image
             src={book.coverImage || "/placeholder-cover.png"}
