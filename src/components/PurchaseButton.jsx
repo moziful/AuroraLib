@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ImSpinner2 } from "react-icons/im";
 
-export default function PurchaseButton({ bookId, title, price, isAvailable, isOwned }) {
+export default function PurchaseButton({ bookId, title, price, isAvailable, isOwned, isOwnBook }) {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = () => {
@@ -26,15 +26,19 @@ export default function PurchaseButton({ bookId, title, price, isAvailable, isOw
               ? "bg-sky-400 text-slate-950 hover:bg-sky-300"
               : isOwned
                 ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 cursor-not-allowed"
-                : "cursor-not-allowed bg-slate-800 text-slate-500"
+                : isOwnBook
+                  ? "bg-violet-500/20 text-violet-400 border border-violet-500/30 cursor-not-allowed"
+                  : "cursor-not-allowed bg-slate-800 text-slate-500"
           }`}
         >
           {loading && <ImSpinner2 className="animate-spin text-sm" />}
           {isOwned
             ? "Owned"
-            : isAvailable
-              ? "Purchase Now"
-              : "Unavailable for Purchase"}
+            : isOwnBook
+              ? "Your Publication"
+              : isAvailable
+                ? "Purchase Now"
+                : "Unavailable for Purchase"}
         </button>
       </section>
     </form>

@@ -78,7 +78,7 @@ export async function revalidateBooks() {
     revalidatePath("/dashboard/writer/view-book");
 }
 
-export async function updateUserDetails(userId, { name, email }) {
+export async function updateUserDetails(userId, { name, email, image }) {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     if (!apiUrl) throw new Error("API URL is not configured.");
 
@@ -87,7 +87,7 @@ export async function updateUserDetails(userId, { name, email }) {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({ name, email, image }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.message || `Request failed with status ${res.status}`);

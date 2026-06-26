@@ -34,6 +34,36 @@ export default function SignUp() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await fetch("/api/upload-image", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Upload failed");
+      }
+      setUploadedImageUrl(data.url);
+    } catch (err) {
+      toast.error("Profile picture upload failed: " + err.message);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
   useEffect(() => {
     if (!isPending && session?.user) {
       const role = session.user.role;
@@ -104,7 +134,7 @@ export default function SignUp() {
           const errData = await res.json().catch(() => ({}));
           throw new Error(errData.message || "Failed to save role choice.");
         }
-        
+
         window.location.href =
           selectedRole === "writer" ? "/dashboard/writer" : "/dashboard/reader";
       } catch (err) {
@@ -121,6 +151,7 @@ export default function SignUp() {
       name,
       email,
       password,
+      image: uploadedImageUrl || undefined,
     });
 
     if (authError) {
@@ -133,7 +164,7 @@ export default function SignUp() {
     try {
       let token = data?.accessToken || data?.session?.accessToken;
       let userId = data?.id || data?.user?.id;
-      
+
       if (!token) {
         const { data: signInData, error: signInError } = await authClient.signIn.email({
           email,
@@ -198,6 +229,46 @@ export default function SignUp() {
               className="space-y-6"
             >
               <form className="space-y-4" onSubmit={handleNextStep}>
+                <div className="flex flex-col items-center justify-center space-y-2">
+                  <div className="relative group h-20 w-20 overflow-hidden rounded-full border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-inner">
+                    {imagePreview ? (
+                      <img
+                        src={imagePreview}
+                        alt="Profile preview"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-slate-400 dark:text-slate-500">
+                        <MdPerson className="text-4xl" />
+                      </div>
+                    )}
+                    {uploadingImage && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-slate-950/50">
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />
+                      </div>
+                    )}
+                    <label
+                      htmlFor="profile-upload"
+                      className="absolute inset-0 flex items-center justify-center bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer text-white text-[10px] font-bold uppercase tracking-wider"
+                    >
+                      Change
+                    </label>
+                  </div>
+                  <input
+                    id="profile-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                  <span className="text-[10px] text-slate-500 font-bold">
+                    {uploadingImage
+                      ? "Uploading..."
+                      : uploadedImageUrl
+                        ? "Uploaded successfully!"
+                        : "Upload Profile Picture"}
+                  </span>
+                </div>
                 <div className="space-y-2">
                   <label
                     className="text-xs font-bold text-slate-600 dark:text-slate-400"
@@ -324,9 +395,10 @@ export default function SignUp() {
                 </AnimatePresence>
                 <button
                   type="submit"
-                  className="w-full rounded-xl bg-sky-400 py-3 text-sm font-black text-slate-950 transition-all duration-200 hover:bg-sky-500 shadow-lg shadow-sky-400/10 mt-2"
+                  disabled={uploadingImage}
+                  className="w-full rounded-xl bg-sky-400 py-3 text-sm font-black text-slate-950 transition-all duration-200 hover:bg-sky-500 shadow-lg shadow-sky-400/10 mt-2 disabled:opacity-50"
                 >
-                  Continue
+                  {uploadingImage ? "Uploading Image..." : "Continue"}
                 </button>
               </form>
               <div className="relative flex items-center justify-center">
@@ -360,12 +432,12 @@ export default function SignUp() {
                   type="button"
                   disabled={loading}
                   onClick={() => handleRoleSelect("reader")}
-                  className="group flex flex-col items-center justify-center rounded-xl border border-slate-800 bg-slate-950 p-6 text-center transition-all duration-200 hover:border-sky-400/40 hover:bg-slate-900 disabled:opacity-50"
+                  className="group flex flex-col items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 p-6 text-center transition-all duration-200 hover:border-sky-400/40 hover:bg-slate-200 dark:hover:bg-slate-900 disabled:opacity-50"
                 >
                   <div className="mb-3 rounded-full bg-sky-400/10 p-3 text-sky-400 group-hover:scale-110 transition-transform">
                     <MdMenuBook className="h-6 w-6" />
                   </div>
-                  <h3 className="text-sm font-bold text-slate-200">Reader</h3>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-slate-200">Reader</h3>
                   <p className="mt-1 text-xs text-slate-500">
                     Discover, purchase, and read premium ebooks.
                   </p>
@@ -374,12 +446,12 @@ export default function SignUp() {
                   type="button"
                   disabled={loading}
                   onClick={() => handleRoleSelect("writer")}
-                  className="group flex flex-col items-center justify-center rounded-xl border border-slate-800 bg-slate-950 p-6 text-center transition-all duration-200 hover:border-sky-400/40 hover:bg-slate-900 disabled:opacity-50"
+                  className="group flex flex-col items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 p-6 text-center transition-all duration-200 hover:border-sky-400/40 hover:bg-slate-200 dark:hover:bg-slate-900 disabled:opacity-50"
                 >
                   <div className="mb-3 rounded-full bg-sky-400/10 p-3 text-sky-400 group-hover:scale-110 transition-transform">
                     <MdCreate className="h-6 w-6" />
                   </div>
-                  <h3 className="text-sm font-bold text-slate-200">Writer</h3>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-slate-200">Writer</h3>
                   <p className="mt-1 text-xs text-slate-500">
                     Publish creations and track your sales analytics.
                   </p>

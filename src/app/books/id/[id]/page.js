@@ -33,8 +33,9 @@ export default async function BookDetailsPage({ params }) {
   const session = await auth.api.getSession({ headers: await headers() });
   const currentUserEmail = session?.user?.email;
   const isOwned = currentUserEmail && book.buyerEmail === currentUserEmail;
+  const isOwnBook = currentUserEmail && book.writerEmail === currentUserEmail;
 
-  const isAvailable = book.status === "Available" && !isOwned;
+  const isAvailable = book.status === "Available" && !isOwned && !isOwnBook;
   const statusStyles = getStatusStyles(book.status);
 
   return (
@@ -115,6 +116,7 @@ export default async function BookDetailsPage({ params }) {
                   price={book.price}
                   isAvailable={isAvailable}
                   isOwned={isOwned}
+                  isOwnBook={isOwnBook}
                 />
               </div>
             </div>
