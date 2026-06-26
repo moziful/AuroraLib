@@ -14,6 +14,8 @@ import {
   MdPerson,
   MdEdit,
   MdAddCircle,
+  MdMenuBook,
+  MdBookmark,
 } from "react-icons/md";
 import { authClient } from "@/lib/auth-client";
 import { ImSpinner2 } from "react-icons/im";
@@ -26,6 +28,10 @@ import AnalyticsStatCard from "./AnalyticsStatCard";
 import DashboardCharts from "./DashboardCharts";
 import Modal from "./Modal";
 import Image from "next/image";
+
+import EbookGallery from "./EbookGallery";
+import LibraryBookCard from "./LibraryBookCard";
+import { getPurchasedBooks, getBookmarkedBooks } from "@/lib/user-actions";
 
 // Make sure to export getAllTransactions from your data file
 import { getAllBooks, getAllTransactions } from "@/lib/data";
@@ -71,6 +77,11 @@ export default function AdminDashboard() {
   const [actionLoading, setActionLoading] = useState({});
   const [isModalLoading, setIsModalLoading] = useState(false);
 
+  // Admin personal library states
+  const [purchasedBooks, setPurchasedBooks] = useState([]);
+  const [bookmarkedBooks, setBookmarkedBooks] = useState([]);
+  const [personalLoading, setPersonalLoading] = useState(true);
+
   // Modal states for User Edit
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUserForEdit, setSelectedUserForEdit] = useState(null);
@@ -93,6 +104,8 @@ export default function AdminDashboard() {
     { id: "users", label: "Manage Users", icon: MdPeople },
     { id: "ebooks", label: "Manage All Ebooks", icon: MdBook },
     { id: "transactions", label: "View All Transactions", icon: MdReceipt },
+    { id: "purchased", label: "My Library", icon: MdMenuBook },
+    { id: "bookmarks", label: "Bookmarks", icon: MdBookmark },
     { id: "add-book", label: "Add Ebook", icon: MdAddCircle },
     { id: "profile", label: "Profile Management", icon: MdPerson },
   ];
@@ -139,6 +152,27 @@ export default function AdminDashboard() {
       setActiveTab(queryTab);
     }
   }, [queryTab]);
+
+  useEffect(() => {
+    if (user?.email) {
+      setPersonalLoading(true);
+      const fetchPersonalData = async () => {
+        try {
+          const [purchased, bookmarked] = await Promise.all([
+            getPurchasedBooks(user.email),
+            getBookmarkedBooks(user.email),
+          ]);
+          setPurchasedBooks(purchased);
+          setBookmarkedBooks(bookmarked);
+        } catch (err) {
+          console.error("Failed to fetch admin personal library data:", err);
+        } finally {
+          setPersonalLoading(false);
+        }
+      };
+      fetchPersonalData();
+    }
+  }, [user?.email]);
 
   const handleTabChange = (tabId) => {
     if (tabId !== "add-book") {
@@ -840,6 +874,52 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                     )}
+                  />
+                </div>
+              </div>
+            )}
+            {activeTab === "purchased" && (
+              <div>
+                <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
+                  Purchased Ebooks (My Library)
+                </h2>
+                <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+                  {personalLoading ? (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div
+                          key={i}
+                          className="animate-pulse rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-4 h-80"
+                        />
+                      ))}
+                    </div>
+                  ) : purchasedBooks.length === 0 ? (
+                    <p className="text-slate-600 dark:text-slate-500 text-sm">
+                      You haven&apos;t purchased any ebooks yet.
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                      {purchasedBooks.map((book) => (
+                        <LibraryBookCard key={book._id} book={book} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            {activeTab === "bookmarks" && (
+              <div>
+                <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
+                  Bookmarked Ebooks
+                </h2>
+                <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+                  <EbookGallery
+                    books={bookmarkedBooks}
+                    isLoading={personalLoading}
+                    emptyMessage="You haven't bookmarked any ebooks yet."
+                    actionLabel="View Details"
+                    hoverBorderClass="hover:border-sky-400/30"
+                    btnHoverClass="hover:bg-sky-400 dark:hover:bg-sky-400"
                   />
                 </div>
               </div>

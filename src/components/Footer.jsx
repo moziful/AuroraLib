@@ -103,8 +103,17 @@ export default function Footer() {
       </div>
 
       <div className="mx-auto mt-10 flex max-w-7xl flex-col gap-2 border-t border-slate-800 pt-6 text-sm text-slate-800 dark:text-slate-500 md:flex-row md:items-center md:justify-between">
-        <p>© {new Date().getFullYear()} AuroraLib. All rights reserved.</p>
-        <p>Made for readers, writers, and everyone in between.</p>
+        <p>
+          © {new Date().getFullYear()} AuroraLib - Made for readers, writers,
+          and everyone in between.
+        </p>
+        <p></p>
+        <p>
+          Developed by{" "}
+          <span className="text-sky-400 font-semibold leading-loose uppercase text-xs bg-sky-100/20 rounded-sm px-1">
+            Moziful Haque
+          </span>
+        </p>
       </div>
     </footer>
   );
