@@ -237,9 +237,9 @@ export default function AddBookForm({ initialData, onSuccess }) {
     <>
       <ToastContainer position="bottom-right" theme="dark" />
       <div className="w-full">
-        <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
+        {/* <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
           {initialData ? "Edit Book" : "Add a New Book"}
-        </h2>
+        </h2> */}
         <form onSubmit={handleSubmit}>
           <div className="md:hidden mb-6">
             <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-4">
@@ -400,7 +400,7 @@ export default function AddBookForm({ initialData, onSuccess }) {
               </div>
             </div>
 
-            <div className="md:col-span-2 space-y-5 overflow-y-auto max-h-full pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+            <div className="md:col-span-2 space-y-5 pb-10 md:max-h-[calc(100vh-18rem)] overflow-y-auto scrollbar-none">
               <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-6 space-y-4">
                 <p className="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-500">
                   Book Info
@@ -425,11 +425,19 @@ export default function AddBookForm({ initialData, onSuccess }) {
                       className={`${inputCls} cursor-pointer appearance-none`}
                       required
                     >
-                      <option value="" disabled className="text-slate-600">
+                      <option
+                        value=""
+                        disabled
+                        className="bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-400"
+                      >
                         Select genre…
                       </option>
                       {GENRES.map((g) => (
-                        <option key={g} value={g} className="bg-slate-800">
+                        <option
+                          key={g}
+                          value={g}
+                          className="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-400"
+                        >
                           {g}
                         </option>
                       ))}
@@ -467,7 +475,11 @@ export default function AddBookForm({ initialData, onSuccess }) {
                     className={`${inputCls} cursor-pointer appearance-none`}
                   >
                     {STATUSES.map((s) => (
-                      <option key={s} value={s} className="bg-slate-800">
+                      <option
+                        key={s}
+                        value={s}
+                        className="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-400"
+                      >
                         {s}
                       </option>
                     ))}
