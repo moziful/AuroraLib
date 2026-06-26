@@ -5,13 +5,27 @@ export default function DataTable({
   data,
   renderRow,
   renderMobileCard,
+  isLoading,
   emptyMessage = "No transactions found.",
 }) {
   return (
     <>
       {renderMobileCard && (
         <div className="lg:hidden space-y-3">
-          {data.length === 0 ? (
+          {isLoading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="animate-pulse rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 space-y-2 h-24"
+              >
+                <div className="flex justify-between items-center">
+                  <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-1/3" />
+                  <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-1/6" />
+                </div>
+                <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded w-1/2" />
+              </div>
+            ))
+          ) : data.length === 0 ? (
             <p className="p-6 text-center text-slate-600 dark:text-slate-500 text-sm">
               {emptyMessage}
             </p>
@@ -36,14 +50,26 @@ export default function DataTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 dark:divide-slate-800/50">
-            {data.map((item, index) => (
-              <Fragment key={item?.id ?? index}>
-                {renderRow(item, index)}
-              </Fragment>
-            ))}
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i}>
+                  {headers.map((_, idx) => (
+                    <td key={idx} className="px-4 py-4">
+                      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3 animate-pulse" />
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : (
+              data.map((item, index) => (
+                <Fragment key={item?.id ?? index}>
+                  {renderRow(item, index)}
+                </Fragment>
+              ))
+            )}
           </tbody>
         </table>
-        {data.length === 0 && !renderMobileCard && (
+        {data.length === 0 && !isLoading && !renderMobileCard && (
           <p className="p-6 text-center text-slate-600 dark:text-slate-500 text-sm">
             {emptyMessage}
           </p>
@@ -63,14 +89,26 @@ export default function DataTable({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800/50">
-                {data.map((item, index) => (
-                  <Fragment key={item?.id ?? index}>
-                    {renderRow(item, index)}
-                  </Fragment>
-                ))}
+                {isLoading ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <tr key={i}>
+                      {headers.map((_, idx) => (
+                        <td key={idx} className="px-2 py-3">
+                          <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3 animate-pulse" />
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : (
+                  data.map((item, index) => (
+                    <Fragment key={item?.id ?? index}>
+                      {renderRow(item, index)}
+                    </Fragment>
+                  ))
+                )}
               </tbody>
             </table>
-            {data.length === 0 && (
+            {data.length === 0 && !isLoading && (
               <p className="p-6 text-center text-slate-600 dark:text-slate-500 text-sm">
                 {emptyMessage}
               </p>

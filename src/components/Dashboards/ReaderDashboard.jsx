@@ -25,16 +25,36 @@ import {
   getTransactionHistory,
 } from "@/lib/user-actions";
 
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+
 export default function UserDashboard() {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
-  const [activeTab, setActiveTab] = useState("overview");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const queryTab = searchParams.get("tab");
+
+  const [activeTab, setActiveTab] = useState(queryTab || "overview");
   const [history, setHistory] = useState([]);
   const [books, setBooks] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    if (queryTab) {
+      setActiveTab(queryTab);
+    }
+  }, [queryTab]);
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    const params = new URLSearchParams(searchParams);
+    params.set("tab", tabId);
+    router.replace(`${pathname}?${params.toString()}`);
+  };
 
   const tabsConfig = [
     { id: "overview", label: "Overview", icon: MdDashboard },
@@ -117,7 +137,7 @@ export default function UserDashboard() {
             <DashboardTabs
               tabs={tabsConfig}
               activeTab={activeTab}
-              setActiveTab={setActiveTab}
+              setActiveTab={handleTabChange}
             />
           </div>
 
@@ -132,21 +152,21 @@ export default function UserDashboard() {
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       <AnalyticsStatCard
                         title="Purchased Books"
-                        value={totalBooks}
+                        value={loading ? "..." : totalBooks}
                         description="Books in your library"
                         icon={MdMenuBook}
                         colorClass="text-emerald-400"
                       />
                       <AnalyticsStatCard
                         title="Bookmarks"
-                        value={totalBookmarks}
+                        value={loading ? "..." : totalBookmarks}
                         description="Saved for later"
                         icon={MdBookmark}
                         colorClass="text-violet-400"
                       />
                       <AnalyticsStatCard
                         title="Total Spent"
-                        value={`$${totalSpent.toFixed(2)}`}
+                        value={loading ? "..." : `$${totalSpent.toFixed(2)}`}
                         description="Lifetime purchases"
                         icon={MdTrendingUp}
                         colorClass="text-amber-400"
@@ -203,6 +223,7 @@ export default function UserDashboard() {
                 <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <EbookGallery
                     books={bookmarks}
+                    isLoading={loading}
                     emptyMessage="You haven't bookmarked any ebooks yet."
                     actionLabel="View Details"
                     hoverBorderClass="hover:border-sky-400/30"
@@ -220,6 +241,7 @@ export default function UserDashboard() {
                 <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <DataTable
                     headers={[
+                      "#",
                       "Ebook Name",
                       "Writer",
                       "Price",
@@ -227,11 +249,15 @@ export default function UserDashboard() {
                       "Status",
                     ]}
                     data={history}
-                    renderRow={(item) => (
+                    isLoading={loading}
+                    renderRow={(item, index) => (
                       <tr
                         key={item.id}
                         className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
                       >
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 font-medium">
+                          {index + 1}
+                        </td>
                         <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
                           {item.name}
                         </td>

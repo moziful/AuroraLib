@@ -56,14 +56,22 @@ async function fetchAuthToken() {
   return data.token;
 }
 
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+
 export default function WriterDashboard() {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
-  const [activeTab, setActiveTab] = useState("overview");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const queryTab = searchParams.get("tab");
+
+  const [activeTab, setActiveTab] = useState(queryTab || "overview");
   const [books, setBooks] = useState([]);
   const [sales, setSales] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [actionLoading, setActionLoading] = useState({});
   const [isModalLoading, setIsModalLoading] = useState(false);
@@ -76,6 +84,12 @@ export default function WriterDashboard() {
     message: "",
     onConfirm: null,
   });
+
+  useEffect(() => {
+    if (queryTab) {
+      setActiveTab(queryTab);
+    }
+  }, [queryTab]);
 
   const totalEbooks = books.length;
   const publishedBooks = books.filter((b) => b.status === "Available" || b.status === "published").length;
@@ -134,17 +148,25 @@ export default function WriterDashboard() {
 
     const loadWriterData = async () => {
       if (!user?.email) return;
+      setLoading(true);
+      try {
+        const [writerBooks, salesData, bookmarksData] = await Promise.all([
+          getBooksByEmail(user.email),
+          getWriterSales(user.email),
+          getBookmarkedReferences(user.email),
+        ]);
 
-      const [writerBooks, salesData, bookmarksData] = await Promise.all([
-        getBooksByEmail(user.email),
-        getWriterSales(user.email),
-        getBookmarkedReferences(user.email),
-      ]);
-
-      if (alive) {
-        setBooks(writerBooks || []);
-        setSales(salesData || []);
-        setBookmarks(bookmarksData || []);
+        if (alive) {
+          setBooks(writerBooks || []);
+          setSales(salesData || []);
+          setBookmarks(bookmarksData || []);
+        }
+      } catch (err) {
+        console.error("Failed to load writer data:", err);
+      } finally {
+        if (alive) {
+          setLoading(false);
+        }
       }
     };
 
@@ -222,6 +244,9 @@ export default function WriterDashboard() {
       setEditingBookData(null);
     }
     setActiveTab(tabId);
+    const params = new URLSearchParams(searchParams);
+    params.set("tab", tabId);
+    router.replace(`${pathname}?${params.toString()}`);
   };
 
   return (
@@ -260,35 +285,35 @@ export default function WriterDashboard() {
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         <AnalyticsStatCard
                           title="Total Ebooks"
-                          value={totalEbooks}
+                          value={loading ? "..." : totalEbooks}
                           description="Books managed on AuroraLib"
                           icon={MdBook}
                           colorClass="text-violet-400"
                         />
                         <AnalyticsStatCard
                           title="Published"
-                          value={publishedBooks}
+                          value={loading ? "..." : publishedBooks}
                           description="Currently available"
                           icon={MdPublic}
                           colorClass="text-emerald-400"
                         />
                         <AnalyticsStatCard
                           title="Upcoming"
-                          value={upcomingBooks}
+                          value={loading ? "..." : upcomingBooks}
                           description="Coming soon"
                           icon={MdSchedule}
                           colorClass="text-sky-400"
                         />
                         <AnalyticsStatCard
                           title="Unpublished"
-                          value={unpublishedBooks}
+                          value={loading ? "..." : unpublishedBooks}
                           description="Currently unavailable"
                           icon={MdVisibilityOff}
                           colorClass="text-rose-400"
                         />
                         <AnalyticsStatCard
                           title="Gross Earnings"
-                          value={`$${grossEarnings.toFixed(2)}`}
+                          value={loading ? "..." : `$${grossEarnings.toFixed(2)}`}
                           description="Accumulated revenue details"
                           icon={MdTrendingUp}
                           colorClass="text-amber-400"
@@ -323,6 +348,7 @@ export default function WriterDashboard() {
                         "Actions",
                       ]}
                       data={books}
+                      isLoading={loading}
                       emptyMessage="You haven't uploaded any books yet."
                       renderRow={(book, index) => (
                         <tr
@@ -355,9 +381,9 @@ export default function WriterDashboard() {
                           <td className="px-4 py-3 text-violet-600 dark:text-violet-400 font-semibold">
                             ${book.price}
                           </td>
-                          <td className="px-4 py-3">
+                           <td className="px-4 py-3">
                             <span
-                              className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
+                              className={`inline-flex items-center justify-center rounded-md px-2 py-1 text-xs font-medium border w-24 ${
                                 book.status === "Available" || book.status === "published"
                                   ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                   : book.status === "Coming Soon"
@@ -379,7 +405,7 @@ export default function WriterDashboard() {
                                   actionLoading[book._id || book.id] ===
                                     "deleting"
                                 }
-                                className="inline-flex items-center gap-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors disabled:opacity-50"
+                                className="inline-flex items-center justify-center gap-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors disabled:opacity-50 w-20"
                               >
                                 {actionLoading[book._id || book.id] ===
                                   "publishing" && (
@@ -513,6 +539,7 @@ export default function WriterDashboard() {
                   </h2>
                   <EbookGallery
                     books={bookmarks}
+                    isLoading={loading}
                     emptyMessage="No references bookmarked."
                     actionLabel="View Details"
                     hoverBorderClass="hover:border-violet-500/30"
@@ -527,18 +554,23 @@ export default function WriterDashboard() {
                   </h2>
                   <DataTable
                     headers={[
+                      "#",
                       "Ebook Title",
                       "Buyer Name",
                       "Purchase Date",
                       "Amount",
                     ]}
                     data={sales}
+                    isLoading={loading}
                     emptyMessage="No items have been purchased yet."
-                    renderRow={(sale) => (
+                    renderRow={(sale, index) => (
                       <tr
                         key={sale.id}
                         className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
                       >
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 font-medium">
+                          {index + 1}
+                        </td>
                         <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
                           {sale.title}
                         </td>

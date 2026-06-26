@@ -20,6 +20,32 @@ export default function UserProfile({ user, role = "Reader" }) {
     }
   }, [user]);
 
+  if (!user) {
+    return (
+      <div className="max-w-2xl rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-6 shadow-xl relative animate-pulse">
+        <div className="mb-6 flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/60 pb-6">
+          <div className="flex items-center gap-4 w-full">
+            <div className="h-16 w-16 rounded-2xl bg-slate-200 dark:bg-slate-850" />
+            <div className="flex-1 space-y-2">
+              <div className="h-5 bg-slate-200 dark:bg-slate-850 rounded w-1/3" />
+              <div className="h-4 bg-slate-200 dark:bg-slate-850 rounded w-1/4" />
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="rounded-xl border border-slate-200/50 dark:border-slate-800/50 bg-slate-100 dark:bg-slate-950 p-4 space-y-2">
+            <div className="h-3 bg-slate-205 dark:bg-slate-850 rounded w-1/4" />
+            <div className="h-4 bg-slate-205 dark:bg-slate-850 rounded w-1/2" />
+          </div>
+          <div className="rounded-xl border border-slate-200/50 dark:border-slate-800/50 bg-slate-100 dark:bg-slate-950 p-4 space-y-2">
+            <div className="h-3 bg-slate-205 dark:bg-slate-850 rounded w-1/4" />
+            <div className="h-4 bg-slate-205 dark:bg-slate-850 rounded w-3/4" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Define fallback colors based on the dashboard role
   const roleColors = {
     User: "text-sky-400 bg-sky-500/10 border-sky-500/20",

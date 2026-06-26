@@ -21,6 +21,7 @@ import { ImSpinner2 } from "react-icons/im";
 import DashboardHeader from "../Dashboards/DashboardHeader";
 import DashboardTabs from "../Dashboards/DashboardTabs";
 import DataTable from "../Dashboards/DataTable";
+import UserProfile from "./UserProfile";
 import AnalyticsStatCard from "./AnalyticsStatCard";
 import DashboardCharts from "./DashboardCharts";
 import Modal from "./Modal";
@@ -50,15 +51,23 @@ async function getAdminOverviewData() {
   };
 }
 
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+
 export default function AdminDashboard() {
   const { data: session, isPending: sessionLoading } = authClient.useSession();
   const user = session?.user;
 
-  const [activeTab, setActiveTab] = useState("overview");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const queryTab = searchParams.get("tab");
+
+  const [activeTab, setActiveTab] = useState(queryTab || "overview");
   const [editingBookData, setEditingBookData] = useState(null);
   const [users, setUsers] = useState([]);
   const [ebooks, setEbooks] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState({});
   const [isModalLoading, setIsModalLoading] = useState(false);
 
@@ -85,34 +94,65 @@ export default function AdminDashboard() {
     { id: "ebooks", label: "Manage All Ebooks", icon: MdBook },
     { id: "transactions", label: "View All Transactions", icon: MdReceipt },
     { id: "add-book", label: "Add Ebook", icon: MdAddCircle },
+    { id: "profile", label: "Profile Management", icon: MdPerson },
   ];
 
   useEffect(() => {
     let active = true;
-    getAdminOverviewData().then((data) => {
-      if (active) {
-        setEbooks(data.ebooks);
-        setTransactions(data.transactions);
-      }
-    });
 
-    authClient.admin
-      .listUsers({ query: { limit: 100 } })
-      .then((res) => {
-        if (active && res?.data?.users) {
-          setUsers(res.data.users);
+    const loadAdminData = async () => {
+      setLoading(true);
+      try {
+        const [overviewData, usersRes] = await Promise.all([
+          getAdminOverviewData(),
+          authClient.admin.listUsers({ query: { limit: 100 } }).catch((err) => {
+            console.error("Failed to fetch users:", err);
+            return { data: { users: [] } };
+          }),
+        ]);
+
+        if (active) {
+          setEbooks(overviewData.ebooks || []);
+          setTransactions(overviewData.transactions || []);
+          if (usersRes?.data?.users) {
+            setUsers(usersRes.data.users);
+          }
         }
-      })
-      .catch((err) => console.error("Failed to fetch users:", err));
+      } catch (err) {
+        console.error("Failed to load admin dashboard data:", err);
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadAdminData();
 
     return () => {
       active = false;
     };
   }, []);
 
+  useEffect(() => {
+    if (queryTab) {
+      setActiveTab(queryTab);
+    }
+  }, [queryTab]);
+
+  const handleTabChange = (tabId) => {
+    if (tabId !== "add-book") {
+      setEditingBookData(null);
+    }
+    setActiveTab(tabId);
+    const params = new URLSearchParams(searchParams);
+    params.set("tab", tabId);
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
   const handleEditClick = (book) => {
     setEditingBookData(book);
-    setActiveTab("add-book");
+    handleTabChange("add-book");
   };
 
   const handleOpenEditModal = (user) => {
@@ -324,7 +364,7 @@ export default function AdminDashboard() {
             <DashboardTabs
               tabs={tabsConfig}
               activeTab={activeTab}
-              setActiveTab={setActiveTab}
+              setActiveTab={handleTabChange}
             />
           </div>
 
@@ -339,63 +379,63 @@ export default function AdminDashboard() {
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                       <AnalyticsStatCard
                         title="Total Accounts"
-                        value={totalAccounts}
+                        value={loading ? "..." : totalAccounts}
                         description="All registered accounts"
                         icon={MdPeople}
                         colorClass="text-slate-400"
                       />
                       <AnalyticsStatCard
                         title="Readers"
-                        value={totalReadersCount}
+                        value={loading ? "..." : totalReadersCount}
                         description="Active reader accounts"
                         icon={MdPeople}
                         colorClass="text-sky-400"
                       />
                       <AnalyticsStatCard
                         title="Writers"
-                        value={totalWritersCount}
+                        value={loading ? "..." : totalWritersCount}
                         description="Approved creators"
                         icon={MdPerson}
                         colorClass="text-violet-400"
                       />
                       <AnalyticsStatCard
                         title="Admins"
-                        value={totalAdminsCount}
+                        value={loading ? "..." : totalAdminsCount}
                         description="System administrators"
                         icon={MdShield}
                         colorClass="text-rose-400"
                       />
                       <AnalyticsStatCard
                         title="Total Books"
-                        value={totalBooksCount}
+                        value={loading ? "..." : totalBooksCount}
                         description="Entire system catalog"
                         icon={MdBook}
                         colorClass="text-fuchsia-400"
                       />
                       <AnalyticsStatCard
                         title="Ebooks Sold"
-                        value={totalEbooksSold}
+                        value={loading ? "..." : totalEbooksSold}
                         description="Total purchase transactions"
                         icon={MdReceipt}
                         colorClass="text-amber-400"
                       />
                       <AnalyticsStatCard
                         title="Published Books"
-                        value={publishedBooksCount}
+                        value={loading ? "..." : publishedBooksCount}
                         description="Currently available"
                         icon={MdToggleOn}
                         colorClass="text-emerald-400"
                       />
                       <AnalyticsStatCard
                         title="Unpublished Books"
-                        value={unpublishedBooksCount}
+                        value={loading ? "..." : unpublishedBooksCount}
                         description="Hidden from catalog"
                         icon={MdToggleOff}
                         colorClass="text-slate-500"
                       />
                       <AnalyticsStatCard
                         title="Total Revenue"
-                        value={`$${totalRevenueVal.toFixed(2)}`}
+                        value={loading ? "..." : `$${totalRevenueVal.toFixed(2)}`}
                         description="Aggregated systems revenue"
                         icon={MdTrendingUp}
                         colorClass="text-emerald-400"
@@ -422,18 +462,23 @@ export default function AdminDashboard() {
                 <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <DataTable
                     headers={[
+                      "#",
                       "Name",
                       "Email Address",
                       "Current Role",
                       "Actions",
                     ]}
                     data={users}
+                    isLoading={loading}
                     emptyMessage="No registered users found."
-                    renderRow={(u) => (
+                    renderRow={(u, index) => (
                       <tr
                         key={u.id}
                         className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
                       >
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 font-medium">
+                          {index + 1}
+                        </td>
                         <td className="px-4 py-3 font-medium text-slate-900 dark:text-white whitespace-nowrap">
                           {u.name}
                         </td>
@@ -516,6 +561,7 @@ export default function AdminDashboard() {
                       "Actions",
                     ]}
                     data={ebooks}
+                    isLoading={loading}
                     emptyMessage="No ebooks available in the system."
                     renderRow={(book, index) => (
                       <tr
@@ -553,7 +599,7 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-4 py-3">
                           <span
-                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
+                            className={`inline-flex items-center justify-center rounded-md px-2 py-1 text-xs font-medium border w-24 ${
                               book.status === "Available" ||
                               book.status === "published"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
@@ -576,7 +622,7 @@ export default function AdminDashboard() {
                                 actionLoading[book._id || book.id] ===
                                   "deleting"
                               }
-                              className="inline-flex items-center gap-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors disabled:opacity-50"
+                              className="inline-flex items-center justify-center gap-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors disabled:opacity-50 w-24"
                             >
                               {actionLoading[book._id || book.id] ===
                                 "publishing" && (
@@ -722,6 +768,7 @@ export default function AdminDashboard() {
                 <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <DataTable
                     headers={[
+                      "#",
                       "Transaction ID",
                       "Type",
                       "Email Address",
@@ -729,12 +776,16 @@ export default function AdminDashboard() {
                       "Execution Date",
                     ]}
                     data={transactions}
+                    isLoading={loading}
                     emptyMessage="Looks like there are no transactions yet. Once users start interacting with the platform, records will populate here."
-                    renderRow={(tx) => (
+                    renderRow={(tx, index) => (
                       <tr
                         key={tx.id}
                         className="hover:bg-slate-100/50 dark:hover:bg-slate-800/30 transition-colors"
                       >
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 font-medium">
+                          {index + 1}
+                        </td>
                         <td className="px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">
                           {tx.id || tx._id}
                         </td>
@@ -791,6 +842,14 @@ export default function AdminDashboard() {
                     )}
                   />
                 </div>
+              </div>
+            )}
+            {activeTab === "profile" && (
+              <div>
+                <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
+                  Profile Management
+                </h2>
+                <UserProfile user={user} role="Admin" />
               </div>
             )}
           </div>
