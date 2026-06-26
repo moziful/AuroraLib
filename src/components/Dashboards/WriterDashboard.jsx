@@ -323,10 +323,10 @@ export default function WriterDashboard() {
                         key={book._id || book.id || book.slug}
                         className="hover:bg-slate-800/30 transition-colors"
                       >
-                        <td className="px-6 py-4 text-slate-400 font-medium">
+                        <td className="px-4 py-3 text-slate-400 font-medium">
                           {index + 1}
                         </td>
-                        <td className="px-6 py-4 flex items-center gap-3">
+                        <td className="px-4 py-3 flex items-center gap-2">
                           <div className="relative h-12 w-9 overflow-hidden rounded-xl bg-slate-800 shrink-0">
                             <Image
                               src={
@@ -339,17 +339,17 @@ export default function WriterDashboard() {
                               className="object-cover"
                             />
                           </div>
-                          <span className="font-medium text-slate-900 dark:text-white max-w-[150px] truncate">
+                          <span className="font-medium text-slate-900 dark:text-white max-w-37 truncate">
                             {book.title}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-slate-400">
+                        <td className="px-4 py-3 text-slate-400">
                           {book.genre || "N/A"}
                         </td>
-                        <td className="px-6 py-4 text-violet-400 font-semibold">
+                        <td className="px-4 py-3 text-violet-400 font-semibold">
                           ${book.price}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-3">
                           <span
                             className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
                               book.status === "Available"
@@ -362,8 +362,8 @@ export default function WriterDashboard() {
                             {book.status || "Available"}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
-                          <div className="flex flex-wrap gap-2">
+                        <td className="px-4 py-3">
+                          <div className="flex gap-2">
                             <button
                               onClick={() => promptStatusChange(book)}
                               className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors"
@@ -389,6 +389,75 @@ export default function WriterDashboard() {
                           </div>
                         </td>
                       </tr>
+                    )}
+                    renderMobileCard={(book) => (
+                      <div
+                        key={book._id || book.id || book.slug}
+                        className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 space-y-2"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded-lg bg-slate-800">
+                            <Image
+                              src={
+                                book.coverImage ||
+                                book.cover ||
+                                "/not-found-image.png"
+                              }
+                              alt=""
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">
+                              {book.title}
+                            </p>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                                {book.genre || "N/A"}
+                              </span>
+                              <span
+                                className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium border ${
+                                  book.status === "Available"
+                                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                    : book.status === "Coming Soon"
+                                      ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
+                                      : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                }`}
+                              >
+                                {book.status || "Available"}
+                              </span>
+                            </div>
+                          </div>
+                          <span className="text-violet-400 font-semibold text-sm whitespace-nowrap">
+                            ${book.price}
+                          </span>
+                        </div>
+                        <div className="flex gap-2 pt-1">
+                          <button
+                            onClick={() => promptStatusChange(book)}
+                            className="flex-1 text-xs py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors"
+                          >
+                            {book.status === "Available"
+                              ? "Unpublish"
+                              : book.status === "Unavailable"
+                                ? "Publish"
+                                : "Set Status"}
+                          </button>
+                          <button
+                            onClick={() => handleEditClick(book)}
+                            className="text-xs py-2 px-3 bg-violet-500/10 border border-violet-500/20 text-violet-400 rounded-lg hover:bg-violet-500 hover:text-white transition-all"
+                          >
+                            <MdEdit className="inline" />
+                          </button>
+                          <button
+                            onClick={() => promptDeleteBook(book)}
+                            className="text-xs py-2 px-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg hover:bg-rose-500 hover:text-white transition-all"
+                          >
+                            <MdDelete className="inline" />
+                          </button>
+                        </div>
+                      </div>
                     )}
                   />
                 </div>
@@ -437,19 +506,42 @@ export default function WriterDashboard() {
                         key={sale.id}
                         className="hover:bg-slate-800/30 transition-colors"
                       >
-                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
+                        <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
                           {sale.title}
                         </td>
-                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
                           {sale.buyer}
                         </td>
-                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
                           {sale.date}
                         </td>
-                        <td className="px-6 py-4 text-emerald-400 font-semibold">
+                        <td className="px-4 py-3 text-emerald-400 font-semibold">
                           {sale.amount}
                         </td>
                       </tr>
+                    )}
+                    renderMobileCard={(sale) => (
+                      <div
+                        key={sale.id}
+                        className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 space-y-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-slate-900 dark:text-white text-sm truncate flex-1">
+                            {sale.title}
+                          </span>
+                          <span className="text-emerald-400 font-semibold text-sm ml-2">
+                            {sale.amount}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-slate-600 dark:text-slate-400">
+                            {sale.buyer}
+                          </span>
+                          <span className="text-slate-500 dark:text-slate-500">
+                            {sale.date}
+                          </span>
+                        </div>
+                      </div>
                     )}
                   />
                 </div>

@@ -108,7 +108,7 @@ export default function UserDashboard() {
       <div className="mx-auto max-w-7xl">
         <DashboardHeader
           roleTitle="User Dashboard"
-          subtitle={`Welcome back, ${(!mounted || isPending) ? "Reader" : user?.name || "Reader"}`}
+          subtitle={`Welcome back, ${!mounted || isPending ? "Reader" : user?.name || "Reader"}`}
           icon={MdDashboard}
         />
 
@@ -128,7 +128,7 @@ export default function UserDashboard() {
                   <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                     Overview
                   </h2>
-                  <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+                  <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       <AnalyticsStatCard
                         title="Purchased Books"
@@ -170,7 +170,7 @@ export default function UserDashboard() {
                 <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Purchased Ebooks
                 </h2>
-                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+                <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   {loading ? (
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                       {[1, 2, 3, 4].map((i) => (
@@ -200,7 +200,7 @@ export default function UserDashboard() {
                 <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Bookmarked Ebooks
                 </h2>
-                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+                <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <EbookGallery
                     books={bookmarks}
                     emptyMessage="You haven't bookmarked any ebooks yet."
@@ -217,7 +217,7 @@ export default function UserDashboard() {
                 <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Transaction Logs
                 </h2>
-                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+                <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <DataTable
                     headers={[
                       "Ebook Name",
@@ -232,22 +232,50 @@ export default function UserDashboard() {
                         key={item.id}
                         className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
                       >
-                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
+                        <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
                           {item.name}
                         </td>
-                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
                           {item.writer}
                         </td>
-                        <td className="px-6 py-4 text-sky-600 dark:text-sky-400 font-semibold">
+                        <td className="px-4 py-3 text-sky-600 dark:text-sky-400 font-semibold">
                           {item.price}
                         </td>
-                        <td className="px-6 py-4">{item.date}</td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-3">{item.date}</td>
+                        <td className="px-4 py-3">
                           <span className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-400 border border-emerald-500/20">
                             {item.status}
                           </span>
                         </td>
                       </tr>
+                    )}
+                    renderMobileCard={(item) => (
+                      <div
+                        key={item.id}
+                        className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 space-y-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-slate-900 dark:text-white text-sm truncate flex-1">
+                            {item.name}
+                          </span>
+                          <span className="text-sky-600 dark:text-sky-400 font-semibold text-sm ml-2">
+                            {item.price}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-2">
+                            <span className="text-slate-600 dark:text-slate-400">
+                              {item.writer}
+                            </span>
+                            <span className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-400 border border-emerald-500/20">
+                              {item.status}
+                            </span>
+                          </div>
+                          <span className="text-slate-500 dark:text-slate-500">
+                            {item.date}
+                          </span>
+                        </div>
+                      </div>
                     )}
                   />
                 </div>
@@ -259,7 +287,7 @@ export default function UserDashboard() {
                 <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Profile Management
                 </h2>
-                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+                <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <UserProfile user={user} role="User" />
                 </div>
               </div>

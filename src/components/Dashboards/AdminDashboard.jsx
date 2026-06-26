@@ -41,7 +41,7 @@ import "react-toastify/dist/ReactToastify.css";
 async function getAdminOverviewData() {
   const [realBooks, realTransactions] = await Promise.all([
     getAllBooks(),
-    getAllTransactions()
+    getAllTransactions(),
   ]);
 
   return {
@@ -142,11 +142,11 @@ export default function AdminDashboard() {
               users.map((u) =>
                 u.id === selectedUserForEdit.id
                   ? {
-                    ...u,
-                    role: editForm.role,
-                    name: editForm.name,
-                    email: editForm.email,
-                  }
+                      ...u,
+                      role: editForm.role,
+                      name: editForm.name,
+                      email: editForm.email,
+                    }
                   : u,
               ),
             );
@@ -335,7 +335,7 @@ export default function AdminDashboard() {
                   <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                     Overview
                   </h2>
-                  <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                  <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                       <AnalyticsStatCard
                         title="Total Accounts"
@@ -419,7 +419,7 @@ export default function AdminDashboard() {
                 <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Manage System Accounts
                 </h2>
-                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <DataTable
                     headers={[
                       "Name",
@@ -434,18 +434,18 @@ export default function AdminDashboard() {
                         key={u.id}
                         className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
                       >
-                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
+                        <td className="px-4 py-3 font-medium text-slate-900 dark:text-white whitespace-nowrap">
                           {u.name}
                         </td>
-                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap max-w-[120px] truncate">
                           {u.email}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-3">
                           <span className="bg-slate-100 dark:bg-slate-950 text-xs font-semibold text-slate-900 dark:text-slate-300 border border-slate-300 dark:border-slate-800 rounded-lg px-3 py-1.5">
                             {u.role === "user" ? "reader" : u.role}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-3">
                           <div className="flex gap-2">
                             <button
                               onClick={() => handleOpenEditModal(u)}
@@ -463,6 +463,38 @@ export default function AdminDashboard() {
                         </td>
                       </tr>
                     )}
+                    renderMobileCard={(u) => (
+                      <div
+                        key={u.id}
+                        className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 space-y-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-slate-900 dark:text-white text-sm">
+                            {u.name}
+                          </span>
+                          <span className="bg-slate-100 dark:bg-slate-950 text-xs font-semibold text-slate-900 dark:text-slate-300 border border-slate-300 dark:border-slate-800 rounded-lg px-2 py-1">
+                            {u.role === "user" ? "reader" : u.role}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                          {u.email}
+                        </p>
+                        <div className="flex gap-2 pt-1">
+                          <button
+                            onClick={() => handleOpenEditModal(u)}
+                            className="flex-1 text-xs py-2 bg-sky-500/10 border border-sky-500/20 text-sky-400 rounded-lg hover:bg-sky-500 hover:text-white transition-all"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => deleteUser(u.id)}
+                            className="flex-1 text-xs py-2 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg hover:bg-rose-500 hover:text-white transition-all"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   />
                 </div>
               </div>
@@ -472,7 +504,7 @@ export default function AdminDashboard() {
                 <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Manage Global Catalog
                 </h2>
-                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <DataTable
                     headers={[
                       "#",
@@ -490,10 +522,10 @@ export default function AdminDashboard() {
                         key={book._id || book.id || book.slug}
                         className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
                       >
-                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400 font-medium">
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 font-medium">
                           {index + 1}
                         </td>
-                        <td className="px-6 py-4 flex items-center gap-3">
+                        <td className="px-4 py-3 flex items-center gap-2">
                           <div className="relative h-12 w-9 overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 shrink-0">
                             <Image
                               src={
@@ -506,49 +538,50 @@ export default function AdminDashboard() {
                               className="object-cover"
                             />
                           </div>
-                          <span className="font-medium text-slate-900 dark:text-white max-w-[150px] truncate">
+                          <span className="font-medium text-slate-900 dark:text-white max-w-37 truncate">
                             {book.title}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
                           {book.writerName}
                         </td>
-                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
                           {book.genre || "N/A"}
                         </td>
-                        <td className="px-6 py-4 text-violet-600 dark:text-violet-400 font-semibold">
+                        <td className="px-4 py-3 text-violet-600 dark:text-violet-400 font-semibold">
                           ${book.price}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-3">
                           <span
-                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${book.status === "Available" ||
-                                book.status === "published"
+                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
+                              book.status === "Available" ||
+                              book.status === "published"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                 : book.status === "Coming Soon"
                                   ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
                                   : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                              }`}
+                            }`}
                           >
                             {book.status || "Available"}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-3">
                           <div className="flex gap-2">
                             <button
                               type="button"
                               onClick={() => toggleBookPublish(book)}
                               disabled={
                                 actionLoading[book._id || book.id] ===
-                                "publishing" ||
+                                  "publishing" ||
                                 actionLoading[book._id || book.id] ===
-                                "deleting"
+                                  "deleting"
                               }
                               className="inline-flex items-center gap-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors disabled:opacity-50"
                             >
                               {actionLoading[book._id || book.id] ===
                                 "publishing" && (
-                                  <ImSpinner2 className="animate-spin text-xs" />
-                                )}
+                                <ImSpinner2 className="animate-spin text-xs" />
+                              )}
                               {book.status === "Available"
                                 ? "Unpublish"
                                 : book.status === "Unavailable"
@@ -565,14 +598,14 @@ export default function AdminDashboard() {
                               onClick={() => deleteBook(book.id || book._id)}
                               disabled={
                                 actionLoading[book._id || book.id] ===
-                                "publishing" ||
+                                  "publishing" ||
                                 actionLoading[book._id || book.id] ===
-                                "deleting"
+                                  "deleting"
                               }
                               className="p-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded hover:bg-rose-500 hover:text-white transition-all disabled:opacity-50"
                             >
                               {actionLoading[book._id || book.id] ===
-                                "deleting" ? (
+                              "deleting" ? (
                                 <ImSpinner2 className="animate-spin text-sm" />
                               ) : (
                                 <MdDelete />
@@ -581,6 +614,87 @@ export default function AdminDashboard() {
                           </div>
                         </td>
                       </tr>
+                    )}
+                    renderMobileCard={(book) => (
+                      <div
+                        key={book._id || book.id || book.slug}
+                        className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 space-y-2"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-800">
+                            <Image
+                              src={
+                                book.coverImage ||
+                                book.cover ||
+                                "/not-found-image.png"
+                              }
+                              alt=""
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">
+                              {book.title}
+                            </p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                              {book.writerName}
+                            </p>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                                {book.genre || "N/A"}
+                              </span>
+                              <span
+                                className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium border ${
+                                  book.status === "Available" ||
+                                  book.status === "published"
+                                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                    : book.status === "Coming Soon"
+                                      ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
+                                      : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                }`}
+                              >
+                                {book.status || "Available"}
+                              </span>
+                            </div>
+                          </div>
+                          <span className="text-violet-600 dark:text-violet-400 font-semibold text-sm whitespace-nowrap">
+                            ${book.price}
+                          </span>
+                        </div>
+                        <div className="flex gap-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => toggleBookPublish(book)}
+                            disabled={
+                              actionLoading[book._id || book.id] ===
+                              "publishing"
+                            }
+                            className="flex-1 text-xs py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors disabled:opacity-50"
+                          >
+                            {book.status === "Available"
+                              ? "Unpublish"
+                              : book.status === "Unavailable"
+                                ? "Publish"
+                                : "Set Status"}
+                          </button>
+                          <button
+                            onClick={() => handleEditClick(book)}
+                            className="text-xs py-2 px-3 bg-violet-500/10 border border-violet-500/20 text-violet-400 rounded-lg hover:bg-violet-500 hover:text-white transition-all"
+                          >
+                            <MdEdit className="inline" />
+                          </button>
+                          <button
+                            onClick={() => deleteBook(book.id || book._id)}
+                            disabled={
+                              actionLoading[book._id || book.id] === "deleting"
+                            }
+                            className="text-xs py-2 px-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg hover:bg-rose-500 hover:text-white transition-all disabled:opacity-50"
+                          >
+                            <MdDelete className="inline" />
+                          </button>
+                        </div>
+                      </div>
                     )}
                   />
                 </div>
@@ -605,7 +719,7 @@ export default function AdminDashboard() {
                 <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Platform Audit Ledger
                 </h2>
-                <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <DataTable
                     headers={[
                       "Transaction ID",
@@ -621,29 +735,59 @@ export default function AdminDashboard() {
                         key={tx.id}
                         className="hover:bg-slate-100/50 dark:hover:bg-slate-800/30 transition-colors"
                       >
-                        <td className="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">
+                        <td className="px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">
                           {tx.id || tx._id}
                         </td>
-                        <td className="px-6 py-4 uppercase text-xs tracking-wider">
+                        <td className="px-4 py-3 uppercase tracking-wider">
                           <span
-                            className={`px-2 py-0.5 rounded border ${tx.type === "purchase"
+                            className={`px-2 py-0.5 rounded border ${
+                              tx.type === "purchase"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                 : "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                              }`}
+                            }`}
                           >
                             {tx.type}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
                           {tx.email}
                         </td>
-                        <td className="px-6 py-4 text-emerald-600 dark:text-emerald-400 font-bold">
+                        <td className="px-4 py-3 text-emerald-600 dark:text-emerald-400 font-bold">
                           {tx.amount}
                         </td>
-                        <td className="px-6 py-4 text-slate-500 dark:text-slate-500">
+                        <td className="px-4 py-3 text-slate-500 dark:text-slate-500">
                           {tx.date}
                         </td>
                       </tr>
+                    )}
+                    renderMobileCard={(tx) => (
+                      <div
+                        key={tx.id}
+                        className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 space-y-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span
+                            className={`px-2 py-0.5 rounded text-xs font-medium border uppercase ${
+                              tx.type === "purchase"
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                : "bg-purple-500/10 text-purple-400 border-purple-500/20"
+                            }`}
+                          >
+                            {tx.type || "purchase"}
+                          </span>
+                          <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm">
+                            {tx.amount}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-slate-600 dark:text-slate-400 truncate flex-1">
+                            {tx.email}
+                          </span>
+                          <span className="text-slate-500 dark:text-slate-500 ml-2">
+                            {tx.date}
+                          </span>
+                        </div>
+                      </div>
                     )}
                   />
                 </div>
@@ -738,13 +882,17 @@ export default function AdminDashboard() {
               disabled={isModalLoading}
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold bg-sky-500 text-white rounded-lg hover:bg-sky-400 transition-colors disabled:opacity-50"
             >
-              {isModalLoading && <ImSpinner2 className="animate-spin text-xs" />}
+              {isModalLoading && (
+                <ImSpinner2 className="animate-spin text-xs" />
+              )}
               Confirm
             </button>
           </>
         }
       >
-        <p className="text-sm text-slate-600 dark:text-slate-300">{confirmConfig.message}</p>
+        <p className="text-sm text-slate-600 dark:text-slate-300">
+          {confirmConfig.message}
+        </p>
       </Modal>
     </div>
   );
