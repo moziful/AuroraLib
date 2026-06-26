@@ -32,14 +32,26 @@ function ThemeToggle() {
       className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 transition-all hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-sky-500 dark:hover:text-sky-400 focus:outline-none"
       aria-label="Toggle Dark Mode"
     >
-      {theme === "dark" ? <MdLightMode className="text-xl" /> : <MdDarkMode className="text-xl" />}
+      {theme === "dark" ? (
+        <MdLightMode className="text-xl" />
+      ) : (
+        <MdDarkMode className="text-xl" />
+      )}
     </button>
   );
 }
 
-function AuthSection({ isPending, user, signingOut, handleSignOut, getInitials }) {
+function AuthSection({
+  isPending,
+  user,
+  signingOut,
+  handleSignOut,
+  getInitials,
+}) {
   if (isPending) {
-    return <div className="h-8 w-24 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800" />;
+    return (
+      <div className="h-8 w-24 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800" />
+    );
   }
   if (user) {
     return (
@@ -66,8 +78,12 @@ function AuthSection({ isPending, user, signingOut, handleSignOut, getInitials }
         </button>
         <div className="absolute top-full right-0 mt-2 w-56 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 flex flex-col gap-3">
           <div className="flex flex-col border-b border-slate-200 dark:border-slate-800 pb-2">
-            <span className="text-sm font-bold text-slate-900 dark:text-white truncate">{user.name}</span>
-            <span className="text-xs text-slate-600 dark:text-slate-400 truncate">{user.email}</span>
+            <span className="text-sm font-bold text-slate-900 dark:text-white truncate">
+              {user.name}
+            </span>
+            <span className="text-xs text-slate-600 dark:text-slate-400 truncate">
+              {user.email}
+            </span>
             {user.role && (
               <span className="mt-2 inline-block text-[10px] font-black uppercase tracking-wider text-sky-600 dark:text-sky-400 bg-sky-400/10 border border-sky-400/20 px-2 py-0.5 rounded w-max">
                 {user.role}
@@ -98,7 +114,7 @@ function AuthSection({ isPending, user, signingOut, handleSignOut, getInitials }
       className="px-4 mx-1 py-2 text-xs font-black rounded-lg bg-sky-500 dark:bg-sky-400 text-white dark:text-slate-950 hover:bg-sky-400 dark:hover:bg-[#7dd3fc] transition-all duration-200 shadow-lg shadow-sky-400/10 flex items-center gap-2"
     >
       <MdLogin className="text-sm" />
-      <span>Start Reading</span>
+      <span>Get started</span>
     </Link>
   );
 }
@@ -112,7 +128,9 @@ function MobileAuthSection({
   closeMenu,
 }) {
   if (isPending) {
-    return <div className="h-12 w-full animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800" />;
+    return (
+      <div className="h-12 w-full animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800" />
+    );
   }
 
   if (user) {
@@ -138,7 +156,9 @@ function MobileAuthSection({
             <p className="truncate text-sm font-bold text-slate-800 dark:text-slate-200">
               {user.name}
             </p>
-            <p className="truncate text-xs text-slate-600 dark:text-slate-500">{user.email}</p>
+            <p className="truncate text-xs text-slate-600 dark:text-slate-500">
+              {user.email}
+            </p>
             {user.role && (
               <span className="mt-1 inline-block text-[10px] font-black uppercase tracking-wider text-sky-600 dark:text-sky-400 bg-sky-400/10 border border-sky-400/20 px-2 py-0.5 rounded">
                 {user.role === "user" ? "reader" : user.role}
@@ -174,7 +194,7 @@ function MobileAuthSection({
         onClick={closeMenu}
       >
         <MdLogin className="text-lg" />
-        <span>Start Reading</span>
+        <span>Get started</span>
       </Link>
     </div>
   );
@@ -203,23 +223,24 @@ export default function Navbar() {
     },
   ];
 
-  const displayRole = user?.role === "user" ? "reader" : (user?.role || "reader");
+  const displayRole = user?.role === "user" ? "reader" : user?.role || "reader";
   const navItems = user
     ? [
-      ...baseNavItems,
-      {
-        href: `/dashboard/${displayRole}`,
-        label: "Dashboard",
-        icon: <MdDashboard className="text-xl" />,
-      },
-    ]
+        ...baseNavItems,
+        {
+          href: `/dashboard/${displayRole}`,
+          label: "Dashboard",
+          icon: <MdDashboard className="text-xl" />,
+        },
+      ]
     : baseNavItems;
 
   const linkClass = (href) => `
     px-3 py-2 text-xs font-bold rounded-lg transition-all duration-200 flex items-center gap-2 border
-    ${pathname.startsWith(href) && (href !== "/" || pathname === "/")
-      ? "bg-slate-100 dark:bg-slate-900 text-sky-500 dark:text-sky-400 border-sky-400/20 shadow-md shadow-sky-400/5"
-      : "border-transparent text-slate-600 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-300"
+    ${
+      pathname.startsWith(href) && (href !== "/" || pathname === "/")
+        ? "bg-slate-100 dark:bg-slate-900 text-sky-500 dark:text-sky-400 border-sky-400/20 shadow-md shadow-sky-400/5"
+        : "border-transparent text-slate-600 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-300"
     }
   `;
 
@@ -248,7 +269,8 @@ export default function Navbar() {
             />
             <span>
               <span className="text-slate-900 dark:text-white drop-shadow-[0_2px_10px_rgba(56,189,248,0.2)]">
-                <span className="text-sky-500 dark:text-sky-400">Aurora</span>Lib
+                <span className="text-sky-500 dark:text-sky-400">Aurora</span>
+                Lib
               </span>
             </span>
           </div>

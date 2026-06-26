@@ -16,7 +16,7 @@ import {
   MdSchedule,
 } from "react-icons/md";
 import { authClient } from "@/lib/auth-client";
-import { getBooksByEmail } from "@/lib/data";
+import { getBooksByEmail, getWriterSales } from "@/lib/data";
 import { deleteBookAction, updateBookStatus } from "@/lib/actions";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -33,18 +33,6 @@ import Modal from "./Modal";
 
 import AddBookForm from "./AddBookForm";
 import Image from "next/image";
-
-async function getSalesHistory(email) {
-  return [
-    {
-      id: "s1",
-      title: "Mastering Next.js Architecture",
-      buyer: "John Doe",
-      date: "2026-06-15",
-      amount: "$29.00",
-    },
-  ];
-}
 
 async function getBookmarkedReferences(email) {
   return [
@@ -89,15 +77,11 @@ export default function WriterDashboard() {
   const [editingBookData, setEditingBookData] = useState(null);
 
   const totalEbooks = books.length;
-  const publishedBooks = books.filter(
-    (b) => b.status === "Available",
-  ).length;
+  const publishedBooks = books.filter((b) => b.status === "Available").length;
   const unpublishedBooks = books.filter(
     (b) => b.status === "Unavailable",
   ).length;
-  const upcomingBooks = books.filter(
-    (b) => b.status === "Coming Soon",
-  ).length;
+  const upcomingBooks = books.filter((b) => b.status === "Coming Soon").length;
 
   const grossEarnings = sales.reduce((total, sale) => {
     const value = parseFloat(String(sale.amount || "").replace("$", ""));
@@ -152,7 +136,7 @@ export default function WriterDashboard() {
 
       const [writerBooks, salesData, bookmarksData] = await Promise.all([
         getBooksByEmail(user.email),
-        getSalesHistory(user.email),
+        getWriterSales(user.email),
         getBookmarkedReferences(user.email),
       ]);
 
@@ -367,12 +351,13 @@ export default function WriterDashboard() {
                         </td>
                         <td className="px-6 py-4">
                           <span
-                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${book.status === "Available"
+                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
+                              book.status === "Available"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                 : book.status === "Coming Soon"
                                   ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
                                   : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                              }`}
+                            }`}
                           >
                             {book.status || "Available"}
                           </span>

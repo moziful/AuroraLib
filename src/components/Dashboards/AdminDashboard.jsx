@@ -26,7 +26,8 @@ import DashboardCharts from "./DashboardCharts";
 import Modal from "./Modal";
 import Image from "next/image";
 
-import { getAllBooks } from "@/lib/data";
+// Make sure to export getAllTransactions from your data file
+import { getAllBooks, getAllTransactions } from "@/lib/data";
 import AddBookForm from "./AddBookForm";
 import {
   deleteBookAction,
@@ -36,26 +37,16 @@ import {
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+// Updated to fetch dynamic transaction data
 async function getAdminOverviewData() {
-  const realBooks = await getAllBooks();
+  const [realBooks, realTransactions] = await Promise.all([
+    getAllBooks(),
+    getAllTransactions()
+  ]);
+
   return {
-    ebooks: realBooks,
-    transactions: [
-      {
-        id: "TX-9901",
-        type: "publishing fee",
-        email: "nathan@auroralib.com",
-        amount: "$10.00",
-        date: "2026-06-18",
-      },
-      {
-        id: "TX-9902",
-        type: "purchase",
-        email: "alice@example.com",
-        amount: "$24.99",
-        date: "2026-06-20",
-      },
-    ],
+    ebooks: realBooks || [],
+    transactions: realTransactions || [],
   };
 }
 
@@ -63,12 +54,13 @@ export default function AdminDashboard() {
   const { data: session, isPending: sessionLoading } = authClient.useSession();
   const user = session?.user;
 
-  const [activeTab, setActiveTab] = useState("overview"); // overview | users | ebooks | transactions | add-book
+  const [activeTab, setActiveTab] = useState("overview");
   const [editingBookData, setEditingBookData] = useState(null);
   const [users, setUsers] = useState([]);
   const [ebooks, setEbooks] = useState([]);
   const [transactions, setTransactions] = useState([]);
-  const [actionLoading, setActionLoading] = useState({}); // { [bookId]: 'publishing' | 'deleting' | null }
+  const [actionLoading, setActionLoading] = useState({});
+  const [isModalLoading, setIsModalLoading] = useState(false);
 
   // Modal states for User Edit
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -118,7 +110,6 @@ export default function AdminDashboard() {
     };
   }, []);
 
-  // Reuse writer's edit handling for books
   const handleEditClick = (book) => {
     setEditingBookData(book);
     setActiveTab("add-book");
@@ -137,6 +128,7 @@ export default function AdminDashboard() {
         title: "Confirm Edit",
         message: `Are you sure you want to save changes to ${selectedUserForEdit.name}?`,
         onConfirm: async () => {
+          setIsModalLoading(true);
           try {
             await authClient.admin.setRole({
               userId: selectedUserForEdit.id,
@@ -150,11 +142,11 @@ export default function AdminDashboard() {
               users.map((u) =>
                 u.id === selectedUserForEdit.id
                   ? {
-                      ...u,
-                      role: editForm.role,
-                      name: editForm.name,
-                      email: editForm.email,
-                    }
+                    ...u,
+                    role: editForm.role,
+                    name: editForm.name,
+                    email: editForm.email,
+                  }
                   : u,
               ),
             );
@@ -164,8 +156,10 @@ export default function AdminDashboard() {
           } catch (err) {
             console.error(err);
             toast.error("Failed to update user.");
+          } finally {
+            setIsModalLoading(false);
+            setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
           }
-          setConfirmConfig({ ...confirmConfig, isOpen: false });
         },
       });
     }
@@ -177,6 +171,7 @@ export default function AdminDashboard() {
       title: "Delete User",
       message: "Are you sure you want to permanently delete this user profile?",
       onConfirm: async () => {
+        setIsModalLoading(true);
         try {
           await authClient.admin.removeUser({ userId: id });
           setUsers(users.filter((u) => u.id !== id));
@@ -184,13 +179,14 @@ export default function AdminDashboard() {
         } catch (err) {
           console.error(err);
           toast.error("Failed to delete user.");
+        } finally {
+          setIsModalLoading(false);
+          setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
         }
-        setConfirmConfig({ ...confirmConfig, isOpen: false });
       },
     });
   };
 
-  // Helper to get auth token for privileged actions
   async function fetchAuthToken() {
     const res = await fetch("/api/auth/token");
     if (!res.ok)
@@ -211,8 +207,8 @@ export default function AdminDashboard() {
       title: "Change Status",
       message: `Are you sure you want to mark this book as ${newStatus}?`,
       onConfirm: async () => {
+        setIsModalLoading(true);
         setActionLoading((prev) => ({ ...prev, [bookId]: "publishing" }));
-        setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
         try {
           const token = await fetchAuthToken();
           await updateBookStatus(bookId, newStatus, token);
@@ -228,6 +224,8 @@ export default function AdminDashboard() {
           toast.error(`Failed to update status: ${e.message}`);
         } finally {
           setActionLoading((prev) => ({ ...prev, [bookId]: null }));
+          setIsModalLoading(false);
+          setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
         }
       },
     });
@@ -239,8 +237,8 @@ export default function AdminDashboard() {
       title: "Delete Ebook",
       message: "Are you sure you want to delete this ebook from the platform?",
       onConfirm: async () => {
+        setIsModalLoading(true);
         setActionLoading((prev) => ({ ...prev, [id]: "deleting" }));
-        setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
         try {
           const token = await fetchAuthToken();
           await deleteBookAction(id, token);
@@ -250,10 +248,13 @@ export default function AdminDashboard() {
           toast.error(`Failed to delete book: ${e.message}`);
         } finally {
           setActionLoading((prev) => ({ ...prev, [id]: null }));
+          setIsModalLoading(false);
+          setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
         }
       },
     });
   };
+
   const totalAccounts = users.length;
   const totalReadersCount = users.filter(
     (u) => u.role === "reader" || u.role === "user" || u.role === "User",
@@ -520,14 +521,13 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-6 py-4">
                           <span
-                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${
-                              book.status === "Available" ||
-                              book.status === "published"
+                            className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium border ${book.status === "Available" ||
+                                book.status === "published"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                 : book.status === "Coming Soon"
                                   ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
                                   : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                            }`}
+                              }`}
                           >
                             {book.status || "Available"}
                           </span>
@@ -537,12 +537,18 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => toggleBookPublish(book)}
-                              disabled={actionLoading[book._id || book.id] === "publishing" || actionLoading[book._id || book.id] === "deleting"}
+                              disabled={
+                                actionLoading[book._id || book.id] ===
+                                "publishing" ||
+                                actionLoading[book._id || book.id] ===
+                                "deleting"
+                              }
                               className="inline-flex items-center gap-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors disabled:opacity-50"
                             >
-                              {actionLoading[book._id || book.id] === "publishing" && (
-                                <ImSpinner2 className="animate-spin text-xs" />
-                              )}
+                              {actionLoading[book._id || book.id] ===
+                                "publishing" && (
+                                  <ImSpinner2 className="animate-spin text-xs" />
+                                )}
                               {book.status === "Available"
                                 ? "Unpublish"
                                 : book.status === "Unavailable"
@@ -557,10 +563,16 @@ export default function AdminDashboard() {
                             </button>
                             <button
                               onClick={() => deleteBook(book.id || book._id)}
-                              disabled={actionLoading[book._id || book.id] === "publishing" || actionLoading[book._id || book.id] === "deleting"}
+                              disabled={
+                                actionLoading[book._id || book.id] ===
+                                "publishing" ||
+                                actionLoading[book._id || book.id] ===
+                                "deleting"
+                              }
                               className="p-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded hover:bg-rose-500 hover:text-white transition-all disabled:opacity-50"
                             >
-                              {actionLoading[book._id || book.id] === "deleting" ? (
+                              {actionLoading[book._id || book.id] ===
+                                "deleting" ? (
                                 <ImSpinner2 className="animate-spin text-sm" />
                               ) : (
                                 <MdDelete />
@@ -603,31 +615,34 @@ export default function AdminDashboard() {
                       "Execution Date",
                     ]}
                     data={transactions}
-                    emptyMessage="No transaction entries recorded."
+                    emptyMessage="Looks like there are no transactions yet. Once users start interacting with the platform, records will populate here."
                     renderRow={(tx) => (
                       <tr
                         key={tx.id}
-                        className="hover:bg-slate-800/30 transition-colors"
+                        className="hover:bg-slate-100/50 dark:hover:bg-slate-800/30 transition-colors"
                       >
-                        <td className="px-6 py-4 font-semibold text-slate-300">
-                          {tx.id}
+                        <td className="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">
+                          {tx.id || tx._id}
                         </td>
                         <td className="px-6 py-4 uppercase text-xs tracking-wider">
                           <span
-                            className={`px-2 py-0.5 rounded border ${
-                              tx.type === "purchase"
+                            className={`px-2 py-0.5 rounded border ${tx.type === "purchase"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                 : "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                            }`}
+                              }`}
                           >
                             {tx.type}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-slate-400">{tx.email}</td>
-                        <td className="px-6 py-4 text-emerald-400 font-bold">
+                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
+                          {tx.email}
+                        </td>
+                        <td className="px-6 py-4 text-emerald-600 dark:text-emerald-400 font-bold">
                           {tx.amount}
                         </td>
-                        <td className="px-6 py-4 text-slate-500">{tx.date}</td>
+                        <td className="px-6 py-4 text-slate-500 dark:text-slate-500">
+                          {tx.date}
+                        </td>
                       </tr>
                     )}
                   />
@@ -713,20 +728,23 @@ export default function AdminDashboard() {
               onClick={() =>
                 setConfirmConfig({ ...confirmConfig, isOpen: false })
               }
-              className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white"
+              disabled={isModalLoading}
+              className="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-white disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               onClick={confirmConfig.onConfirm}
-              className="px-4 py-2 text-sm font-bold bg-sky-500 text-white rounded-lg hover:bg-sky-400 transition-colors"
+              disabled={isModalLoading}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold bg-sky-500 text-white rounded-lg hover:bg-sky-400 transition-colors disabled:opacity-50"
             >
+              {isModalLoading && <ImSpinner2 className="animate-spin text-xs" />}
               Confirm
             </button>
           </>
         }
       >
-        <p className="text-sm text-slate-300">{confirmConfig.message}</p>
+        <p className="text-sm text-slate-600 dark:text-slate-300">{confirmConfig.message}</p>
       </Modal>
     </div>
   );
