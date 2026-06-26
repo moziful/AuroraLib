@@ -214,6 +214,15 @@ export default function Navbar() {
     window.location.href = "/";
   };
 
+  useEffect(() => {
+    const currentPath = pathname;
+    const prevPath = sessionStorage.getItem("current_path") || "";
+    if (prevPath && prevPath !== currentPath) {
+      sessionStorage.setItem("prev_path", prevPath);
+    }
+    sessionStorage.setItem("current_path", currentPath);
+  }, [pathname]);
+
   const baseNavItems = [
     { href: "/", label: "Home", icon: <MdHome className="text-xl" /> },
     {

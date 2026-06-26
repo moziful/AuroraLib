@@ -512,7 +512,7 @@ export default function AddBookForm({ initialData, onSuccess }) {
                         <input
                           type="text"
                           name="writerName"
-                          value={writerDefaults?.writerName || form.writerName}
+                          value={form.writerName}
                           onChange={handleChange}
                           placeholder="e.g. Nathan Clarke"
                           className={inputCls}
@@ -525,9 +525,7 @@ export default function AddBookForm({ initialData, onSuccess }) {
                         <input
                           type="email"
                           name="writerEmail"
-                          value={
-                            writerDefaults?.writerEmail || form.writerEmail
-                          }
+                          value={form.writerEmail}
                           onChange={handleChange}
                           placeholder="e.g. nathan@auroralib.com"
                           className={inputCls}

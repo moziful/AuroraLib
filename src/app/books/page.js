@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getAllBooks } from "@/lib/data";
 import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
 import BookCard, { BookCardSkeleton } from "@/components/BookCard";
@@ -17,15 +17,55 @@ export default function EbooksPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [status, setStatus] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
+  const [restored, setRestored] = useState(false);
+
+  const isFirstFetch = useRef(true);
+
+  // Restore state on mount if navigating back from a details page
+  useEffect(() => {
+    const prevPath = sessionStorage.getItem("prev_path") || "";
+    const cameFromDetails = prevPath.startsWith("/books/id/");
+
+    let initialPage = 1;
+    let initialSearch = "";
+    let initialStatus = "all";
+    let initialSort = "newest";
+
+    if (cameFromDetails) {
+      initialPage = Number(sessionStorage.getItem("books_page") || "1");
+      initialSearch = sessionStorage.getItem("books_search") || "";
+      initialStatus = sessionStorage.getItem("books_status") || "all";
+      initialSort = sessionStorage.getItem("books_sort") || "newest";
+    }
+
+    setCurrentPage(initialPage);
+    setSearchInput(initialSearch);
+    setSearchQuery(initialSearch);
+    setStatus(initialStatus);
+    setSortBy(initialSort);
+    setRestored(true);
+  }, []);
+
+  // Save changes to sessionStorage
+  useEffect(() => {
+    if (restored) {
+      sessionStorage.setItem("books_page", currentPage);
+      sessionStorage.setItem("books_search", searchInput);
+      sessionStorage.setItem("books_status", status);
+      sessionStorage.setItem("books_sort", sortBy);
+    }
+  }, [currentPage, searchInput, status, sortBy, restored]);
 
   useEffect(() => {
+    if (!restored) return;
     const timer = setTimeout(() => {
       setSearchQuery(searchInput);
     }, 500);
     return () => clearTimeout(timer);
-  }, [searchInput]);
+  }, [searchInput, restored]);
 
   useEffect(() => {
+    if (!restored) return;
     const fetchBooks = async () => {
       try {
         setLoading(true);
@@ -35,7 +75,12 @@ export default function EbooksPage() {
           sort: sortBy,
         });
         setBooks(data);
-        setCurrentPage(1);
+        
+        if (isFirstFetch.current) {
+          isFirstFetch.current = false;
+        } else {
+          setCurrentPage(1);
+        }
       } catch (error) {
         console.error("Failed to load books:", error);
       } finally {
@@ -43,7 +88,7 @@ export default function EbooksPage() {
       }
     };
     fetchBooks();
-  }, [searchQuery, status, sortBy]);
+  }, [searchQuery, status, sortBy, restored]);
 
   const handleClearFilters = () => {
     setSearchInput("");
