@@ -182,7 +182,7 @@ export default function UserDashboard() {
                     </div>
                   ) : books.length === 0 ? (
                     <p className="text-slate-600 dark:text-slate-500 text-sm">
-                      You haven't purchased any ebooks yet.
+                      You haven&apos;t purchased any ebooks yet.
                     </p>
                   ) : (
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

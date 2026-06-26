@@ -251,7 +251,7 @@ export default function WriterDashboard() {
                     <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                       Overview
                     </h2>
-                    <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         <AnalyticsStatCard
                           title="Total Ebooks"
@@ -583,7 +583,7 @@ export default function WriterDashboard() {
         <p className="text-slate-600 dark:text-slate-400 text-sm">
           Are you sure you want to delete{" "}
           <span className="text-sky-400 font-semibold">
-            "{bookToDelete?.title}"
+            &quot;{bookToDelete?.title}&quot;
           </span>
           ? This action cannot be undone.
         </p>
@@ -613,7 +613,7 @@ export default function WriterDashboard() {
         <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">
           Update the status for{" "}
           <span className="text-sky-400 font-semibold">
-            "{bookToStatus?.title}"
+            &quot;{bookToStatus?.title}&quot;
           </span>
           .
         </p>
@@ -622,8 +622,8 @@ export default function WriterDashboard() {
           {bookToStatus?.status === "Coming Soon" ? (
             <>
               <p className="text-xs text-amber-400 mb-2">
-                Warning: Once changed from 'Coming Soon', it cannot be reverted
-                back to 'Coming Soon'.
+                Warning: Once changed from &apos;Coming Soon&apos;, it cannot be
+                reverted back to &apos;Coming Soon&apos;.
               </p>
               <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
                 <input

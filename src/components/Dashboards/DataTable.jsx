@@ -24,7 +24,7 @@ export default function DataTable({
           )}
         </div>
       )}
-      <div className="hidden lg:block lg:max-h-[calc(100vh-280px)] overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="hidden lg:block lg:max-h-[calc(100vh-280px)] overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
         <table className="w-full text-left text-sm text-slate-700 dark:text-slate-400">
           <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-slate-950 text-xs font-semibold uppercase text-slate-600 dark:text-slate-500 shadow-sm shadow-slate-200/50 dark:shadow-slate-800/50">
             <tr>

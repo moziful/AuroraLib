@@ -437,7 +437,7 @@ export default function AdminDashboard() {
                         <td className="px-4 py-3 font-medium text-slate-900 dark:text-white whitespace-nowrap">
                           {u.name}
                         </td>
-                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap max-w-[120px] truncate">
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap max-w-30 truncate">
                           {u.email}
                         </td>
                         <td className="px-4 py-3">
