@@ -127,7 +127,7 @@ export default function GenresSection() {
           {genres.map(({ name, icon: Icon, color, iconColor, glow }) => (
             <Link
               key={name}
-              href={`/books`}
+              href={`/books?genre=${name}`}
               className={`group flex flex-col items-center gap-3 rounded-2xl border bg-linear-to-b ${color} p-5 shadow-lg ${glow} transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
             >
               <span

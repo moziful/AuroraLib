@@ -1,11 +1,27 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { getAllBooks } from "@/lib/data";
 import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
 import BookCard, { BookCardSkeleton } from "@/components/BookCard";
 
 const itemsPerPage = 6;
+
+const GENRES = [
+  "Fiction",
+  "Mystery",
+  "Romance",
+  "Sci-Fi",
+  "Fantasy",
+  "Horror",
+  "History",
+  "Science",
+  "Business",
+  "Self-Help",
+  "Travel",
+  "Poetry"
+];
 
 const getPageNumbers = (currentPage, totalPages, maxButtons = 7) => {
   if (totalPages <= maxButtons) {
@@ -26,7 +42,21 @@ const getPageNumbers = (currentPage, totalPages, maxButtons = 7) => {
   return Array.from({ length: maxButtons }, (_, i) => startPage + i);
 };
 
-export default function EbooksPage() {
+export default function EbooksPageWrapper() {
+  return (
+    <Suspense fallback={
+      <div className="p-4 xl:p-0 flex flex-col max-w-7xl w-full mx-auto min-h-[calc(100vh-4rem)] items-center justify-center">
+        <div className="text-xl text-sky-400 font-medium">Loading catalog...</div>
+      </div>
+    }>
+      <EbooksPage />
+    </Suspense>
+  );
+}
+
+function EbooksPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,12 +66,22 @@ export default function EbooksPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [status, setStatus] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
+  const [genre, setGenre] = useState("all");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
   const [restored, setRestored] = useState(false);
 
   const isFirstFetch = useRef(true);
 
-  // Restore state on mount if navigating back from a details page
+  // Restore state on mount if navigating back from a details page or reading from searchParams
   useEffect(() => {
+    const paramGenre = searchParams.get("genre");
+    const paramSearch = searchParams.get("search");
+    const paramStatus = searchParams.get("status");
+    const paramSort = searchParams.get("sort");
+    const paramMinPrice = searchParams.get("minPrice");
+    const paramMaxPrice = searchParams.get("maxPrice");
+
     const prevPath = sessionStorage.getItem("prev_path") || "";
     const cameFromDetails = prevPath.startsWith("/books/id/");
 
@@ -49,12 +89,27 @@ export default function EbooksPage() {
     let initialSearch = "";
     let initialStatus = "all";
     let initialSort = "newest";
+    let initialGenre = "all";
+    let initialMinPrice = "";
+    let initialMaxPrice = "";
 
-    if (cameFromDetails) {
+    // 1. Prioritize searchParams if they exist
+    if (paramGenre || paramSearch || paramStatus || paramSort || paramMinPrice || paramMaxPrice) {
+      if (paramGenre) initialGenre = paramGenre;
+      if (paramSearch) initialSearch = paramSearch;
+      if (paramStatus) initialStatus = paramStatus;
+      if (paramSort) initialSort = paramSort;
+      if (paramMinPrice) initialMinPrice = paramMinPrice;
+      if (paramMaxPrice) initialMaxPrice = paramMaxPrice;
+    } else if (cameFromDetails) {
+      // 2. Fallback to sessionStorage if we came from details
       initialPage = Number(sessionStorage.getItem("books_page") || "1");
       initialSearch = sessionStorage.getItem("books_search") || "";
       initialStatus = sessionStorage.getItem("books_status") || "all";
       initialSort = sessionStorage.getItem("books_sort") || "newest";
+      initialGenre = sessionStorage.getItem("books_genre") || "all";
+      initialMinPrice = sessionStorage.getItem("books_minPrice") || "";
+      initialMaxPrice = sessionStorage.getItem("books_maxPrice") || "";
     }
 
     setCurrentPage(initialPage);
@@ -62,8 +117,11 @@ export default function EbooksPage() {
     setSearchQuery(initialSearch);
     setStatus(initialStatus);
     setSortBy(initialSort);
+    setGenre(initialGenre);
+    setMinPrice(initialMinPrice);
+    setMaxPrice(initialMaxPrice);
     setRestored(true);
-  }, []);
+  }, [searchParams]);
 
   // Save changes to sessionStorage
   useEffect(() => {
@@ -72,8 +130,11 @@ export default function EbooksPage() {
       sessionStorage.setItem("books_search", searchInput);
       sessionStorage.setItem("books_status", status);
       sessionStorage.setItem("books_sort", sortBy);
+      sessionStorage.setItem("books_genre", genre);
+      sessionStorage.setItem("books_minPrice", minPrice);
+      sessionStorage.setItem("books_maxPrice", maxPrice);
     }
-  }, [currentPage, searchInput, status, sortBy, restored]);
+  }, [currentPage, searchInput, status, sortBy, genre, minPrice, maxPrice, restored]);
 
   useEffect(() => {
     if (!restored) return;
@@ -92,6 +153,9 @@ export default function EbooksPage() {
           search: searchQuery,
           status,
           sort: sortBy,
+          genre,
+          minPrice,
+          maxPrice,
         });
         setBooks(data);
         
@@ -107,12 +171,17 @@ export default function EbooksPage() {
       }
     };
     fetchBooks();
-  }, [searchQuery, status, sortBy, restored]);
+  }, [searchQuery, status, sortBy, genre, minPrice, maxPrice, restored]);
 
   const handleClearFilters = () => {
     setSearchInput("");
+    setSearchQuery("");
     setStatus("all");
     setSortBy("newest");
+    setGenre("all");
+    setMinPrice("");
+    setMaxPrice("");
+    router.replace("/books");
   };
 
   // Pagination Calculation
@@ -164,8 +233,8 @@ export default function EbooksPage() {
           </span>
         </h1>
       </div>
-      <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-4 mb-8 flex flex-col lg:flex-row items-end lg:items-center gap-4 shadow-lg shadow-black/20">
-        <div className="w-full lg:flex-1">
+      <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-4 items-end shadow-lg shadow-black/20">
+        <div className="w-full sm:col-span-2 md:col-span-3 lg:col-span-2 xl:col-span-2">
           <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Search (Title, Author, Genre)</label>
           <input
             type="text"
@@ -175,20 +244,57 @@ export default function EbooksPage() {
             className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors placeholder:text-slate-500"
           />
         </div>
-        <div className="w-full lg:w-auto">
+        <div className="w-full">
+          <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Genre</label>
+          <select
+            value={genre}
+            onChange={(e) => setGenre(e.target.value)}
+            className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors"
+          >
+            <option value="all">All Genres</option>
+            {GENRES.map((g) => (
+              <option key={g} value={g}>{g}</option>
+            ))}
+          </select>
+        </div>
+        <div className="w-full">
           <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Status</label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors"
           >
-            <option value="all">All</option>
+            <option value="all">All Status</option>
             <option value="Available">Available</option>
             <option value="Unavailable">Unavailable</option>
             <option value="Coming Soon">Coming Soon</option>
           </select>
         </div>
-        <div className="w-full lg:w-auto">
+        <div className="w-full">
+          <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Min Price ($)</label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+            placeholder="Min"
+            className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors placeholder:text-slate-500"
+          />
+        </div>
+        <div className="w-full">
+          <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Max Price ($)</label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+            placeholder="Max"
+            className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors placeholder:text-slate-500"
+          />
+        </div>
+        <div className="w-full">
           <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Sort By</label>
           <select
             value={sortBy}
@@ -204,10 +310,10 @@ export default function EbooksPage() {
         <button
           onClick={handleClearFilters}
           title="Clear Filters"
-          className="w-full lg:w-auto h-10 mt-auto px-4 bg-white dark:bg-slate-800 hover:bg-slate-700 border border-slate-300 dark:border-slate-700 hover:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 transition-colors text-sm font-medium"
+          className="w-full h-10 px-4 bg-white dark:bg-slate-800 hover:bg-slate-700 border border-slate-300 dark:border-slate-700 hover:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 transition-colors text-sm font-medium"
         >
           <FaTimes />
-          <span className="lg:hidden">Clear Filters</span>
+          <span>Clear Filters</span>
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
