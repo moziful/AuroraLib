@@ -7,6 +7,25 @@ import BookCard, { BookCardSkeleton } from "@/components/BookCard";
 
 const itemsPerPage = 6;
 
+const getPageNumbers = (currentPage, totalPages, maxButtons = 7) => {
+  if (totalPages <= maxButtons) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  let startPage = currentPage - Math.floor((maxButtons - 1) / 2);
+  if (startPage < 1) {
+    startPage = 1;
+  }
+
+  let endPage = startPage + maxButtons - 1;
+  if (endPage > totalPages) {
+    endPage = totalPages;
+    startPage = endPage - maxButtons + 1;
+  }
+
+  return Array.from({ length: maxButtons }, (_, i) => startPage + i);
+};
+
 export default function EbooksPage() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -110,6 +129,31 @@ export default function EbooksPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const PaginationButton = ({ pageNum }) => {
+    if (pageNum === "...") {
+      return (
+        <button
+          disabled
+          className="w-9 h-9 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 border border-slate-700 text-slate-700 dark:text-slate-400 cursor-default opacity-50"
+        >
+          ...
+        </button>
+      );
+    }
+    return (
+      <button
+        onClick={() => handlePageChange(pageNum)}
+        className={`w-9 h-9 rounded-xl text-xs font-bold transition-all duration-200 ${
+          activePage === pageNum
+            ? "bg-sky-400 text-black font-black shadow-lg shadow-sky-400/20"
+            : "bg-white dark:bg-slate-800 border border-slate-700 text-slate-700 dark:text-slate-400 hover:text-sky-400 hover:border-sky-400"
+        }`}
+      >
+        {pageNum}
+      </button>
+    );
+  };
+
   return (
     <div className="p-4 xl:p-0 flex flex-col max-w-7xl w-full mx-auto min-h-[calc(100vh-4rem)]">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
@@ -191,18 +235,28 @@ export default function EbooksPage() {
           >
             <FaChevronLeft />
           </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-            <button
-              key={pageNum}
-              onClick={() => handlePageChange(pageNum)}
-              className={`w-9 h-9 rounded-xl text-xs font-bold transition-all duration-200 ${activePage === pageNum
-                ? "bg-sky-400 text-black font-black shadow-lg shadow-sky-400/20"
-                : "bg-white dark:bg-slate-800 border border-slate-700 text-slate-700 dark:text-slate-400 hover:text-sky-400 hover:border-sky-400"
-                }`}
-            >
-              {pageNum}
-            </button>
-          ))}
+          
+          {/* Desktop Pagination (11 buttons) */}
+          <div className="hidden md:flex items-center gap-2">
+            {getPageNumbers(activePage, totalPages, 11).map((pageNum, idx) => (
+              <PaginationButton key={`desktop-${pageNum}-${idx}`} pageNum={pageNum} />
+            ))}
+          </div>
+
+          {/* Tablet Pagination (7 buttons) */}
+          <div className="hidden sm:flex md:hidden items-center gap-2">
+            {getPageNumbers(activePage, totalPages, 7).map((pageNum, idx) => (
+              <PaginationButton key={`tablet-${pageNum}-${idx}`} pageNum={pageNum} />
+            ))}
+          </div>
+
+          {/* Mobile Pagination (5 buttons) */}
+          <div className="flex sm:hidden items-center gap-2">
+            {getPageNumbers(activePage, totalPages, 5).map((pageNum, idx) => (
+              <PaginationButton key={`mobile-${pageNum}-${idx}`} pageNum={pageNum} />
+            ))}
+          </div>
+
           <button
             onClick={() => handlePageChange(activePage + 1)}
             disabled={activePage === totalPages}

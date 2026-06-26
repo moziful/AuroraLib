@@ -54,6 +54,9 @@ function AuthSection({
     );
   }
   if (user) {
+    const displayRole = user.role === "user" ? "reader" : user.role;
+    const profileLink = `/dashboard/${displayRole}?tab=profile`;
+
     return (
       <div className="flex items-center gap-2 group relative mr-2">
         <button className="flex items-center gap-2 focus:outline-none">
@@ -77,8 +80,11 @@ function AuthSection({
           </span>
         </button>
         <div className="absolute top-full right-0 mt-2 w-56 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 flex flex-col gap-3">
-          <div className="flex flex-col border-b border-slate-200 dark:border-slate-800 pb-2">
-            <span className="text-sm font-bold text-slate-900 dark:text-white truncate">
+          <Link
+            href={profileLink}
+            className="flex flex-col border-b border-slate-200 dark:border-slate-800 pb-2 hover:opacity-85 group/profile-details transition cursor-pointer"
+          >
+            <span className="text-sm font-bold text-slate-900 dark:text-white truncate group-hover/profile-details:text-sky-500 dark:group-hover/profile-details:text-sky-400 transition-colors">
               {user.name}
             </span>
             <span className="text-xs text-slate-600 dark:text-slate-400 truncate">
@@ -89,7 +95,7 @@ function AuthSection({
                 {user.role}
               </span>
             )}
-          </div>
+          </Link>
           <button
             onClick={handleSignOut}
             disabled={signingOut}
@@ -134,9 +140,16 @@ function MobileAuthSection({
   }
 
   if (user) {
+    const displayRole = user.role === "user" ? "reader" : user.role;
+    const profileLink = `/dashboard/${displayRole}?tab=profile`;
+
     return (
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3">
+        <Link
+          href={profileLink}
+          onClick={closeMenu}
+          className="flex items-center gap-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 hover:border-sky-400/50 transition duration-200 cursor-pointer"
+        >
           {user.image ? (
             <Image
               src={user.image}
@@ -165,7 +178,7 @@ function MobileAuthSection({
               </span>
             )}
           </div>
-        </div>
+        </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <button
