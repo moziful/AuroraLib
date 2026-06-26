@@ -55,7 +55,7 @@ function AuthSection({
   }
   if (user) {
     return (
-      <div className="flex items-center gap-2 group relative">
+      <div className="flex items-center gap-2 group relative mr-2">
         <button className="flex items-center gap-2 focus:outline-none">
           {user.image ? (
             <Image
@@ -226,21 +226,20 @@ export default function Navbar() {
   const displayRole = user?.role === "user" ? "reader" : user?.role || "reader";
   const navItems = user
     ? [
-        ...baseNavItems,
-        {
-          href: `/dashboard/${displayRole}`,
-          label: "Dashboard",
-          icon: <MdDashboard className="text-xl" />,
-        },
-      ]
+      ...baseNavItems,
+      {
+        href: `/dashboard/${displayRole}`,
+        label: "Dashboard",
+        icon: <MdDashboard className="text-xl" />,
+      },
+    ]
     : baseNavItems;
 
   const linkClass = (href) => `
     px-3 py-2 text-xs font-bold rounded-lg transition-all duration-200 flex items-center gap-2 border
-    ${
-      pathname.startsWith(href) && (href !== "/" || pathname === "/")
-        ? "bg-slate-100 dark:bg-slate-900 text-sky-500 dark:text-sky-400 border-sky-400/20 shadow-md shadow-sky-400/5"
-        : "border-transparent text-slate-600 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-300"
+    ${pathname.startsWith(href) && (href !== "/" || pathname === "/")
+      ? "bg-slate-100 dark:bg-slate-900 text-sky-500 dark:text-sky-400 border-sky-400/20 shadow-md shadow-sky-400/5"
+      : "border-transparent text-slate-600 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-300"
     }
   `;
 

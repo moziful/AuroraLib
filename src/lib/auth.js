@@ -35,7 +35,7 @@ export const auth = betterAuth({
             role: {
                 type: "string",
                 required: true,
-                defaultValue: "reader",
+                defaultValue: "pending",
                 input: true,
             },
         },
@@ -44,8 +44,8 @@ export const auth = betterAuth({
         user: {
             create: {
                 before: async (userData) => {
-                    if (!userData.role || userData.role === "user") {
-                        return { data: { ...userData, role: "reader" } };
+                    if (!userData.role || userData.role === "user" || userData.role === "reader") {
+                        return { data: { ...userData, role: "pending" } };
                     }
                     return { data: userData };
                 },

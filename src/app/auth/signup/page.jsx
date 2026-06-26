@@ -16,6 +16,7 @@ import {
   MdErrorOutline,
 } from "react-icons/md";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 
 export default function SignUp() {
   const router = useRouter();
@@ -36,11 +37,16 @@ export default function SignUp() {
   useEffect(() => {
     if (!isPending && session?.user) {
       const role = session.user.role;
-      router.replace(
-        role === "writer" ? "/dashboard/writer" : "/dashboard/reader",
-      );
+      if (role === "pending") {
+        router.replace("/dashboard/pending");
+      } else {
+        router.replace(
+          role === "writer" ? "/dashboard/writer" : "/dashboard/reader",
+        );
+      }
     }
   }, [session, isPending, router]);
+
   if (isPending || session?.user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-white dark:bg-slate-950">
@@ -68,7 +74,10 @@ export default function SignUp() {
   };
   const handleGoogleSignIn = async () => {
     try {
-      await authClient.signIn.social({ provider: "google" });
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/dashboard/pending",
+      });
     } catch (error) {
       toast.error("Google sign up failed");
     }
@@ -77,8 +86,37 @@ export default function SignUp() {
     setLoading(true);
     setError("");
 
+    if (session?.user) {
+      // Social sign-up (Google) flow
+      try {
+        const userId = session.user.id;
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+        const url = `${apiBase}/users/${userId}/role`;
+        const res = await fetch(url, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ role: selectedRole }),
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.message || "Failed to save role choice.");
+        }
+        
+        window.location.href =
+          selectedRole === "writer" ? "/dashboard/writer" : "/dashboard/reader";
+      } catch (err) {
+        console.error("Failed to assign role to Google user:", err);
+        setError(err.message || "Sign up failed. Please try again.");
+        setLoading(false);
+      }
+      return;
+    }
+
     const { name, email, password } = formData;
-    // Sign up without a role – better‑auth will assign the default (reader)
+    // Sign up without a role – better‑auth will assign the default (pending)
     const { data, error: authError } = await authClient.signUp.email({
       name,
       email,
@@ -91,38 +129,36 @@ export default function SignUp() {
       return;
     }
 
-    // If the user chose writer, upgrade the role via our new endpoint
-    if (selectedRole === "writer") {
-      try {
-        let token = data?.accessToken || data?.session?.accessToken;
-        let userId = data?.id || data?.user?.id;
-        
-        if (!token) {
-          const { data: signInData, error: signInError } = await authClient.signIn.email({
-            email,
-            password,
-          });
-          if (!signInError) {
-            token = signInData?.accessToken || signInData?.session?.accessToken || signInData?.token;
-            userId = signInData?.id || signInData?.user?.id || userId;
-          }
+    // Now update the role in the database (for BOTH reader and writer, since default is pending!)
+    try {
+      let token = data?.accessToken || data?.session?.accessToken;
+      let userId = data?.id || data?.user?.id;
+      
+      if (!token) {
+        const { data: signInData, error: signInError } = await authClient.signIn.email({
+          email,
+          password,
+        });
+        if (!signInError) {
+          token = signInData?.accessToken || signInData?.session?.accessToken || signInData?.token;
+          userId = signInData?.id || signInData?.user?.id || userId;
         }
-
-        if (token && userId) {
-          const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
-          const url = `${apiBase}/users/${userId}/role`;
-          await fetch(url, {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ role: "writer" }),
-          });
-        }
-      } catch (e) {
-        console.warn("Role upgrade failed:", e);
       }
+
+      if (token && userId) {
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+        const url = `${apiBase}/users/${userId}/role`;
+        await fetch(url, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ role: selectedRole }),
+        });
+      }
+    } catch (e) {
+      console.warn("Role assignment failed:", e);
     }
 
     // Redirect to the appropriate dashboard
@@ -370,14 +406,16 @@ export default function SignUp() {
                   <div className="h-6 w-6 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />
                 </div>
               )}
-              <button
-                type="button"
-                disabled={loading}
-                onClick={() => setStep(1)}
-                className="w-full text-center text-xs font-bold text-slate-500 hover:text-slate-300 transition-colors pt-2"
-              >
-                ← Back to profile details
-              </button>
+              {!session?.user && (
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => setStep(1)}
+                  className="w-full text-center text-xs font-bold text-slate-500 hover:text-slate-300 transition-colors pt-2"
+                >
+                  ← Back to profile details
+                </button>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

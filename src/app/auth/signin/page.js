@@ -21,7 +21,9 @@ export default function SignIn() {
             const role = (session.user.role || "reader").toLowerCase();
             const normalizedRole = role === "user" ? "reader" : role;
 
-            if (normalizedRole === "admin") {
+            if (normalizedRole === "pending") {
+                router.replace("/dashboard/pending");
+            } else if (normalizedRole === "admin") {
                 router.replace("/dashboard/admin");
             } else if (normalizedRole === "writer") {
                 router.replace("/dashboard/writer");
@@ -53,11 +55,14 @@ export default function SignIn() {
             return;
         }
         const role = data?.user?.role;
-        window.location.href = role === "admin" ? "/dashboard/admin" : role === "writer" ? "/dashboard/writer" : "/dashboard/reader";
+        window.location.href = role === "pending" ? "/dashboard/pending" : role === "admin" ? "/dashboard/admin" : role === "writer" ? "/dashboard/writer" : "/dashboard/reader";
     };
     const handleGoogleSignIn = async () => {
         try {
-            await authClient.signIn.social({ provider: "google" });
+            await authClient.signIn.social({
+                provider: "google",
+                callbackURL: "/dashboard/pending",
+            });
         } catch (error) {
             toast.error("Google sign in failed");
         }
