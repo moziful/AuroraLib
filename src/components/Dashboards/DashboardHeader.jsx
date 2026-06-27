@@ -9,7 +9,7 @@ export default function DashboardHeader({
   borderColorClass = "border-sky-500/20",
 }) {
   return (
-    <div className="mb-10">
+    <div className="mb-4 lg:mb-10">
       <div className="flex items-center gap-3">
         <div
           className={`flex shrink-0 h-12 w-12 sm:h-10 sm:w-10 items-center justify-center rounded-xl border ${bgColorClass} ${borderColorClass}`}

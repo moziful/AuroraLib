@@ -14,13 +14,16 @@ import {
   MdPublic,
   MdVisibilityOff,
   MdSchedule,
+  MdMenuBook,
 } from "react-icons/md";
 import { authClient } from "@/lib/auth-client";
 import { getBooksByEmail, getWriterSales } from "@/lib/data";
 import { deleteBookAction, updateBookStatus } from "@/lib/actions";
+import { getPurchasedBooks, getBookmarkedBooks } from "@/lib/user-actions";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ImSpinner2 } from "react-icons/im";
+import LibraryBookCard from "./LibraryBookCard";
 
 // Reusable Dashboard Sub-components
 import DashboardHeader from "../Dashboards/DashboardHeader";
@@ -30,21 +33,12 @@ import DataTable from "../Dashboards/DataTable";
 import UserProfile from "../Dashboards/UserProfile";
 import AnalyticsStatCard from "./AnalyticsStatCard";
 import DashboardCharts from "./DashboardCharts";
+import OverviewLayout from "./OverviewLayout";
+import ManageEbooksTable from "./ManageEbooksTable";
 import Modal from "./Modal";
 
 import AddBookForm from "./AddBookForm";
 import Image from "next/image";
-
-async function getBookmarkedReferences(email) {
-  return [
-    {
-      id: "b1",
-      title: "Database Sharding Patterns",
-      cover: "/not-found-image.png",
-      slug: "database-sharding-patterns",
-    },
-  ];
-}
 
 async function fetchAuthToken() {
   const res = await fetch("/api/auth/token");
@@ -69,6 +63,7 @@ export default function WriterDashboard() {
 
   const [activeTab, setActiveTab] = useState(queryTab || "overview");
   const [books, setBooks] = useState([]);
+  const [purchasedBooks, setPurchasedBooks] = useState([]);
   const [sales, setSales] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -112,10 +107,13 @@ export default function WriterDashboard() {
     const val = parseFloat(String(s.amount || "").replace("$", "")) || 0;
     monthlySalesMap[month] = (monthlySalesMap[month] || 0) + val;
   });
-  const barData = Object.keys(monthlySalesMap).map((k) => ({
-    name: k,
-    value: monthlySalesMap[k],
-  }));
+  const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const barData = Object.keys(monthlySalesMap)
+    .map((k) => ({
+      name: k,
+      value: monthlySalesMap[k],
+    }))
+    .sort((a, b) => monthOrder.indexOf(a.name) - monthOrder.indexOf(b.name));
 
   const genreMap = {};
   books.forEach((b) => {
@@ -130,6 +128,7 @@ export default function WriterDashboard() {
   const tabsConfig = [
     { id: "overview", label: "Overview", icon: MdDashboard },
     { id: "manage", label: "Manage Ebooks", icon: MdBook },
+    { id: "purchased", label: "My Library", icon: MdMenuBook },
     { id: "add-book", label: "Add Ebook", icon: MdAddCircle },
     { id: "bookmarks", label: "Bookmarks", icon: MdBookmark },
     { id: "sales", label: "Sales History", icon: MdAttachMoney },
@@ -150,16 +149,18 @@ export default function WriterDashboard() {
       if (!user?.email) return;
       setLoading(true);
       try {
-        const [writerBooks, salesData, bookmarksData] = await Promise.all([
+        const [writerBooks, salesData, bookmarksData, purchasedData] = await Promise.all([
           getBooksByEmail(user.email),
           getWriterSales(user.email),
-          getBookmarkedReferences(user.email),
+          getBookmarkedBooks(user.email),
+          getPurchasedBooks(user.email),
         ]);
 
         if (alive) {
           setBooks(writerBooks || []);
           setSales(salesData || []);
           setBookmarks(bookmarksData || []);
+          setPurchasedBooks(purchasedData || []);
         }
       } catch (err) {
         console.error("Failed to load writer data:", err);
@@ -175,6 +176,10 @@ export default function WriterDashboard() {
       alive = false;
     };
   }, [user?.email]);
+
+  const handleUnbookmark = (bookId) => {
+    setBookmarks((prev) => prev.filter((b) => (b._id || b.id) !== bookId));
+  };
 
   const handleEditClick = (book) => {
     setEditingBookData(book);
@@ -198,14 +203,12 @@ export default function WriterDashboard() {
           await updateBookStatus(bookId, newStatus, token);
           setBooks(
             books.map((b) =>
-              (b._id || b.id || b.slug) === bookId
-                ? { ...b, status: newStatus }
-                : b
-            )
+              (b._id || b.id || b.slug) === bookId ? { ...b, status: newStatus } : b,
+            ),
           );
-          toast.success(`Book marked as ${newStatus}.`);
+          toast.success(`Book marked as ${newStatus} successfully!`);
         } catch (e) {
-          toast.error(`Failed to update status: ${e.message}`);
+          toast.error(`Failed to update book: ${e.message}`);
         } finally {
           setActionLoading((prev) => ({ ...prev, [bookId]: null }));
           setIsModalLoading(false);
@@ -251,23 +254,27 @@ export default function WriterDashboard() {
 
   return (
     <>
-      <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        theme="dark"
-      />
       <div className="min-h-screen bg-white dark:bg-slate-950 px-4 py-10 text-slate-900 dark:text-slate-100">
         <div className="mx-auto max-w-7xl">
-          <DashboardHeader
-            roleTitle="Writer Dashboard"
-            subtitle="Manage your books, upload contributions, and monitor distribution metrics."
-            icon={MdDashboard}
-            iconColorClass="text-violet-400"
-            bgColorClass="bg-violet-500/10"
-            borderColorClass="border-violet-500/20"
-          />
+          <div className="sticky top-[49px] z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md -mx-4 px-4 py-4 border-b border-slate-200 dark:border-slate-800 lg:static lg:bg-transparent lg:border-none lg:p-0 lg:m-0">
+            <DashboardHeader
+              roleTitle="Writer Dashboard"
+              subtitle="Manage your books, upload contributions, and monitor distribution metrics."
+              icon={MdDashboard}
+              iconColorClass="text-violet-400"
+              bgColorClass="bg-violet-500/10"
+              borderColorClass="border-violet-500/20"
+            />
+            <div className="block lg:hidden">
+              <DashboardTabs
+                tabs={tabsConfig}
+                activeTab={activeTab}
+                setActiveTab={handleTabChange}
+              />
+            </div>
+          </div>
           <div className="mt-6 grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
-            <div className="lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:self-start">
+            <div className="hidden lg:block lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:self-start">
               <DashboardTabs
                 tabs={tabsConfig}
                 activeTab={activeTab}
@@ -281,54 +288,69 @@ export default function WriterDashboard() {
                     <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                       Overview
                     </h2>
-                    <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <AnalyticsStatCard
-                          title="Total Ebooks"
-                          value={loading ? "..." : totalEbooks}
-                          description="Books managed on AuroraLib"
-                          icon={MdBook}
-                          colorClass="text-violet-400"
-                        />
-                        <AnalyticsStatCard
-                          title="Published"
-                          value={loading ? "..." : publishedBooks}
-                          description="Currently available"
-                          icon={MdPublic}
-                          colorClass="text-emerald-400"
-                        />
-                        <AnalyticsStatCard
-                          title="Upcoming"
-                          value={loading ? "..." : upcomingBooks}
-                          description="Coming soon"
-                          icon={MdSchedule}
-                          colorClass="text-sky-400"
-                        />
-                        <AnalyticsStatCard
-                          title="Unpublished"
-                          value={loading ? "..." : unpublishedBooks}
-                          description="Currently unavailable"
-                          icon={MdVisibilityOff}
-                          colorClass="text-rose-400"
-                        />
-                        <AnalyticsStatCard
-                          title="Gross Earnings"
-                          value={loading ? "..." : `$${grossEarnings.toFixed(2)}`}
-                          description="Accumulated revenue details"
-                          icon={MdTrendingUp}
-                          colorClass="text-amber-400"
-                        />
-                      </div>
-
-                      <div className="mt-8">
+                    <OverviewLayout
+                      stats={
+                        <>
+                          <AnalyticsStatCard
+                            title="Total Ebooks"
+                            value={loading ? "..." : totalEbooks}
+                            description="Books managed on AuroraLib"
+                            icon={MdBook}
+                            colorClass="text-violet-400"
+                          />
+                          <AnalyticsStatCard
+                            title="Published"
+                            value={loading ? "..." : publishedBooks}
+                            description="Currently available"
+                            icon={MdPublic}
+                            colorClass="text-emerald-400"
+                          />
+                          <AnalyticsStatCard
+                            title="Upcoming"
+                            value={loading ? "..." : upcomingBooks}
+                            description="Coming soon"
+                            icon={MdSchedule}
+                            colorClass="text-sky-400"
+                          />
+                          <AnalyticsStatCard
+                            title="Unpublished"
+                            value={loading ? "..." : unpublishedBooks}
+                            description="Currently unavailable"
+                            icon={MdVisibilityOff}
+                            colorClass="text-rose-400"
+                          />
+                          <AnalyticsStatCard
+                            title="Gross Earnings"
+                            value={loading ? "..." : `$${grossEarnings.toFixed(2)}`}
+                            description="Accumulated revenue details"
+                            icon={MdTrendingUp}
+                            colorClass="text-amber-400"
+                          />
+                          <AnalyticsStatCard
+                            title="Books Owned"
+                            value={loading ? "..." : purchasedBooks.length}
+                            description="Books in your library"
+                            icon={MdMenuBook}
+                            colorClass="text-sky-400"
+                          />
+                          <AnalyticsStatCard
+                            title="Bookmarks"
+                            value={loading ? "..." : bookmarks.length}
+                            description="Ebooks you saved for later"
+                            icon={MdBookmark}
+                            colorClass="text-sky-400"
+                          />
+                        </>
+                      }
+                      charts={
                         <DashboardCharts
                           title1="Monthly Sales Volume"
                           title2="Ebooks by Genre"
                           barData={barData}
                           pieData={pieData}
                         />
-                      </div>
-                    </div>
+                      }
+                    />
                   </div>
                 </div>
               )}
@@ -337,187 +359,35 @@ export default function WriterDashboard() {
                   <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                     Your Publications
                   </h2>
+                  <ManageEbooksTable
+                    books={books}
+                    isLoading={loading}
+                    emptyMessage="You haven't uploaded any books yet."
+                    actionLoading={actionLoading}
+                    toggleBookPublish={toggleBookPublish}
+                    handleEditClick={handleEditClick}
+                    deleteBook={deleteBook}
+                    showWriter={false}
+                  />
+                </div>
+              )}
+              {activeTab === "purchased" && (
+                <div>
+                  <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
+                    My Library
+                  </h2>
                   <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
-                    <DataTable
-                      headers={[
-                        "#",
-                        "Book Details",
-                        "Genre",
-                        "Price",
-                        "Status",
-                        "Actions",
-                      ]}
-                      data={books}
-                      isLoading={loading}
-                      emptyMessage="You haven't uploaded any books yet."
-                      renderRow={(book, index) => (
-                        <tr
-                          key={book._id || book.id || book.slug}
-                          className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
-                        >
-                          <td className="px-4 py-3 text-slate-600 dark:text-slate-400 font-medium">
-                            {index + 1}
-                          </td>
-                          <td className="px-4 py-3 flex items-center gap-2">
-                            <div className="relative h-12 w-9 overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 shrink-0">
-                              <Image
-                                src={
-                                  book.coverImage ||
-                                  book.cover ||
-                                  "/not-found-image.png"
-                                }
-                                alt=""
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                            <span className="font-medium text-slate-900 dark:text-white max-w-37 truncate">
-                              {book.title}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                            {book.genre || "N/A"}
-                          </td>
-                          <td className="px-4 py-3 text-violet-600 dark:text-violet-400 font-semibold">
-                            ${book.price}
-                          </td>
-                           <td className="px-4 py-3">
-                            <span
-                              className={`inline-flex items-center justify-center rounded-md px-2 py-1 text-xs font-medium border w-24 ${
-                                book.status === "Available" || book.status === "published"
-                                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                                  : book.status === "Coming Soon"
-                                    ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
-                                    : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                              }`}
-                            >
-                              {book.status || "Available"}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex gap-2">
-                              <button
-                                type="button"
-                                onClick={() => toggleBookPublish(book)}
-                                disabled={
-                                  actionLoading[book._id || book.id] ===
-                                    "publishing" ||
-                                  actionLoading[book._id || book.id] ===
-                                    "deleting"
-                                }
-                                className="inline-flex items-center justify-center gap-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors disabled:opacity-50 w-20"
-                              >
-                                {actionLoading[book._id || book.id] ===
-                                  "publishing" && (
-                                  <ImSpinner2 className="animate-spin text-xs" />
-                                )}
-                                {book.status === "Available" || book.status === "published"
-                                  ? "Unpublish"
-                                  : "Publish"}
-                              </button>
-                              <button
-                                onClick={() => handleEditClick(book)}
-                                className="p-1 bg-violet-500/10 border border-violet-500/20 text-violet-400 rounded hover:bg-violet-500 hover:text-white transition-all"
-                              >
-                                <MdEdit />
-                              </button>
-                              <button
-                                onClick={() => deleteBook(book.id || book._id)}
-                                disabled={
-                                  actionLoading[book._id || book.id] ===
-                                    "publishing" ||
-                                  actionLoading[book._id || book.id] ===
-                                    "deleting"
-                                }
-                                className="p-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded hover:bg-rose-500 hover:text-white transition-all disabled:opacity-50"
-                              >
-                                {actionLoading[book._id || book.id] ===
-                                "deleting" ? (
-                                  <ImSpinner2 className="animate-spin text-sm" />
-                                ) : (
-                                  <MdDelete />
-                                )}
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                      renderMobileCard={(book) => (
-                        <div
-                          key={book._id || book.id || book.slug}
-                          className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 space-y-2"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-800">
-                              <Image
-                                src={
-                                  book.coverImage ||
-                                  book.cover ||
-                                  "/not-found-image.png"
-                                }
-                                alt=""
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">
-                                {book.title}
-                              </p>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
-                                  {book.genre || "N/A"}
-                                </span>
-                                <span
-                                  className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium border ${
-                                    book.status === "Available" || book.status === "published"
-                                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                                      : book.status === "Coming Soon"
-                                        ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
-                                        : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                  }`}
-                                >
-                                  {book.status || "Available"}
-                                </span>
-                              </div>
-                            </div>
-                            <span className="text-violet-600 dark:text-violet-400 font-semibold text-sm whitespace-nowrap">
-                              ${book.price}
-                            </span>
-                          </div>
-                          <div className="flex gap-2 pt-1">
-                            <button
-                              type="button"
-                              onClick={() => toggleBookPublish(book)}
-                              disabled={
-                                actionLoading[book._id || book.id] ===
-                                "publishing"
-                              }
-                              className="flex-1 text-xs py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors disabled:opacity-50"
-                            >
-                              {book.status === "Available" || book.status === "published"
-                                ? "Unpublish"
-                                : "Publish"}
-                            </button>
-                            <button
-                              onClick={() => handleEditClick(book)}
-                              className="text-xs py-2 px-3 bg-violet-500/10 border border-violet-500/20 text-violet-400 rounded-lg hover:bg-violet-500 hover:text-white transition-all"
-                            >
-                              <MdEdit className="inline" />
-                            </button>
-                            <button
-                              onClick={() => deleteBook(book.id || book._id)}
-                              disabled={
-                                actionLoading[book._id || book.id] === "deleting"
-                              }
-                              className="text-xs py-2 px-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg hover:bg-rose-500 hover:text-white transition-all disabled:opacity-50"
-                            >
-                              <MdDelete className="inline" />
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    />
+                    {purchasedBooks.length === 0 ? (
+                      <p className="text-slate-600 dark:text-slate-500 text-sm">
+                        You haven&apos;t purchased any ebooks yet.
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+                        {purchasedBooks.map((book) => (
+                          <LibraryBookCard key={book._id} book={book} />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -544,6 +414,7 @@ export default function WriterDashboard() {
                     actionLabel="View Details"
                     hoverBorderClass="hover:border-violet-500/30"
                     btnHoverClass="hover:bg-violet-500"
+                    onUnbookmark={handleUnbookmark}
                   />
                 </div>
               )}
@@ -640,7 +511,11 @@ export default function WriterDashboard() {
             <button
               onClick={confirmConfig.onConfirm}
               disabled={isModalLoading}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold bg-sky-500 text-white rounded-lg hover:bg-sky-400 transition-colors disabled:opacity-50"
+              className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-white rounded-lg transition-colors disabled:opacity-50 ${
+                confirmConfig.title?.toLowerCase().includes("delete")
+                  ? "bg-rose-600 hover:bg-rose-500"
+                  : "bg-sky-500 hover:bg-sky-400"
+              }`}
             >
               {isModalLoading && (
                 <ImSpinner2 className="animate-spin text-xs" />

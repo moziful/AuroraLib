@@ -26,11 +26,14 @@ import DataTable from "../Dashboards/DataTable";
 import UserProfile from "./UserProfile";
 import AnalyticsStatCard from "./AnalyticsStatCard";
 import DashboardCharts from "./DashboardCharts";
+import OverviewLayout from "./OverviewLayout";
 import Modal from "./Modal";
 import Image from "next/image";
 
 import EbookGallery from "./EbookGallery";
 import LibraryBookCard from "./LibraryBookCard";
+import ManageEbooksTable from "./ManageEbooksTable";
+import RoleBadge from "../RoleBadge";
 import { getPurchasedBooks, getBookmarkedBooks } from "@/lib/user-actions";
 
 // Make sure to export getAllTransactions from your data file
@@ -216,11 +219,11 @@ export default function AdminDashboard() {
               users.map((u) =>
                 u.id === selectedUserForEdit.id
                   ? {
-                      ...u,
-                      role: editForm.role,
-                      name: editForm.name,
-                      email: editForm.email,
-                    }
+                    ...u,
+                    role: editForm.role,
+                    name: editForm.name,
+                    email: editForm.email,
+                  }
                   : u,
               ),
             );
@@ -329,6 +332,10 @@ export default function AdminDashboard() {
     });
   };
 
+  const handleUnbookmark = (bookId) => {
+    setBookmarkedBooks((prev) => prev.filter((b) => (b._id || b.id) !== bookId));
+  };
+
   const totalAccounts = users.length;
   const totalReadersCount = users.filter(
     (u) => u.role === "reader" || u.role === "user" || u.role === "User",
@@ -365,10 +372,13 @@ export default function AdminDashboard() {
     const val = parseFloat(String(t.amount || "").replace("$", "")) || 0;
     monthlySalesMap[month] = (monthlySalesMap[month] || 0) + val;
   });
-  const barData = Object.keys(monthlySalesMap).map((k) => ({
-    name: k,
-    value: monthlySalesMap[k],
-  }));
+  const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const barData = Object.keys(monthlySalesMap)
+    .map((k) => ({
+      name: k,
+      value: monthlySalesMap[k],
+    }))
+    .sort((a, b) => monthOrder.indexOf(a.name) - monthOrder.indexOf(b.name));
 
   const statusMap = {};
   ebooks.forEach((b) => {
@@ -382,19 +392,27 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 px-4 py-10 text-slate-900 dark:text-slate-100">
-      <ToastContainer position="bottom-right" theme="dark" />
       <div className="mx-auto max-w-7xl">
-        <DashboardHeader
-          roleTitle="Admin Control Room"
-          subtitle="Site configuration metrics, role assignments, platform audit logs, and catalog verification."
-          icon={MdShield}
-          iconColorClass="text-rose-400"
-          bgColorClass="bg-rose-500/10"
-          borderColorClass="border-rose-500/20"
-        />
+        <div className="sticky top-[49px] z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md -mx-4 px-4 py-4 border-b border-slate-200 dark:border-slate-800 lg:static lg:bg-transparent lg:border-none lg:p-0 lg:m-0">
+          <DashboardHeader
+            roleTitle="Admin Control Room"
+            subtitle="Site configuration metrics, role assignments, platform audit logs, and catalog verification."
+            icon={MdShield}
+            iconColorClass="text-rose-400"
+            bgColorClass="bg-rose-500/10"
+            borderColorClass="border-rose-500/20"
+          />
+          <div className="block lg:hidden">
+            <DashboardTabs
+              tabs={tabsConfig}
+              activeTab={activeTab}
+              setActiveTab={handleTabChange}
+            />
+          </div>
+        </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
-          <div className="lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:self-start">
+          <div className="hidden lg:block lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:self-start">
             <DashboardTabs
               tabs={tabsConfig}
               activeTab={activeTab}
@@ -409,82 +427,97 @@ export default function AdminDashboard() {
                   <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                     Overview
                   </h2>
-                  <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                      <AnalyticsStatCard
-                        title="Total Accounts"
-                        value={loading ? "..." : totalAccounts}
-                        description="All registered accounts"
-                        icon={MdPeople}
-                        colorClass="text-slate-400"
-                      />
-                      <AnalyticsStatCard
-                        title="Readers"
-                        value={loading ? "..." : totalReadersCount}
-                        description="Active reader accounts"
-                        icon={MdPeople}
-                        colorClass="text-sky-400"
-                      />
-                      <AnalyticsStatCard
-                        title="Writers"
-                        value={loading ? "..." : totalWritersCount}
-                        description="Approved creators"
-                        icon={MdPerson}
-                        colorClass="text-violet-400"
-                      />
-                      <AnalyticsStatCard
-                        title="Admins"
-                        value={loading ? "..." : totalAdminsCount}
-                        description="System administrators"
-                        icon={MdShield}
-                        colorClass="text-rose-400"
-                      />
-                      <AnalyticsStatCard
-                        title="Total Books"
-                        value={loading ? "..." : totalBooksCount}
-                        description="Entire system catalog"
-                        icon={MdBook}
-                        colorClass="text-fuchsia-400"
-                      />
-                      <AnalyticsStatCard
-                        title="Ebooks Sold"
-                        value={loading ? "..." : totalEbooksSold}
-                        description="Total purchase transactions"
-                        icon={MdReceipt}
-                        colorClass="text-amber-400"
-                      />
-                      <AnalyticsStatCard
-                        title="Published Books"
-                        value={loading ? "..." : publishedBooksCount}
-                        description="Currently available"
-                        icon={MdToggleOn}
-                        colorClass="text-emerald-400"
-                      />
-                      <AnalyticsStatCard
-                        title="Unpublished Books"
-                        value={loading ? "..." : unpublishedBooksCount}
-                        description="Hidden from catalog"
-                        icon={MdToggleOff}
-                        colorClass="text-slate-500"
-                      />
-                      <AnalyticsStatCard
-                        title="Total Revenue"
-                        value={loading ? "..." : `$${totalRevenueVal.toFixed(2)}`}
-                        description="Aggregated systems revenue"
-                        icon={MdTrendingUp}
-                        colorClass="text-emerald-400"
-                      />
-                    </div>
-
-                    <div className="mt-8">
+                  <OverviewLayout
+                    stats={
+                      <>
+                        <AnalyticsStatCard
+                          title="Total Accounts"
+                          value={loading ? "..." : totalAccounts}
+                          description="All registered accounts"
+                          icon={MdPeople}
+                          colorClass="text-slate-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Readers"
+                          value={loading ? "..." : totalReadersCount}
+                          description="Active reader accounts"
+                          icon={MdPeople}
+                          colorClass="text-sky-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Writers"
+                          value={loading ? "..." : totalWritersCount}
+                          description="Approved creators"
+                          icon={MdPerson}
+                          colorClass="text-violet-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Admins"
+                          value={loading ? "..." : totalAdminsCount}
+                          description="System administrators"
+                          icon={MdShield}
+                          colorClass="text-rose-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Total Books"
+                          value={loading ? "..." : totalBooksCount}
+                          description="Entire system catalog"
+                          icon={MdBook}
+                          colorClass="text-fuchsia-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Ebooks Sold"
+                          value={loading ? "..." : totalEbooksSold}
+                          description="Total purchase transactions"
+                          icon={MdReceipt}
+                          colorClass="text-amber-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Published Books"
+                          value={loading ? "..." : publishedBooksCount}
+                          description="Currently available"
+                          icon={MdToggleOn}
+                          colorClass="text-emerald-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Unpublished Books"
+                          value={loading ? "..." : unpublishedBooksCount}
+                          description="Hidden from catalog"
+                          icon={MdToggleOff}
+                          colorClass="text-slate-500"
+                        />
+                        <AnalyticsStatCard
+                          title="Total Revenue"
+                          value={loading ? "..." : `$${totalRevenueVal.toFixed(2)}`}
+                          description="Aggregated systems revenue"
+                          icon={MdTrendingUp}
+                          colorClass="text-emerald-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Books Owned"
+                          value={personalLoading ? "..." : purchasedBooks.length}
+                          description="Books in your library"
+                          icon={MdMenuBook}
+                          colorClass="text-sky-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Bookmarks"
+                          value={personalLoading ? "..." : bookmarkedBooks.length}
+                          description="Ebooks you saved for later"
+                          icon={MdBookmark}
+                          colorClass="text-sky-400"
+                        />
+                      </>
+                    }
+                    charts={
                       <DashboardCharts
                         title1="Platform Revenue"
                         title2="Ebooks by Status"
                         barData={barData}
                         pieData={pieData}
                       />
-                    </div>
-                  </div>
+                    }
+                  />
                 </div>
               </div>
             )}
@@ -520,9 +553,7 @@ export default function AdminDashboard() {
                           {u.email}
                         </td>
                         <td className="px-4 py-3">
-                          <span className="bg-slate-100 dark:bg-slate-950 text-xs font-semibold text-slate-900 dark:text-slate-300 border border-slate-300 dark:border-slate-800 rounded-lg px-3 py-1.5">
-                            {u.role === "user" ? "reader" : u.role}
-                          </span>
+                          <RoleBadge role={u.role} />
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex gap-2">
@@ -551,9 +582,7 @@ export default function AdminDashboard() {
                           <span className="font-semibold text-slate-900 dark:text-white text-sm">
                             {u.name}
                           </span>
-                          <span className="bg-slate-100 dark:bg-slate-950 text-xs font-semibold text-slate-900 dark:text-slate-300 border border-slate-300 dark:border-slate-800 rounded-lg px-2 py-1">
-                            {u.role === "user" ? "reader" : u.role}
-                          </span>
+                          <RoleBadge role={u.role} />
                         </div>
                         <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                           {u.email}
@@ -583,201 +612,16 @@ export default function AdminDashboard() {
                 <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                   Manage Global Catalog
                 </h2>
-                <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
-                  <DataTable
-                    headers={[
-                      "#",
-                      "Book Details",
-                      "Writer",
-                      "Genre",
-                      "Price",
-                      "Status",
-                      "Actions",
-                    ]}
-                    data={ebooks}
-                    isLoading={loading}
-                    emptyMessage="No ebooks available in the system."
-                    renderRow={(book, index) => (
-                      <tr
-                        key={book._id || book.id || book.slug}
-                        className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
-                      >
-                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 font-medium">
-                          {index + 1}
-                        </td>
-                        <td className="px-4 py-3 flex items-center gap-2">
-                          <div className="relative h-12 w-9 overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 shrink-0">
-                            <Image
-                              src={
-                                book.coverImage ||
-                                book.cover ||
-                                "/not-found-image.png"
-                              }
-                              alt=""
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                          <span className="font-medium text-slate-900 dark:text-white max-w-37 truncate">
-                            {book.title}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                          {book.writerName}
-                        </td>
-                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                          {book.genre || "N/A"}
-                        </td>
-                        <td className="px-4 py-3 text-violet-600 dark:text-violet-400 font-semibold">
-                          ${book.price}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span
-                            className={`inline-flex items-center justify-center rounded-md px-2 py-1 text-xs font-medium border w-24 ${
-                              book.status === "Available" ||
-                              book.status === "published"
-                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                                : book.status === "Coming Soon"
-                                  ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
-                                  : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                            }`}
-                          >
-                            {book.status || "Available"}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex gap-2">
-                            <button
-                              type="button"
-                              onClick={() => toggleBookPublish(book)}
-                              disabled={
-                                actionLoading[book._id || book.id] ===
-                                  "publishing" ||
-                                actionLoading[book._id || book.id] ===
-                                  "deleting"
-                              }
-                              className="inline-flex items-center justify-center gap-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors disabled:opacity-50 w-24"
-                            >
-                              {actionLoading[book._id || book.id] ===
-                                "publishing" && (
-                                <ImSpinner2 className="animate-spin text-xs" />
-                              )}
-                              {book.status === "Available"
-                                ? "Unpublish"
-                                : book.status === "Unavailable"
-                                  ? "Publish"
-                                  : "Set Status"}
-                            </button>
-                            <button
-                              onClick={() => handleEditClick(book)}
-                              className="p-1 bg-violet-500/10 border border-violet-500/20 text-violet-400 rounded hover:bg-violet-500 hover:text-white transition-all"
-                            >
-                              <MdEdit />
-                            </button>
-                            <button
-                              onClick={() => deleteBook(book.id || book._id)}
-                              disabled={
-                                actionLoading[book._id || book.id] ===
-                                  "publishing" ||
-                                actionLoading[book._id || book.id] ===
-                                  "deleting"
-                              }
-                              className="p-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded hover:bg-rose-500 hover:text-white transition-all disabled:opacity-50"
-                            >
-                              {actionLoading[book._id || book.id] ===
-                              "deleting" ? (
-                                <ImSpinner2 className="animate-spin text-sm" />
-                              ) : (
-                                <MdDelete />
-                              )}
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                    renderMobileCard={(book) => (
-                      <div
-                        key={book._id || book.id || book.slug}
-                        className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 space-y-2"
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-800">
-                            <Image
-                              src={
-                                book.coverImage ||
-                                book.cover ||
-                                "/not-found-image.png"
-                              }
-                              alt=""
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">
-                              {book.title}
-                            </p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">
-                              {book.writerName}
-                            </p>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
-                                {book.genre || "N/A"}
-                              </span>
-                              <span
-                                className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium border ${
-                                  book.status === "Available" ||
-                                  book.status === "published"
-                                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                                    : book.status === "Coming Soon"
-                                      ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
-                                      : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                }`}
-                              >
-                                {book.status || "Available"}
-                              </span>
-                            </div>
-                          </div>
-                          <span className="text-violet-600 dark:text-violet-400 font-semibold text-sm whitespace-nowrap">
-                            ${book.price}
-                          </span>
-                        </div>
-                        <div className="flex gap-2 pt-1">
-                          <button
-                            type="button"
-                            onClick={() => toggleBookPublish(book)}
-                            disabled={
-                              actionLoading[book._id || book.id] ===
-                              "publishing"
-                            }
-                            className="flex-1 text-xs py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors disabled:opacity-50"
-                          >
-                            {book.status === "Available"
-                              ? "Unpublish"
-                              : book.status === "Unavailable"
-                                ? "Publish"
-                                : "Set Status"}
-                          </button>
-                          <button
-                            onClick={() => handleEditClick(book)}
-                            className="text-xs py-2 px-3 bg-violet-500/10 border border-violet-500/20 text-violet-400 rounded-lg hover:bg-violet-500 hover:text-white transition-all"
-                          >
-                            <MdEdit className="inline" />
-                          </button>
-                          <button
-                            onClick={() => deleteBook(book.id || book._id)}
-                            disabled={
-                              actionLoading[book._id || book.id] === "deleting"
-                            }
-                            className="text-xs py-2 px-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg hover:bg-rose-500 hover:text-white transition-all disabled:opacity-50"
-                          >
-                            <MdDelete className="inline" />
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  />
-                </div>
+                <ManageEbooksTable
+                  books={ebooks}
+                  isLoading={loading}
+                  emptyMessage="No ebooks available in the system."
+                  actionLoading={actionLoading}
+                  toggleBookPublish={toggleBookPublish}
+                  handleEditClick={handleEditClick}
+                  deleteBook={deleteBook}
+                  showWriter={true}
+                />
               </div>
             )}
             {activeTab === "add-book" && (
@@ -825,11 +669,10 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-4 py-3 uppercase tracking-wider">
                           <span
-                            className={`px-2 py-0.5 rounded border ${
-                              tx.type === "purchase"
+                            className={`px-2 py-0.5 rounded border ${tx.type === "purchase"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                 : "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                            }`}
+                              }`}
                           >
                             {tx.type}
                           </span>
@@ -852,11 +695,10 @@ export default function AdminDashboard() {
                       >
                         <div className="flex items-center justify-between">
                           <span
-                            className={`px-2 py-0.5 rounded text-xs font-medium border uppercase ${
-                              tx.type === "purchase"
+                            className={`px-2 py-0.5 rounded text-xs font-medium border uppercase ${tx.type === "purchase"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                 : "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                            }`}
+                              }`}
                           >
                             {tx.type || "purchase"}
                           </span>
@@ -885,7 +727,7 @@ export default function AdminDashboard() {
                 </h2>
                 <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   {personalLoading ? (
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
                       {[1, 2, 3, 4].map((i) => (
                         <div
                           key={i}
@@ -898,7 +740,7 @@ export default function AdminDashboard() {
                       You haven&apos;t purchased any ebooks yet.
                     </p>
                   ) : (
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
                       {purchasedBooks.map((book) => (
                         <LibraryBookCard key={book._id} book={book} />
                       ))}
@@ -920,6 +762,7 @@ export default function AdminDashboard() {
                     actionLabel="View Details"
                     hoverBorderClass="hover:border-sky-400/30"
                     btnHoverClass="hover:bg-sky-400 dark:hover:bg-sky-400"
+                    onUnbookmark={handleUnbookmark}
                   />
                 </div>
               </div>
@@ -1019,7 +862,10 @@ export default function AdminDashboard() {
             <button
               onClick={confirmConfig.onConfirm}
               disabled={isModalLoading}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold bg-sky-500 text-white rounded-lg hover:bg-sky-400 transition-colors disabled:opacity-50"
+              className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-white rounded-lg transition-colors disabled:opacity-50 ${confirmConfig.title?.toLowerCase().includes("delete")
+                  ? "bg-rose-600 hover:bg-rose-500"
+                  : "bg-sky-500 hover:bg-sky-400"
+                }`}
             >
               {isModalLoading && (
                 <ImSpinner2 className="animate-spin text-xs" />

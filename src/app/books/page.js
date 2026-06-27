@@ -310,7 +310,7 @@ function EbooksPage() {
         <button
           onClick={handleClearFilters}
           title="Clear Filters"
-          className="w-full h-10 px-4 bg-white dark:bg-slate-800 hover:bg-slate-700 border border-slate-300 dark:border-slate-700 hover:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 transition-colors text-sm font-medium"
+          className="w-full h-10 px-4 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center gap-2 transition-colors text-sm font-medium"
         >
           <FaTimes />
           <span>Clear Filters</span>
@@ -326,9 +326,9 @@ function EbooksPage() {
             <BookCard key={book._id || book.slug} book={book} />
           ))
         ) : (
-          <div className="col-span-full py-12 flex flex-col items-center justify-center text-slate-700 dark:text-slate-400 border border-slate-800 rounded-2xl bg-white dark:bg-slate-900/50">
-            <p className="text-lg font-medium text-slate-300">No books found.</p>
-            <p className="text-sm">Try adjusting your filters to find what you're looking for.</p>
+          <div className="col-span-full py-12 flex flex-col items-center justify-center border border-slate-300 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900/50">
+            <p className="text-lg font-medium text-slate-800 dark:text-slate-200">No books found.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Try adjusting your filters to find what you're looking for.</p>
           </div>
         )}
       </div>

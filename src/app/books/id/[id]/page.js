@@ -2,10 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBookById } from "@/lib/data";
-import { FaChevronLeft } from "react-icons/fa";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import PurchaseButton from "@/components/PurchaseButton";
+import BackButton from "@/components/BackButton";
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-US", {
@@ -42,13 +42,7 @@ export default async function BookDetailsPage({ params }) {
     <div className="sm:h-[calc(100vh-4rem)] overflow-hidden bg-white dark:bg-slate-950 px-4 py-6">
       <div className="mx-auto flex h-full min-h-0 max-w-7xl flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <Link
-            href="/books"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-700 px-5 py-3 text-sm font-bold text-slate-500 dark:text-slate-200 transition-colors hover:border-sky-400/40 hover:text-sky-300"
-          >
-            <FaChevronLeft />
-            Back to Books
-          </Link>
+          <BackButton />
         </div>
         <div className="grid flex-1 min-h-0 grid-cols-1 sm:grid-cols-3 gap-2 overflow-hidden rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 md:flex-row">
           {/* Left side content */}
@@ -117,6 +111,7 @@ export default async function BookDetailsPage({ params }) {
                   isAvailable={isAvailable}
                   isOwned={isOwned}
                   isOwnBook={isOwnBook}
+                  isLoggedIn={!!session}
                 />
               </div>
             </div>

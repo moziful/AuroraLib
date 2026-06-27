@@ -27,8 +27,20 @@ export default function DashboardCharts({
   barData = [], // { name: "Jan", value: 100 }
   pieData = [], // { name: "Fiction", value: 50 }
 }) {
+  // Sort and limit pieData to top 5 categories, group the rest in "Other" to prevent agenda overflow
+  const processedPieData = (() => {
+    if (!pieData || pieData.length <= 6) return pieData;
+    const sorted = [...pieData].sort((a, b) => b.value - a.value);
+    const top = sorted.slice(0, 5);
+    const otherVal = sorted.slice(5).reduce((sum, item) => sum + item.value, 0);
+    if (otherVal > 0) {
+      top.push({ name: "Other", value: otherVal });
+    }
+    return top;
+  })();
+
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div className="flex flex-col gap-6">
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-5">
         <h3 className="mb-4 text-sm font-bold text-slate-600 dark:text-slate-400">
           {title1}
@@ -76,11 +88,11 @@ export default function DashboardCharts({
           {title2}
         </h3>
         <div className="flex aspect-video w-full items-center justify-center rounded-xl bg-slate-200/50 dark:bg-slate-950/50 p-6 border border-slate-300 dark:border-slate-800/50">
-          {pieData.length > 0 ? (
+          {processedPieData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={pieData}
+                  data={processedPieData}
                   cx="50%"
                   cy="50%"
                   innerRadius={40}
@@ -89,7 +101,7 @@ export default function DashboardCharts({
                   dataKey="value"
                   stroke="none"
                 >
-                  {pieData.map((entry, index) => (
+                  {processedPieData.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}

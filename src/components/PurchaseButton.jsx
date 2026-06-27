@@ -2,11 +2,18 @@
 
 import { useState } from "react";
 import { ImSpinner2 } from "react-icons/im";
+import { useRouter } from "next/navigation";
 
-export default function PurchaseButton({ bookId, title, price, isAvailable, isOwned, isOwnBook }) {
+export default function PurchaseButton({ bookId, title, price, isAvailable, isOwned, isOwnBook, isLoggedIn }) {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    if (!isLoggedIn) {
+      e.preventDefault();
+      router.push("/auth/signin");
+      return;
+    }
     setLoading(true);
   };
 

@@ -234,9 +234,7 @@ export default function AddBookForm({ initialData, onSuccess }) {
   };
 
   return (
-    <>
-      <ToastContainer position="bottom-right" theme="dark" />
-      <div className="w-full">
+    <div className="w-full">
         {/* <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
           {initialData ? "Edit Book" : "Add a New Book"}
         </h2> */}
@@ -558,6 +556,5 @@ export default function AddBookForm({ initialData, onSuccess }) {
           </div>
         </form>
       </div>
-    </>
   );
 }

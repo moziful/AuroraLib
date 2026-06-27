@@ -12,7 +12,7 @@ export default function LibraryBookCard({ book }) {
     : "Recently";
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-linear-to-br from-slate-50 to-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-sky-500/30 hover:shadow-md dark:border-slate-800/80 dark:from-slate-900 dark:to-slate-950">
+    <div className="group block rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-4 transition-all relative hover:border-sky-500/30">
       <div className="absolute -inset-px -z-10 rounded-2xl bg-linear-to-r from-sky-500/0 via-sky-500/0 to-indigo-500/0 opacity-0 blur transition-all duration-500 group-hover:from-sky-500/10 group-hover:to-indigo-500/10 group-hover:opacity-100" />
       <div className="absolute right-3 top-3 z-10 flex flex-col gap-1.5">
         <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">

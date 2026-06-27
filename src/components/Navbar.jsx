@@ -18,6 +18,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import RoleBadge from "./RoleBadge";
 
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -91,9 +92,9 @@ function AuthSection({
               {user.email}
             </span>
             {user.role && (
-              <span className="mt-2 inline-block text-[10px] font-black uppercase tracking-wider text-sky-600 dark:text-sky-400 bg-sky-400/10 border border-sky-400/20 px-2 py-0.5 rounded w-max">
-                {user.role}
-              </span>
+              <div className="mt-2">
+                <RoleBadge role={user.role} />
+              </div>
             )}
           </Link>
           <button
@@ -173,9 +174,9 @@ function MobileAuthSection({
               {user.email}
             </p>
             {user.role && (
-              <span className="mt-1 inline-block text-[10px] font-black uppercase tracking-wider text-sky-600 dark:text-sky-400 bg-sky-400/10 border border-sky-400/20 px-2 py-0.5 rounded">
-                {user.role === "user" ? "reader" : user.role}
-              </span>
+              <div className="mt-1">
+                <RoleBadge role={user.role} />
+              </div>
             )}
           </div>
         </Link>

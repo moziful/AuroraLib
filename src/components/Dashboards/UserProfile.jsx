@@ -5,6 +5,8 @@ import { authClient } from "@/lib/auth-client";
 import { toast } from "react-toastify";
 import { updateUserDetails } from "@/lib/actions";
 
+import RoleBadge from "@/components/RoleBadge";
+
 export default function UserProfile({ user, role = "Reader" }) {
   const [isEditing, setIsEditing] = useState(false);
   const [nameInput, setNameInput] = useState(user?.name || "");
@@ -46,15 +48,7 @@ export default function UserProfile({ user, role = "Reader" }) {
     );
   }
 
-  // Define fallback colors based on the dashboard role
-  const roleColors = {
-    User: "text-sky-400 bg-sky-500/10 border-sky-500/20",
-    Reader: "text-sky-400 bg-sky-500/10 border-sky-500/20",
-    Writer: "text-violet-400 bg-violet-500/10 border-violet-500/20",
-    Admin: "text-rose-400 bg-rose-500/10 border-rose-500/20",
-  };
 
-  const currentBadgeColor = roleColors[role] || roleColors.Reader;
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
@@ -204,12 +198,7 @@ export default function UserProfile({ user, role = "Reader" }) {
               </h3>
             )}
             <div className="flex items-center gap-2 mt-1">
-              <span
-                className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-semibold tracking-wide uppercase ${currentBadgeColor}`}
-              >
-                <MdVerifiedUser className="text-sm" />
-                {role}
-              </span>
+              <RoleBadge role={role} />
             </div>
           </div>
         </div>

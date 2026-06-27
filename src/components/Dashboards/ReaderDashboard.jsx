@@ -19,6 +19,7 @@ import UserProfile from "./UserProfile";
 import AnalyticsStatCard from "./AnalyticsStatCard";
 import DashboardCharts from "./DashboardCharts";
 import LibraryBookCard from "./LibraryBookCard";
+import OverviewLayout from "./OverviewLayout";
 import {
   getPurchasedBooks,
   getBookmarkedBooks,
@@ -108,10 +109,13 @@ export default function UserDashboard() {
     const val = parseFloat(String(h.price || "").replace("$", "")) || 0;
     monthlyPurchasesMap[month] = (monthlyPurchasesMap[month] || 0) + val;
   });
-  const barData = Object.keys(monthlyPurchasesMap).map((k) => ({
-    name: k,
-    value: monthlyPurchasesMap[k],
-  }));
+  const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const barData = Object.keys(monthlyPurchasesMap)
+    .map((k) => ({
+      name: k,
+      value: monthlyPurchasesMap[k],
+    }))
+    .sort((a, b) => monthOrder.indexOf(a.name) - monthOrder.indexOf(b.name));
 
   const genreMap = {};
   books.forEach((b) => {
@@ -123,17 +127,30 @@ export default function UserDashboard() {
     value: genreMap[k],
   }));
 
+  const handleUnbookmark = (bookId) => {
+    setBookmarks((prev) => prev.filter((b) => (b._id || b.id) !== bookId));
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 px-4 py-10 text-slate-900 dark:text-slate-100">
       <div className="mx-auto max-w-7xl">
-        <DashboardHeader
-          roleTitle="User Dashboard"
-          subtitle={`Welcome back, ${!mounted || isPending ? "Reader" : user?.name || "Reader"}`}
-          icon={MdDashboard}
-        />
+        <div className="sticky top-[49px] z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md -mx-4 px-4 py-4 border-b border-slate-200 dark:border-slate-800 lg:static lg:bg-transparent lg:border-none lg:p-0 lg:m-0">
+          <DashboardHeader
+            roleTitle="User Dashboard"
+            subtitle={`Welcome back, ${!mounted || isPending ? "Reader" : user?.name || "Reader"}`}
+            icon={MdDashboard}
+          />
+          <div className="block lg:hidden">
+            <DashboardTabs
+              tabs={tabsConfig}
+              activeTab={activeTab}
+              setActiveTab={handleTabChange}
+            />
+          </div>
+        </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
-          <div className="lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:self-start">
+          <div className="hidden lg:block lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:self-start">
             <DashboardTabs
               tabs={tabsConfig}
               activeTab={activeTab}
@@ -148,39 +165,41 @@ export default function UserDashboard() {
                   <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
                     Overview
                   </h2>
-                  <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                      <AnalyticsStatCard
-                        title="Purchased Books"
-                        value={loading ? "..." : totalBooks}
-                        description="Books in your library"
-                        icon={MdMenuBook}
-                        colorClass="text-emerald-400"
-                      />
-                      <AnalyticsStatCard
-                        title="Bookmarks"
-                        value={loading ? "..." : totalBookmarks}
-                        description="Saved for later"
-                        icon={MdBookmark}
-                        colorClass="text-violet-400"
-                      />
-                      <AnalyticsStatCard
-                        title="Total Spent"
-                        value={loading ? "..." : `$${totalSpent.toFixed(2)}`}
-                        description="Lifetime purchases"
-                        icon={MdTrendingUp}
-                        colorClass="text-amber-400"
-                      />
-                    </div>
-                    <div className="mt-8">
+                  <OverviewLayout
+                    stats={
+                      <>
+                        <AnalyticsStatCard
+                          title="Purchased Books"
+                          value={loading ? "..." : totalBooks}
+                          description="Books in your library"
+                          icon={MdMenuBook}
+                          colorClass="text-emerald-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Bookmarks"
+                          value={loading ? "..." : totalBookmarks}
+                          description="Saved for later"
+                          icon={MdBookmark}
+                          colorClass="text-violet-400"
+                        />
+                        <AnalyticsStatCard
+                          title="Total Spent"
+                          value={loading ? "..." : `$${totalSpent.toFixed(2)}`}
+                          description="Lifetime purchases"
+                          icon={MdTrendingUp}
+                          colorClass="text-amber-400"
+                        />
+                      </>
+                    }
+                    charts={
                       <DashboardCharts
                         title1="Monthly Purchases"
                         title2="Library by Genre"
                         barData={barData}
                         pieData={pieData}
                       />
-                    </div>
-                  </div>
+                    }
+                  />
                 </div>
               </div>
             )}
@@ -205,7 +224,7 @@ export default function UserDashboard() {
                       You haven&apos;t purchased any ebooks yet.
                     </p>
                   ) : (
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
                       {books.map((book) => (
                         <LibraryBookCard key={book._id} book={book} />
                       ))}
@@ -228,6 +247,7 @@ export default function UserDashboard() {
                     actionLabel="View Details"
                     hoverBorderClass="hover:border-sky-400/30"
                     btnHoverClass="hover:bg-sky-400 dark:hover:bg-sky-400"
+                    onUnbookmark={handleUnbookmark}
                   />
                 </div>
               </div>
