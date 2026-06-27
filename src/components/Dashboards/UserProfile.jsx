@@ -59,24 +59,20 @@ export default function UserProfile({ user, role = "Reader" }) {
     setUploading(true);
     try {
       const data = new FormData();
-      data.append("file", file);
-      data.append("upload_preset", "solaiman");
-      data.append("cloud_name", "dsubx18sp");
+      data.append("image", file);
 
-      const response = await fetch(
-        "https://api.cloudinary.com/v1_1/dsubx18sp/image/upload",
-        {
-          method: "POST",
-          body: data,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to upload image to Cloudinary");
-      }
+      const response = await fetch("/api/upload-image", {
+        method: "POST",
+        body: data,
+      });
 
       const resData = await response.json();
-      setImagePreview(resData.secure_url);
+
+      if (!response.ok || !resData.success) {
+        throw new Error(resData.message || "Upload failed");
+      }
+
+      setImagePreview(resData.url);
       toast.info("Avatar uploaded to storage. Click 'Save Profile' to finalize.");
     } catch (err) {
       console.error(err);
