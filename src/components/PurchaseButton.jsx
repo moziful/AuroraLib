@@ -40,7 +40,7 @@ export default function PurchaseButton({ bookId, title, price, isAvailable, isOw
         >
           {loading && <ImSpinner2 className="animate-spin text-sm" />}
           {isOwned
-            ? "Owned"
+            ? "Already Purchased"
             : isOwnBook
               ? "Your Publication"
               : isAvailable
