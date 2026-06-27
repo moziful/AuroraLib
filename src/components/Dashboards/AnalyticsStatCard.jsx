@@ -8,6 +8,7 @@ export default function AnalyticsStatCard({
   description,
   icon: Icon,
   colorClass = "text-violet-400",
+  onClick,
 }) {
   return (
     <motion.div
@@ -16,7 +17,8 @@ export default function AnalyticsStatCard({
       viewport={{ once: true }}
       whileHover={{ y: -4, scale: 1.01 }}
       transition={{ type: "spring", stiffness: 100, damping: 15 }}
-      className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-6"
+      onClick={onClick}
+      className={`relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-6 ${onClick ? "cursor-pointer select-none hover:border-slate-300 dark:hover:border-slate-700" : ""}`}
     >
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-medium text-slate-600 dark:text-slate-400">

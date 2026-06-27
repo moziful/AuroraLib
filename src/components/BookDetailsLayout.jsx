@@ -84,11 +84,11 @@ export default function BookDetailsLayout({
         transition={{ duration: 0.4, delay: 0.15 }}
         className="sm:min-h-0 bg-white dark:bg-slate-900 p-6 shadow-none sm:shadow-lg sm:shadow-black/20 sm:overflow-y-auto scrollbar-none rounded-xl sm:rounded-none"
       >
-        <h1 className="mb-2 text-3xl sm:text-4xl font-black text-slate-800 dark:text-white lg:text-5xl tracking-tight leading-tight">
+        <h1 className="mb-2 text-3xl sm:text-4xl font-black text-slate-800 dark:text-white lg:text-5xl tracking-tight leading-tight line-clamp-3">
           {book.title}
         </h1>
         <div className="h-1 w-12 bg-sky-500 rounded mb-4" />
-        <p className="text-sm sm:text-base leading-7 sm:leading-8 text-slate-600 dark:text-slate-300 text-justify">
+        <p className="text-sm sm:text-base leading-7 sm:leading-8 text-slate-600 dark:text-slate-300 line-clamp-6">
           {book.description}
         </p>
       </motion.div>
@@ -116,7 +116,7 @@ export default function BookDetailsLayout({
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 + sidebarItems.length * 0.05, type: "spring", stiffness: 100, damping: 15 }}
-          className="bg-white dark:bg-slate-900 p-6 border-t border-slate-100 dark:border-slate-800"
+          className="bg-white dark:bg-slate-900 p-6 border-t-3 border-slate-100 dark:border-slate-800"
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>

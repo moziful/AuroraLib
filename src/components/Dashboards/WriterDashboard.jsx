@@ -234,13 +234,18 @@ export default function WriterDashboard() {
     });
   };
 
-  const handleTabChange = (tabId) => {
+  const handleTabChange = (tabId, searchVal = "") => {
     if (tabId !== "add-book") {
       setEditingBookData(null);
     }
     setActiveTab(tabId);
     const params = new URLSearchParams(searchParams);
     params.set("tab", tabId);
+    if (searchVal) {
+      params.set("search", searchVal);
+    } else {
+      params.delete("search");
+    }
     router.replace(`${pathname}?${params.toString()}`);
   };
 
@@ -283,19 +288,21 @@ export default function WriterDashboard() {
                     <OverviewLayout
                       stats={
                         <>
-                          <AnalyticsStatCard
+                           <AnalyticsStatCard
                             title="Total Ebooks"
                             value={loading ? "..." : totalEbooks}
                             description="Books managed on AuroraLib"
                             icon={MdBook}
                             colorClass="text-violet-400"
+                            onClick={() => handleTabChange("manage")}
                           />
-                          <AnalyticsStatCard
+                           <AnalyticsStatCard
                             title="Published"
                             value={loading ? "..." : publishedBooks}
                             description="Currently available"
                             icon={MdPublic}
                             colorClass="text-emerald-400"
+                            onClick={() => handleTabChange("manage", "publish")}
                           />
                           <AnalyticsStatCard
                             title="Upcoming"
@@ -303,6 +310,7 @@ export default function WriterDashboard() {
                             description="Coming soon"
                             icon={MdSchedule}
                             colorClass="text-sky-400"
+                            onClick={() => handleTabChange("manage", "Coming Soon")}
                           />
                           <AnalyticsStatCard
                             title="Unpublished"
@@ -310,6 +318,7 @@ export default function WriterDashboard() {
                             description="Currently unavailable"
                             icon={MdVisibilityOff}
                             colorClass="text-rose-400"
+                            onClick={() => handleTabChange("manage", "unpublish")}
                           />
                           <AnalyticsStatCard
                             title="Gross Earnings"
@@ -324,6 +333,7 @@ export default function WriterDashboard() {
                             description="Books in your library"
                             icon={MdMenuBook}
                             colorClass="text-sky-400"
+                            onClick={() => handleTabChange("purchased")}
                           />
                           <AnalyticsStatCard
                             title="Bookmarks"
@@ -331,6 +341,7 @@ export default function WriterDashboard() {
                             description="Ebooks you saved for later"
                             icon={MdBookmark}
                             colorClass="text-sky-400"
+                            onClick={() => handleTabChange("bookmarks")}
                           />
                         </>
                       }
@@ -348,10 +359,8 @@ export default function WriterDashboard() {
               )}
               {activeTab === "manage" && (
                 <div>
-                  <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
-                    Your Publications
-                  </h2>
                   <ManageEbooksTable
+                    title="Your Publications"
                     books={books}
                     isLoading={loading}
                     emptyMessage="You haven't uploaded any books yet."

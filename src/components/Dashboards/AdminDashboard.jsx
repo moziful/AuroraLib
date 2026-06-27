@@ -80,6 +80,8 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState({});
   const [isModalLoading, setIsModalLoading] = useState(false);
+  const [usersSearch, setUsersSearch] = useState("");
+  const [transactionsSearch, setTransactionsSearch] = useState("");
 
   // Admin personal library states
   const [purchasedBooks, setPurchasedBooks] = useState([]);
@@ -168,15 +170,48 @@ export default function AdminDashboard() {
     }
   }, [user?.email]);
 
-  const handleTabChange = (tabId) => {
+  const initialSearch = searchParams.get("search") || "";
+
+  useEffect(() => {
+    if (activeTab === "users") {
+      setUsersSearch(initialSearch);
+    } else if (activeTab === "transactions") {
+      setTransactionsSearch(initialSearch);
+    }
+  }, [initialSearch, activeTab]);
+  const handleTabChange = (tabId, searchVal = "") => {
     if (tabId !== "add-book") {
       setEditingBookData(null);
     }
     setActiveTab(tabId);
     const params = new URLSearchParams(searchParams);
     params.set("tab", tabId);
+    if (searchVal) {
+      params.set("search", searchVal);
+    } else {
+      params.delete("search");
+    }
     router.replace(`${pathname}?${params.toString()}`);
   };
+
+  const filteredUsers = (users || []).filter((u) => {
+    if (!usersSearch) return true;
+    const query = usersSearch.toLowerCase();
+    return (
+      u.name?.toLowerCase().includes(query) ||
+      u.email?.toLowerCase().includes(query) ||
+      u.role?.toLowerCase().includes(query)
+    );
+  });
+
+  const filteredTransactions = (transactions || []).filter((tx) => {
+    if (!transactionsSearch) return true;
+    const query = transactionsSearch.toLowerCase();
+    return (
+      (tx.userEmail || tx.email || "").toLowerCase().includes(query) ||
+      (tx.type || "").toLowerCase().includes(query)
+    );
+  });
 
   const handleEditClick = (book) => {
     setEditingBookData(book);
@@ -427,6 +462,7 @@ export default function AdminDashboard() {
                           description="All registered accounts"
                           icon={MdPeople}
                           colorClass="text-slate-400"
+                          onClick={() => handleTabChange("users")}
                         />
                         <AnalyticsStatCard
                           title="Readers"
@@ -434,6 +470,7 @@ export default function AdminDashboard() {
                           description="Active reader accounts"
                           icon={MdPeople}
                           colorClass="text-sky-400"
+                          onClick={() => handleTabChange("users", "reader")}
                         />
                         <AnalyticsStatCard
                           title="Writers"
@@ -441,6 +478,7 @@ export default function AdminDashboard() {
                           description="Approved creators"
                           icon={MdPerson}
                           colorClass="text-violet-400"
+                          onClick={() => handleTabChange("users", "writer")}
                         />
                         <AnalyticsStatCard
                           title="Admins"
@@ -448,6 +486,7 @@ export default function AdminDashboard() {
                           description="System administrators"
                           icon={MdShield}
                           colorClass="text-rose-400"
+                          onClick={() => handleTabChange("users", "admin")}
                         />
                         <AnalyticsStatCard
                           title="Total Books"
@@ -455,6 +494,7 @@ export default function AdminDashboard() {
                           description="Entire system catalog"
                           icon={MdBook}
                           colorClass="text-fuchsia-400"
+                          onClick={() => handleTabChange("ebooks")}
                         />
                         <AnalyticsStatCard
                           title="Ebooks Sold"
@@ -462,6 +502,7 @@ export default function AdminDashboard() {
                           description="Total purchase transactions"
                           icon={MdReceipt}
                           colorClass="text-amber-400"
+                          onClick={() => handleTabChange("transactions", "purchase")}
                         />
                         <AnalyticsStatCard
                           title="Published Books"
@@ -469,6 +510,7 @@ export default function AdminDashboard() {
                           description="Currently available"
                           icon={MdToggleOn}
                           colorClass="text-emerald-400"
+                          onClick={() => handleTabChange("ebooks", "publish")}
                         />
                         <AnalyticsStatCard
                           title="Unpublished Books"
@@ -476,6 +518,7 @@ export default function AdminDashboard() {
                           description="Hidden from catalog"
                           icon={MdToggleOff}
                           colorClass="text-slate-500"
+                          onClick={() => handleTabChange("ebooks", "unpublish")}
                         />
                         <AnalyticsStatCard
                           title="Total Revenue"
@@ -490,6 +533,7 @@ export default function AdminDashboard() {
                           description="Books in your library"
                           icon={MdMenuBook}
                           colorClass="text-sky-400"
+                          onClick={() => handleTabChange("purchased")}
                         />
                         <AnalyticsStatCard
                           title="Bookmarks"
@@ -497,6 +541,7 @@ export default function AdminDashboard() {
                           description="Ebooks you saved for later"
                           icon={MdBookmark}
                           colorClass="text-sky-400"
+                          onClick={() => handleTabChange("bookmarks")}
                         />
                       </>
                     }
@@ -514,9 +559,30 @@ export default function AdminDashboard() {
             )}
             {activeTab === "users" && (
               <div>
-                <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
-                  Manage System Accounts
-                </h2>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                    Manage System Accounts
+                  </h2>
+                  <div className="relative w-full sm:w-72">
+                    <input
+                      type="text"
+                      placeholder="Search users..."
+                      value={usersSearch}
+                      onChange={(e) => setUsersSearch(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 pl-4 pr-10 py-2.5 text-sm text-slate-900 dark:text-slate-200 outline-none placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:border-sky-500/60 focus:ring-2 focus:ring-sky-500/20 transition-all"
+                    />
+                    {usersSearch && (
+                      <button
+                        onClick={() => setUsersSearch("")}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </div>
                 <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <DataTable
                     headers={[
@@ -526,9 +592,9 @@ export default function AdminDashboard() {
                       "Current Role",
                       "Actions",
                     ]}
-                    data={users}
+                    data={filteredUsers}
                     isLoading={loading}
-                    emptyMessage="No registered users found."
+                    emptyMessage={usersSearch ? "No matching users found." : "No registered users found."}
                     renderRow={(u, index) => (
                       <motion.tr
                         initial={{ opacity: 0, y: 10 }}
@@ -603,10 +669,8 @@ export default function AdminDashboard() {
             )}
             {activeTab === "ebooks" && (
               <div>
-                <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
-                  Manage Global Catalog
-                </h2>
                 <ManageEbooksTable
+                  title="Manage Global Catalog"
                   books={ebooks}
                   isLoading={loading}
                   emptyMessage="No ebooks available in the system."
@@ -634,9 +698,30 @@ export default function AdminDashboard() {
             )}
             {activeTab === "transactions" && (
               <div>
-                <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
-                  Platform Audit Ledger
-                </h2>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                    Platform Audit Ledger
+                  </h2>
+                  <div className="relative w-full sm:w-72">
+                    <input
+                      type="text"
+                      placeholder="Search transactions..."
+                      value={transactionsSearch}
+                      onChange={(e) => setTransactionsSearch(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 pl-4 pr-10 py-2.5 text-sm text-slate-900 dark:text-slate-200 outline-none placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:border-sky-500/60 focus:ring-2 focus:ring-sky-500/20 transition-all"
+                    />
+                    {transactionsSearch && (
+                      <button
+                        onClick={() => setTransactionsSearch("")}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </div>
                 <div className="lg:overflow-y-auto lg:overflow-x-hidden lg:max-h-[calc(100vh-280px)] pb-10 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
                   <DataTable
                     headers={[
@@ -647,9 +732,9 @@ export default function AdminDashboard() {
                       "Amount",
                       "Execution Date",
                     ]}
-                    data={transactions}
+                    data={filteredTransactions}
                     isLoading={loading}
-                    emptyMessage="Looks like there are no transactions yet. Once users start interacting with the platform, records will populate here."
+                    emptyMessage={transactionsSearch ? "No matching transactions found." : "Looks like there are no transactions yet. Once users start interacting with the platform, records will populate here."}
                     renderRow={(tx, index) => (
                       <motion.tr
                         initial={{ opacity: 0, y: 10 }}
