@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FcGoogle } from "react-icons/fc";
 import { MdEmail, MdLock, MdVisibility, MdVisibilityOff, MdErrorOutline } from "react-icons/md";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 
 export default function SignIn() {
     const router = useRouter();
@@ -50,10 +51,12 @@ export default function SignIn() {
         setError("");
         const { data, error: authError } = await authClient.signIn.email(formData);
         if (authError) {
+            toast.error(authError.message || "Sign in failed. Please check your credentials.");
             setError(authError.message || "Sign in failed. Please check your credentials.");
             setLoading(false);
             return;
         }
+        toast.success("Signed in successfully!");
         const role = data?.user?.role;
         window.location.href = role === "pending" ? "/dashboard/pending" : role === "admin" ? "/dashboard/admin" : role === "writer" ? "/dashboard/writer" : "/dashboard/reader";
     };

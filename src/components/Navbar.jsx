@@ -16,6 +16,7 @@ import {
   MdLightMode,
 } from "react-icons/md";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import RoleBadge from "./RoleBadge";
@@ -225,6 +226,7 @@ export default function Navbar() {
   const handleSignOut = async () => {
     setSigningOut(true);
     await authClient.signOut();
+    toast.success("Signed out successfully!");
     window.location.href = "/";
   };
 

@@ -93,10 +93,12 @@ export default function SignUp() {
     setError("");
 
     if (formData.password.length < 8) {
+      toast.error("Password must be at least 8 characters long.");
       setError("Password must be at least 8 characters long.");
       return;
     }
     if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match. Please try again.");
       setError("Passwords do not match. Please try again.");
       return;
     }
@@ -135,10 +137,12 @@ export default function SignUp() {
           throw new Error(errData.message || "Failed to save role choice.");
         }
 
+        toast.success("Account created successfully!");
         window.location.href =
           selectedRole === "writer" ? "/dashboard/writer" : "/dashboard/reader";
       } catch (err) {
         console.error("Failed to assign role to Google user:", err);
+        toast.error(err.message || "Sign up failed. Please try again.");
         setError(err.message || "Sign up failed. Please try again.");
         setLoading(false);
       }
@@ -155,6 +159,7 @@ export default function SignUp() {
     });
 
     if (authError) {
+      toast.error(authError.message || "Sign up failed. Please try again.");
       setError(authError.message || "Sign up failed. Please try again.");
       setLoading(false);
       return;
@@ -193,6 +198,7 @@ export default function SignUp() {
     }
 
     // Redirect to the appropriate dashboard
+    toast.success("Account created successfully!");
     window.location.href =
       selectedRole === "writer" ? "/dashboard/writer" : "/dashboard/reader";
   };
