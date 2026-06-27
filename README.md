@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# AuroraLib - Ebook Sharing Platform
 
-## Getting Started
+## 📖 Purpose
+AuroraLib is a digital platform that connects ebook lovers, readers, and collectors with talented writers. The platform democratizes access to literature by allowing users to seamlessly browse, discover, and purchase original ebooks. Writers have the tools to upload and manage their creations, while an admin oversees the entire system.
 
-First, run the development server:
+## 🚀 Live Site
+- [Live Demo](https://auroralib.vercel.app/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 👨‍💻 Admin Credentials
+- **Email:** admin@fable.com
+- **Password:** Admin@123
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔗 GitHub Repositories
+- **Frontend (Next.js):** [AuroraLib](https://github.com/moziful/AuroraLib)
+- **Backend (Express.js):** [AuroraLib-Server](https://github.com/moziful/AuroraLib-Server)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## ✨ Key Features
+- **Role-Based Access Control:** Distinct dashboards and permissions for Users (Readers), Writers, and Admins.
+- **Authentication:** Secure JWT-based email/password login and Google OAuth integration via BetterAuth.
+- **Ebook Marketplace:** Browse, search, filter (by genre, price, availability), and sort ebooks seamlessly.
+- **Secure Payments:** Integrated with Stripe for secure ebook purchasing.
+- **Writer Dashboard:** Upload covers (via ImgBB), manage ebooks, track sales history, and publish/unpublish content.
+- **Admin Management:** Comprehensive oversight of users, all ebooks, transactions, and platform analytics (revenue, sales charts).
+- **Bookmarks/Wishlist:** Users can bookmark their favorite ebooks for future reading or purchase.
+- **Modern UI/UX:** Fully responsive design built with Next.js, featuring dark mode, animations (Framer Motion), and toast notifications.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📦 Tech Stack & Packages
+- **Frontend:** Next.js (App Router), React, Tailwind CSS
+- **Authentication:** Better-Auth (`@better-auth/mongo-adapter`)
+- **Payments:** Stripe (`@stripe/stripe-js`, `stripe`)
+- **UI Components:** Framer Motion (Animations), Lucide React & React Icons, Recharts (Analytics Charts)
+- **Utilities:** React Toastify, Next-Themes (Dark Mode)
+- **Backend:** Node.js, Express.js, MongoDB, JWT (JSON Web Tokens), Multer
