@@ -101,7 +101,7 @@ function AuthSection({
           <button
             onClick={handleSignOut}
             disabled={signingOut}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-2 py-2 text-xs font-bold text-red-600 dark:text-red-400 transition-all duration-200 hover:bg-red-500/20 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-2 py-2 text-xs font-bold text-red-600 dark:text-red-400 transition-all duration-200 hover:bg-red-500/20 disabled:opacity-50 cursor-pointer"
           >
             {signingOut ? (
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-500 dark:border-red-400 border-t-transparent" />
@@ -186,7 +186,7 @@ function MobileAuthSection({
           <button
             onClick={handleSignOut}
             disabled={signingOut}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 py-2 text-sm font-black text-red-600 dark:text-red-400 transition-all duration-200 hover:bg-red-500/20 disabled:opacity-50"
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 py-2 text-sm font-black text-red-600 dark:text-red-400 transition-all duration-200 hover:bg-red-500/20 disabled:opacity-50 cursor-pointer"
           >
             {signingOut ? (
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-500 dark:border-red-400 border-t-transparent" />

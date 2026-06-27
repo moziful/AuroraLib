@@ -77,7 +77,7 @@ export default function BookCard({ book }) {
         <button
           onClick={handleBookmarkToggle}
           disabled={loading}
-          className="absolute top-3 left-3 z-10 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white transition-all backdrop-blur-sm"
+          className="absolute top-3 left-3 z-10 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white transition-all backdrop-blur-sm cursor-pointer"
           title={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
         >
           {loading ? (

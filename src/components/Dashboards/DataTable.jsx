@@ -60,6 +60,12 @@ export default function DataTable({
                   ))}
                 </tr>
               ))
+            ) : data.length === 0 ? (
+              <tr>
+                <td colSpan={headers.length} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                  {emptyMessage}
+                </td>
+              </tr>
             ) : (
               data.map((item, index) => (
                 <Fragment key={item?.id ?? index}>
@@ -69,11 +75,6 @@ export default function DataTable({
             )}
           </tbody>
         </table>
-        {data.length === 0 && !isLoading && !renderMobileCard && (
-          <p className="p-6 text-center text-slate-600 dark:text-slate-500 text-sm">
-            {emptyMessage}
-          </p>
-        )}
       </div>
       {!renderMobileCard && (
         <div className="lg:hidden">
@@ -99,6 +100,12 @@ export default function DataTable({
                       ))}
                     </tr>
                   ))
+                ) : data.length === 0 ? (
+                  <tr>
+                    <td colSpan={headers.length} className="px-2 py-6 text-center text-slate-550 dark:text-slate-450 text-xs">
+                      {emptyMessage}
+                    </td>
+                  </tr>
                 ) : (
                   data.map((item, index) => (
                     <Fragment key={item?.id ?? index}>
@@ -108,11 +115,6 @@ export default function DataTable({
                 )}
               </tbody>
             </table>
-            {data.length === 0 && !isLoading && (
-              <p className="p-6 text-center text-slate-600 dark:text-slate-500 text-sm">
-                {emptyMessage}
-              </p>
-            )}
           </div>
         </div>
       )}

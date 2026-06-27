@@ -66,7 +66,7 @@ export default function BookmarkBookCard({
       <button
         onClick={handleUnbookmark}
         disabled={loading}
-        className="absolute top-6 right-6 z-10 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white transition-all backdrop-blur-sm"
+        className="absolute top-6 right-6 z-10 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white transition-all backdrop-blur-sm cursor-pointer"
         title="Remove from bookmarks"
       >
         {loading ? (

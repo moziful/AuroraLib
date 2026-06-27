@@ -87,9 +87,9 @@ export default function AddBookForm({ initialData, onSuccess }) {
 
   const writerDefaults = user
     ? {
-        writerName: user.name || "",
-        writerEmail: user.email || "",
-      }
+      writerName: user.name || "",
+      writerEmail: user.email || "",
+    }
     : null;
 
   const [coverFile, setCoverFile] = useState(null);
@@ -248,17 +248,97 @@ export default function AddBookForm({ initialData, onSuccess }) {
       animate={{ opacity: 1, y: 0 }}
       className="w-full"
     >
-        {/* <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
+      {/* <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
           {initialData ? "Edit Book" : "Add a New Book"}
         </h2> */}
-        <form onSubmit={handleSubmit}>
-          <div className="md:hidden mb-6">
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-4">
+      <form onSubmit={handleSubmit}>
+        <div className="md:hidden mb-6">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-4">
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-500">
+              Cover Image
+            </p>
+            {coverPreview ? (
+              <div className="relative aspect-video mb-3">
+                <div className="relative h-full w-full overflow-hidden rounded-xl border border-slate-300 dark:border-slate-700">
+                  <Image
+                    src={coverPreview}
+                    alt="Cover preview"
+                    fill
+                    className="object-cover"
+                  />
+                  {uploadedCoverUrl && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                      <MdCheckCircle className="text-5xl text-emerald-400" />
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRemoveCover}
+                  className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 dark:border-slate-600 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 transition hover:border-red-500/50 hover:text-red-400 cursor-pointer"
+                >
+                  <MdClose />
+                </button>
+                {!uploadedCoverUrl && !uploadingCover && (
+                  <button
+                    type="button"
+                    onClick={uploadCoverToImgBB}
+                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 py-2 text-xs font-bold text-sky-600 dark:text-sky-400 transition hover:bg-sky-500/20"
+                  >
+                    <MdCloudUpload className="text-base" /> Upload to ImgBB
+                  </button>
+                )}
+                {uploadingCover && (
+                  <div className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-200 dark:bg-slate-800 py-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />
+                    <span className="text-xs text-slate-600 dark:text-slate-400">
+                      Uploading…
+                    </span>
+                  </div>
+                )}
+                {uploadedCoverUrl && (
+                  <p className="mt-3 flex items-center justify-center gap-1 text-xs text-emerald-400">
+                    <MdCheckCircle /> Uploaded successfully
+                  </p>
+                )}
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="group flex w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-800/50 py-8 transition-all hover:border-sky-500/50 hover:bg-slate-200/50 dark:hover:bg-slate-800"
+              >
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-700 transition group-hover:bg-sky-500/10">
+                  <MdCloudUpload className="text-3xl text-slate-500 transition group-hover:text-sky-400" />
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-semibold text-slate-400 group-hover:text-sky-400">
+                    Click to upload
+                  </p>
+                  <p className="text-xs text-slate-600">
+                    PNG, JPG, WEBP · Max 5 MB
+                  </p>
+                </div>
+              </button>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleCoverSelect}
+              className="hidden"
+            />
+          </div>
+        </div>
+        {/* <div className="hidden lg:grid lg:grid-cols-3 gap-6"> */}
+        <div className="md:grid md:grid-cols-3 gap-6">
+          <div className="md:col-span-1">
+            <div className="hidden md:block rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-5 h-full">
               <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-500">
                 Cover Image
               </p>
               {coverPreview ? (
-                <div className="relative aspect-video mb-3">
+                <div className="relative aspect-square mb-3">
                   <div className="relative h-full w-full overflow-hidden rounded-xl border border-slate-300 dark:border-slate-700">
                     <Image
                       src={coverPreview}
@@ -275,7 +355,7 @@ export default function AddBookForm({ initialData, onSuccess }) {
                   <button
                     type="button"
                     onClick={handleRemoveCover}
-                    className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 dark:border-slate-600 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 transition hover:border-red-500/50 hover:text-red-400"
+                    className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 dark:border-slate-600 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 transition hover:border-red-500/50 hover:text-red-400 cursor-pointer"
                   >
                     <MdClose />
                   </button>
@@ -283,7 +363,7 @@ export default function AddBookForm({ initialData, onSuccess }) {
                     <button
                       type="button"
                       onClick={uploadCoverToImgBB}
-                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 py-2 text-xs font-bold text-sky-600 dark:text-sky-400 transition hover:bg-sky-500/20"
+                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 py-2 text-xs font-bold text-sky-600 dark:text-sky-400 transition hover:bg-sky-500/20 cursor-pointer"
                     >
                       <MdCloudUpload className="text-base" /> Upload to ImgBB
                     </button>
@@ -306,7 +386,7 @@ export default function AddBookForm({ initialData, onSuccess }) {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="group flex w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-800/50 py-8 transition-all hover:border-sky-500/50 hover:bg-slate-200/50 dark:hover:bg-slate-800"
+                  className="group flex w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-800/50 py-8 transition-all hover:border-sky-500/50 hover:bg-slate-200/50 dark:hover:bg-slate-800 cursor-pointer"
                 >
                   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-700 transition group-hover:bg-sky-500/10">
                     <MdCloudUpload className="text-3xl text-slate-500 transition group-hover:text-sky-400" />
@@ -330,228 +410,148 @@ export default function AddBookForm({ initialData, onSuccess }) {
               />
             </div>
           </div>
-          {/* <div className="hidden lg:grid lg:grid-cols-3 gap-6"> */}
-          <div className="md:grid md:grid-cols-3 gap-6">
-            <div className="md:col-span-1">
-              <div className="hidden md:block rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-5 h-full">
-                <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-500">
-                  Cover Image
-                </p>
-                {coverPreview ? (
-                  <div className="relative aspect-square mb-3">
-                    <div className="relative h-full w-full overflow-hidden rounded-xl border border-slate-300 dark:border-slate-700">
-                      <Image
-                        src={coverPreview}
-                        alt="Cover preview"
-                        fill
-                        className="object-cover"
-                      />
-                      {uploadedCoverUrl && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                          <MdCheckCircle className="text-5xl text-emerald-400" />
-                        </div>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleRemoveCover}
-                      className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 dark:border-slate-600 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 transition hover:border-red-500/50 hover:text-red-400"
-                    >
-                      <MdClose />
-                    </button>
-                    {!uploadedCoverUrl && !uploadingCover && (
-                      <button
-                        type="button"
-                        onClick={uploadCoverToImgBB}
-                        className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 py-2 text-xs font-bold text-sky-600 dark:text-sky-400 transition hover:bg-sky-500/20"
-                      >
-                        <MdCloudUpload className="text-base" /> Upload to ImgBB
-                      </button>
-                    )}
-                    {uploadingCover && (
-                      <div className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-200 dark:bg-slate-800 py-2">
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />
-                        <span className="text-xs text-slate-600 dark:text-slate-400">
-                          Uploading…
-                        </span>
-                      </div>
-                    )}
-                    {uploadedCoverUrl && (
-                      <p className="mt-3 flex items-center justify-center gap-1 text-xs text-emerald-400">
-                        <MdCheckCircle /> Uploaded successfully
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="group flex w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-800/50 py-8 transition-all hover:border-sky-500/50 hover:bg-slate-200/50 dark:hover:bg-slate-800"
-                  >
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-700 transition group-hover:bg-sky-500/10">
-                      <MdCloudUpload className="text-3xl text-slate-500 transition group-hover:text-sky-400" />
-                    </div>
-                    <div className="text-center">
-                      <p className="text-sm font-semibold text-slate-400 group-hover:text-sky-400">
-                        Click to upload
-                      </p>
-                      <p className="text-xs text-slate-600">
-                        PNG, JPG, WEBP · Max 5 MB
-                      </p>
-                    </div>
-                  </button>
-                )}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleCoverSelect}
-                  className="hidden"
-                />
-              </div>
-            </div>
 
-            <div className="md:col-span-2 space-y-5 pb-10 md:max-h-[calc(100vh-18rem)] overflow-y-auto scrollbar-none">
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-6 space-y-4">
-                <p className="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-500">
-                  Book Info
-                </p>
-                <Field icon={<MdBook />} label="Title" required>
-                  <input
-                    type="text"
-                    name="title"
-                    value={form.title}
-                    onChange={handleChange}
-                    placeholder="e.g. The Quantum Enigma"
-                    className={inputCls}
-                    required
-                  />
-                </Field>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <Field icon={<MdCategory />} label="Genre" required>
-                    <select
-                      name="genre"
-                      value={form.genre}
-                      onChange={handleChange}
-                      className={`${inputCls} cursor-pointer appearance-none`}
-                      required
-                    >
-                      <option
-                        value=""
-                        disabled
-                        className="bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-400"
-                      >
-                        Select genre…
-                      </option>
-                      {GENRES.map((g) => (
-                        <option
-                          key={g}
-                          value={g}
-                          className="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-400"
-                        >
-                          {g}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  <Field icon={<MdAttachMoney />} label="Price (USD)" required>
-                    <input
-                      type="number"
-                      name="price"
-                      value={form.price}
-                      required
-                      onChange={handleChange}
-                      placeholder="e.g. 32.99"
-                      min="0"
-                      step="0.01"
-                      className={inputCls}
-                    />
-                  </Field>
-                </div>
-                <Field icon={<MdDescription />} label="Description">
-                  <textarea
-                    name="description"
-                    value={form.description}
-                    onChange={handleChange}
-                    placeholder="A short synopsis of the book…"
-                    rows={4}
-                    className={`${inputCls} resize-none`}
-                  />
-                </Field>
-                <Field icon={<MdPublish />} label="Status">
+          <div className="md:col-span-2 space-y-5 pb-10 md:max-h-[calc(100vh-18rem)] overflow-y-auto scrollbar-none">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-6 space-y-4">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-500">
+                Book Info
+              </p>
+              <Field icon={<MdBook />} label="Title" required>
+                <input
+                  type="text"
+                  name="title"
+                  value={form.title}
+                  onChange={handleChange}
+                  placeholder="e.g. The Quantum Enigma"
+                  className={inputCls}
+                  required
+                />
+              </Field>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Field icon={<MdCategory />} label="Genre" required>
                   <select
-                    name="status"
-                    value={form.status}
+                    name="genre"
+                    value={form.genre}
                     onChange={handleChange}
                     className={`${inputCls} cursor-pointer appearance-none`}
+                    required
                   >
-                    {STATUSES.map((s) => (
+                    <option
+                      value=""
+                      disabled
+                      className="bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-400"
+                    >
+                      Select genre…
+                    </option>
+                    {GENRES.map((g) => (
                       <option
-                        key={s}
-                        value={s}
+                        key={g}
+                        value={g}
                         className="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-400"
                       >
-                        {s}
+                        {g}
                       </option>
                     ))}
                   </select>
                 </Field>
+                <Field icon={<MdAttachMoney />} label="Price (USD)" required>
+                  <input
+                    type="number"
+                    name="price"
+                    value={form.price}
+                    required
+                    onChange={handleChange}
+                    placeholder="e.g. 32.99"
+                    min="0"
+                    step="0.01"
+                    className={inputCls}
+                  />
+                </Field>
               </div>
+              <Field icon={<MdDescription />} label="Description">
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
+                  placeholder="A short synopsis of the book…"
+                  rows={4}
+                  className={`${inputCls} resize-none`}
+                />
+              </Field>
+              <Field icon={<MdPublish />} label="Status">
+                <select
+                  name="status"
+                  value={form.status}
+                  onChange={handleChange}
+                  className={`${inputCls} cursor-pointer appearance-none`}
+                >
+                  {STATUSES.map((s) => (
+                    <option
+                      key={s}
+                      value={s}
+                      className="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-400"
+                    >
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            </div>
 
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-6 space-y-4">
-                <p className="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-500">
-                  Writer Info
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-6 space-y-4">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-500">
+                Writer Info
+              </p>
+              {user && (
+                <p className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-500">
+                  <MdVerified className="text-sky-400" /> Prefilled from your
+                  account info. You can modify these.
                 </p>
-                {user && (
-                  <p className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-500">
-                    <MdVerified className="text-sky-400" /> Prefilled from your
-                    account info. You can modify these.
-                  </p>
-                )}
-                {sessionLoading && (
-                  <div className="flex items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-200/50 dark:bg-slate-800/50 px-4 py-3">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />
-                    <span className="text-xs text-slate-600 dark:text-slate-500">
-                      Loading session…
-                    </span>
-                  </div>
-                )}
-                {!sessionLoading && (
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <Field icon={<MdPerson />} label="Writer Name" required>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          name="writerName"
-                          value={form.writerName}
-                          onChange={handleChange}
-                          placeholder="e.g. Nathan Clarke"
-                          className={inputCls}
-                          required
-                        />
-                      </div>
-                    </Field>
-                    <Field icon={<MdEmail />} label="Writer Email" required>
-                      <div className="relative">
-                        <input
-                          type="email"
-                          name="writerEmail"
-                          value={form.writerEmail}
-                          onChange={handleChange}
-                          placeholder="e.g. nathan@auroralib.com"
-                          className={inputCls}
-                          required
-                        />
-                      </div>
-                    </Field>
-                  </div>
-                )}
+              )}
+              {sessionLoading && (
+                <div className="flex items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-200/50 dark:bg-slate-800/50 px-4 py-3">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />
+                  <span className="text-xs text-slate-600 dark:text-slate-500">
+                    Loading session…
+                  </span>
+                </div>
+              )}
+              {!sessionLoading && (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <Field icon={<MdPerson />} label="Writer Name" required>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        name="writerName"
+                        value={form.writerName}
+                        onChange={handleChange}
+                        placeholder="e.g. Nathan Clarke"
+                        className={inputCls}
+                        required
+                      />
+                    </div>
+                  </Field>
+                  <Field icon={<MdEmail />} label="Writer Email" required>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        name="writerEmail"
+                        value={form.writerEmail}
+                        onChange={handleChange}
+                        placeholder="e.g. nathan@auroralib.com"
+                        className={inputCls}
+                        required
+                      />
+                    </div>
+                  </Field>
+                </div>
+              )}
             </div>
 
             <button
               type="submit"
               disabled={submitting || uploadingCover}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-sky-400 py-3.5 text-sm font-black text-black shadow-lg shadow-sky-500/20 transition-all hover:bg-sky-400 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-sky-400 py-3.5 text-sm font-black text-black shadow-lg shadow-sky-500/20 transition-all hover:bg-sky-450 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
             >
               {submitting ? (
                 <>

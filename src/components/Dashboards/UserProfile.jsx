@@ -135,7 +135,7 @@ export default function UserProfile({ user, role = "Reader" }) {
       {!isEditing && (
         <button
           onClick={() => setIsEditing(true)}
-          className="absolute top-6 right-6 p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-600 dark:text-slate-400 transition"
+          className="absolute top-6 right-6 p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-600 dark:text-slate-400 transition cursor-pointer"
           title="Edit Profile"
         >
           <MdEdit className="text-xl" />
@@ -239,7 +239,7 @@ export default function UserProfile({ user, role = "Reader" }) {
             type="button"
             onClick={handleCancel}
             disabled={saving || uploading}
-            className="flex items-center gap-1.5 rounded-xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition disabled:opacity-50 cursor-pointer"
           >
             <MdClose className="text-sm" /> Cancel
           </button>
@@ -247,7 +247,7 @@ export default function UserProfile({ user, role = "Reader" }) {
             type="button"
             onClick={handleSave}
             disabled={saving || uploading}
-            className="flex items-center gap-1.5 rounded-xl bg-sky-400 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-sky-500 transition disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-xl bg-sky-400 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-sky-500 transition disabled:opacity-50 cursor-pointer"
           >
             <MdSave className="text-sm" /> {saving ? "Saving..." : "Save Changes"}
           </button>
