@@ -214,8 +214,8 @@ function EbooksPage() {
       <button
         onClick={() => handlePageChange(pageNum)}
         className={`w-9 h-9 rounded-xl text-xs font-bold transition-all duration-200 ${activePage === pageNum
-            ? "bg-sky-400 text-black font-black shadow-lg shadow-sky-400/20"
-            : "bg-white dark:bg-slate-800 border border-slate-700 text-slate-700 dark:text-slate-400 hover:text-sky-400 hover:border-sky-400"
+          ? "bg-sky-400 text-black font-black shadow-lg shadow-sky-400/20"
+          : "bg-white dark:bg-slate-800 border border-slate-700 text-slate-700 dark:text-slate-400 hover:text-sky-400 hover:border-sky-400"
           }`}
       >
         {pageNum}
@@ -328,7 +328,7 @@ function EbooksPage() {
         }}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-10"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10"
       >
         {loading ? (
           Array.from({ length: itemsPerPage }).map((_, index) => (
