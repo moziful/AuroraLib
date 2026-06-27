@@ -6,10 +6,6 @@ AuroraLib is a digital platform that connects ebook lovers, readers, and collect
 ## 🚀 Live Site
 - [Live Demo](https://auroralib.vercel.app/)
 
-## 👨‍💻 Admin Credentials
-- **Email:** admin@fable.com
-- **Password:** Admin@123
-
 ## 🔗 GitHub Repositories
 - **Frontend (Next.js):** [AuroraLib](https://github.com/moziful/AuroraLib)
 - **Backend (Express.js):** [AuroraLib-Server](https://github.com/moziful/AuroraLib-Server)
