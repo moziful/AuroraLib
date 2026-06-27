@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ImSpinner2 } from "react-icons/im";
 import { MdEdit, MdDelete } from "react-icons/md";
 import DataTable from "./DataTable";
+import { motion } from "framer-motion";
 
 export default function ManageEbooksTable({
   books,
@@ -33,7 +34,10 @@ export default function ManageEbooksTable({
             : "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white";
 
           return (
-            <tr
+            <motion.tr
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.03, type: "spring", stiffness: 100, damping: 15 }}
               key={book._id || book.id || book.slug}
               className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
             >
@@ -115,7 +119,7 @@ export default function ManageEbooksTable({
                   </button>
                 </div>
               </td>
-            </tr>
+            </motion.tr>
           );
         }}
         renderMobileCard={(book) => {

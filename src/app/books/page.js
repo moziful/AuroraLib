@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { getAllBooks } from "@/lib/data";
 import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
 import BookCard, { BookCardSkeleton } from "@/components/BookCard";
+import { motion } from "framer-motion";
 
 const itemsPerPage = 6;
 
@@ -316,7 +317,20 @@ function EbooksPage() {
           <span>Clear Filters</span>
         </button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+      <motion.div 
+        variants={{
+          hidden: { opacity: 1 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.08
+            }
+          }
+        }}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10"
+      >
         {loading ? (
           Array.from({ length: itemsPerPage }).map((_, index) => (
             <BookCardSkeleton key={index} />
@@ -331,7 +345,7 @@ function EbooksPage() {
             <p className="text-sm text-slate-500 dark:text-slate-400">Try adjusting your filters to find what you're looking for.</p>
           </div>
         )}
-      </div>
+      </motion.div>
       {totalPages > 1 && (
         <div className="pb-10 flex items-center justify-center gap-2">
           <button

@@ -10,6 +10,7 @@ import {
   MdTrendingUp,
 } from "react-icons/md";
 import { authClient } from "@/lib/auth-client";
+import { motion } from "framer-motion";
 
 import DashboardHeader from "./DashboardHeader";
 import DashboardTabs from "./DashboardTabs";
@@ -271,7 +272,10 @@ export default function UserDashboard() {
                     data={history}
                     isLoading={loading}
                     renderRow={(item, index) => (
-                      <tr
+                      <motion.tr
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.03, type: "spring", stiffness: 100, damping: 15 }}
                         key={item.id}
                         className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
                       >
@@ -293,7 +297,7 @@ export default function UserDashboard() {
                             {item.status}
                           </span>
                         </td>
-                      </tr>
+                      </motion.tr>
                     )}
                     renderMobileCard={(item) => (
                       <div

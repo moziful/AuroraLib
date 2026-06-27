@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
 import { getAllBooks } from "@/lib/data";
-import BookCard, { BookCardSkeleton } from "@/components/BookCard";
+import FeaturedGrid from "@/components/FeaturedGrid";
 import SectionHeader from "@/components/SectionHeader";
 
 const pickFeaturedBooks = (books) => {
@@ -36,18 +36,7 @@ export default async function FeaturedEbooksSection() {
           </Link>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {books.length
-            ? books.map((book) => (
-                <BookCard
-                  key={book.slug || `${book.title}-${book.createdAt}`}
-                  book={book}
-                />
-              ))
-            : Array.from({ length: 6 }).map((_, index) => (
-                <BookCardSkeleton key={index} />
-              ))}
-        </div>
+        <FeaturedGrid books={books} />
         {!books.length && (
           <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900/30 p-8 text-center text-slate-800 dark:text-slate-300">
             No ebooks are available yet.

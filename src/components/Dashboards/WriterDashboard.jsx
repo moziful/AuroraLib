@@ -18,6 +18,7 @@ import {
 } from "react-icons/md";
 import { authClient } from "@/lib/auth-client";
 import { getBooksByEmail, getWriterSales } from "@/lib/data";
+import { motion } from "framer-motion";
 import { deleteBookAction, updateBookStatus } from "@/lib/actions";
 import { getPurchasedBooks, getBookmarkedBooks } from "@/lib/user-actions";
 import { toast, ToastContainer } from "react-toastify";
@@ -435,7 +436,10 @@ export default function WriterDashboard() {
                     isLoading={loading}
                     emptyMessage="No items have been purchased yet."
                     renderRow={(sale, index) => (
-                      <tr
+                      <motion.tr
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.03, type: "spring", stiffness: 100, damping: 15 }}
                         key={sale.id}
                         className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
                       >
@@ -454,7 +458,7 @@ export default function WriterDashboard() {
                         <td className="px-4 py-3 text-emerald-600 dark:text-emerald-400 font-semibold">
                           {sale.amount}
                         </td>
-                      </tr>
+                      </motion.tr>
                     )}
                     renderMobileCard={(sale) => (
                       <div

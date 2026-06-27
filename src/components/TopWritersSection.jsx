@@ -1,7 +1,6 @@
-import Image from "next/image";
 import { getAllBooks } from "@/lib/data";
 import SectionHeader from "@/components/SectionHeader";
-import { FaBookOpen, FaDollarSign, FaTrophy } from "react-icons/fa";
+import WritersGrid from "@/components/WritersGrid";
 
 const getInitials = (name) => {
   return name
@@ -102,96 +101,7 @@ export default async function TopWritersSection() {
           heading="Authors our readers love most"
           subheading="Ranked by total book sales across the library"
         />
-        <div className="grid gap-6 sm:grid-cols-3">
-          {writers.map((writer, idx) => {
-            const rank = rankConfig[idx];
-            const isFirst = idx === 0;
-
-            return (
-              <div
-                key={writer.email || writer.name}
-                className={`group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:border-slate-300 hover:dark:border-slate-700 hover:shadow-2xl ${rank.glow} ${isFirst ? "sm:-mt-4" : ""}`}
-              >
-                <div className={`relative h-24 bg-linear-to-b ${rank.banner}`}>
-                  <div
-                    className={`absolute inset-x-0 top-0 h-1 bg-linear-to-r ${rank.bannerLine}`}
-                  />
-                  <div className="absolute left-4 top-4 flex items-center gap-2">
-                    <FaTrophy className={`text-sm ${rank.statIcon}`} />
-                    <span
-                      className={`text-xs font-black uppercase tracking-widest ${rank.statIcon}`}
-                    >
-                      {rank.place} Place
-                    </span>
-                  </div>
-                  <span className="absolute right-4 top-3 text-3xl leading-none">
-                    {rank.emoji}
-                  </span>
-                </div>
-
-                <div className="relative -mt-10 flex justify-center">
-                  <div
-                    className={`h-20 w-20 overflow-hidden rounded-full ring-4 ${rank.ring} bg-white dark:bg-slate-900 shadow-lg transition-transform duration-300 group-hover:scale-105 flex items-center justify-center`}
-                  >
-                    {writer.avatar ? (
-                      <Image
-                        src={writer.avatar}
-                        alt={writer.name}
-                        width={80}
-                        height={80}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-slate-800 text-2xl font-black text-sky-400">
-                        {getInitials(writer.name)}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="flex flex-1 flex-col items-center gap-3 px-5 pb-6 pt-3 text-center">
-                  <div>
-                    <h3 className="text-lg font-black leading-tight text-slate-800 dark:text-white">
-                      {writer.name}
-                    </h3>
-                    <span
-                      className={`mt-2 inline-block rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${rank.genrePill}`}
-                    >
-                      {writer.topGenre}
-                    </span>
-                  </div>
-                  <div
-                    className={`h-px w-full bg-linear-to-r from-transparent ${rank.divider} to-transparent`}
-                  />
-                  <div className="flex w-full items-center justify-around">
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="flex items-center gap-2">
-                        <FaBookOpen className={`text-xs ${rank.statIcon}`} />
-                        <span className="text-xl font-black text-slate-800 dark:text-white">
-                          {writer.bookCount}
-                        </span>
-                      </div>
-                      <p className="text-[11px] font-medium text-slate-500">
-                        Books
-                      </p>
-                    </div>
-                    <div className="h-8 w-px bg-slate-800" />
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="flex items-center gap-1">
-                        <FaDollarSign className={`text-xs ${rank.statIcon}`} />
-                        <span className="text-xl font-black text-slate-800 dark:text-white">
-                          {writer.totalSales.toFixed(0)}
-                        </span>
-                      </div>
-                      <p className="text-[11px] font-medium text-slate-500">
-                        Total Sales
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <WritersGrid writers={writers} />
       </div>
     </section>
   );

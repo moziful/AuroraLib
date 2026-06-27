@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { authClient } from "@/lib/auth-client";
@@ -96,6 +97,11 @@ export default function AddBookForm({ initialData, onSuccess }) {
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadedCoverUrl, setUploadedCoverUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (initialData) {
@@ -233,8 +239,14 @@ export default function AddBookForm({ initialData, onSuccess }) {
     }
   };
 
+  if (!mounted) return null;
+
   return (
-    <div className="w-full">
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-full"
+    >
         {/* <h2 className="mb-6 text-xl font-bold text-slate-900 dark:text-white">
           {initialData ? "Edit Book" : "Add a New Book"}
         </h2> */}
@@ -533,28 +545,28 @@ export default function AddBookForm({ initialData, onSuccess }) {
                     </Field>
                   </div>
                 )}
-              </div>
-
-              <button
-                type="submit"
-                disabled={submitting || uploadingCover}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-sky-400 py-3.5 text-sm font-black text-black shadow-lg shadow-sky-500/20 transition-all hover:bg-sky-400 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {submitting ? (
-                  <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />{" "}
-                    Publishing…
-                  </>
-                ) : (
-                  <>
-                    <MdPublish className="text-lg" />{" "}
-                    {initialData ? "Update Book" : "Publish Book"}
-                  </>
-                )}
-              </button>
             </div>
+
+            <button
+              type="submit"
+              disabled={submitting || uploadingCover}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-sky-400 py-3.5 text-sm font-black text-black shadow-lg shadow-sky-500/20 transition-all hover:bg-sky-400 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {submitting ? (
+                <>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />{" "}
+                  Publishing…
+                </>
+              ) : (
+                <>
+                  <MdPublish className="text-lg" />{" "}
+                  {initialData ? "Update Book" : "Publish Book"}
+                </>
+              )}
+            </button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
+    </motion.div>
   );
 }

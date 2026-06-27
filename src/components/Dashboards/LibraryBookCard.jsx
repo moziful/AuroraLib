@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { FaBookOpen, FaDownload, FaAward } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 export default function LibraryBookCard({ book }) {
   const purchasedDate = book.purchasedAt
@@ -12,7 +15,14 @@ export default function LibraryBookCard({ book }) {
     : "Recently";
 
   return (
-    <div className="group block rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-4 transition-all relative hover:border-sky-500/30">
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.98 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true }}
+      whileHover={{ y: -4, scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 100, damping: 15 }}
+      className="group block rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-4 relative"
+    >
       <div className="absolute -inset-px -z-10 rounded-2xl bg-linear-to-r from-sky-500/0 via-sky-500/0 to-indigo-500/0 opacity-0 blur transition-all duration-500 group-hover:from-sky-500/10 group-hover:to-indigo-500/10 group-hover:opacity-100" />
       <div className="absolute right-3 top-3 z-10 flex flex-col gap-1.5">
         <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
@@ -66,6 +76,6 @@ export default function LibraryBookCard({ book }) {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -9,6 +9,18 @@ import { authClient } from "@/lib/auth-client";
 import { toggleBookmarkAction } from "@/lib/user-actions";
 import { toast } from "react-toastify";
 
+import { motion } from "framer-motion";
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { type: "spring", stiffness: 100, damping: 15 }
+  },
+};
+
 export default function BookCard({ book }) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
@@ -51,8 +63,17 @@ export default function BookCard({ book }) {
   };
 
   return (
-    <Link href={`/books/id/${book._id}`}>
-      <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden flex flex-col items-center relative transition-all duration-300 hover:-translate-y-1">
+    <motion.div
+      variants={cardVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-40px" }}
+      whileHover={{ y: -6, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className="h-full"
+    >
+      <Link href={`/books/id/${book._id}`} className="block h-full">
+        <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl shadow-md overflow-hidden flex flex-col items-center relative h-full">
         <button
           onClick={handleBookmarkToggle}
           disabled={loading}
@@ -112,7 +133,8 @@ export default function BookCard({ book }) {
         </div>
       </div>
     </Link>
-  );
+  </motion.div>
+);
 }
 
 export function BookCardSkeleton() {

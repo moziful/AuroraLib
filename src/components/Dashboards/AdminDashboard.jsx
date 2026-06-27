@@ -23,6 +23,7 @@ import { ImSpinner2 } from "react-icons/im";
 import DashboardHeader from "../Dashboards/DashboardHeader";
 import DashboardTabs from "../Dashboards/DashboardTabs";
 import DataTable from "../Dashboards/DataTable";
+import { motion } from "framer-motion";
 import UserProfile from "./UserProfile";
 import AnalyticsStatCard from "./AnalyticsStatCard";
 import DashboardCharts from "./DashboardCharts";
@@ -539,7 +540,10 @@ export default function AdminDashboard() {
                     isLoading={loading}
                     emptyMessage="No registered users found."
                     renderRow={(u, index) => (
-                      <tr
+                      <motion.tr
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.03, type: "spring", stiffness: 100, damping: 15 }}
                         key={u.id}
                         className="hover:bg-slate-100/30 dark:hover:bg-slate-800/30 transition-colors"
                       >
@@ -571,7 +575,7 @@ export default function AdminDashboard() {
                             </button>
                           </div>
                         </td>
-                      </tr>
+                      </motion.tr>
                     )}
                     renderMobileCard={(u) => (
                       <div
@@ -657,7 +661,10 @@ export default function AdminDashboard() {
                     isLoading={loading}
                     emptyMessage="Looks like there are no transactions yet. Once users start interacting with the platform, records will populate here."
                     renderRow={(tx, index) => (
-                      <tr
+                      <motion.tr
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.03, type: "spring", stiffness: 100, damping: 15 }}
                         key={tx.id}
                         className="hover:bg-slate-100/50 dark:hover:bg-slate-800/30 transition-colors"
                       >
@@ -686,7 +693,7 @@ export default function AdminDashboard() {
                         <td className="px-4 py-3 text-slate-500 dark:text-slate-500">
                           {tx.date}
                         </td>
-                      </tr>
+                      </motion.tr>
                     )}
                     renderMobileCard={(tx) => (
                       <div

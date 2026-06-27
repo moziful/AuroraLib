@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import SectionHeader from "@/components/SectionHeader";
+import { motion } from "framer-motion";
 import {
   FaBook,
   FaSearch,
@@ -114,6 +117,8 @@ const genres = [
   },
 ];
 
+const MotionLink = motion(Link);
+
 export default function GenresSection() {
   return (
     <section className="bg-white dark:bg-slate-950 px-4 py-10 sm:py-16">
@@ -123,12 +128,36 @@ export default function GenresSection() {
           heading="Find your next favourite read"
           subheading="Explore our collection filtered by the genre you love most"
         />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        <motion.div 
+          variants={{
+            hidden: { opacity: 1 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.05,
+              },
+            },
+          }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-40px" }}
+          className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+        >
           {genres.map(({ name, icon: Icon, color, iconColor, glow }) => (
-            <Link
+            <MotionLink
               key={name}
               href={`/books?genre=${name}`}
-              className={`group flex flex-col items-center gap-3 rounded-2xl border bg-linear-to-b ${color} p-5 shadow-lg ${glow} transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  transition: { type: "spring", stiffness: 100 } 
+                },
+              }}
+              whileHover={{ y: -4, scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className={`group flex flex-col items-center gap-3 rounded-2xl border bg-linear-to-b ${color} p-5 shadow-lg ${glow} transition-shadow duration-300`}
             >
               <span
                 className={`flex h-12 w-12 items-center justify-center rounded-xl bg-white/70 dark:bg-slate-900/60 text-2xl ${iconColor} transition-transform duration-300 group-hover:scale-110`}
@@ -138,10 +167,11 @@ export default function GenresSection() {
               <span className="text-sm font-bold text-slate-800 dark:text-slate-200 transition-colors">
                 {name}
               </span>
-            </Link>
+            </MotionLink>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 }
+

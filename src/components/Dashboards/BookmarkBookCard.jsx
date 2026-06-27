@@ -9,6 +9,8 @@ import { authClient } from "@/lib/auth-client";
 import { toggleBookmarkAction } from "@/lib/user-actions";
 import { toast } from "react-toastify";
 
+import { motion } from "framer-motion";
+
 export default function BookmarkBookCard({
   book,
   hoverBorderClass = "hover:border-sky-500/30",
@@ -48,10 +50,19 @@ export default function BookmarkBookCard({
   };
 
   return (
-    <Link
-      href={`/books/id/${book._id || book.id}`}
-      className={`group block rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-4 transition-all relative ${hoverBorderClass}`}
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.98 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true }}
+      whileHover={{ y: -4, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 100, damping: 15 }}
+      className="h-full"
     >
+      <Link
+        href={`/books/id/${book._id || book.id}`}
+        className={`group block h-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 p-4 transition-colors relative ${hoverBorderClass}`}
+      >
       <button
         onClick={handleUnbookmark}
         disabled={loading}
@@ -84,5 +95,6 @@ export default function BookmarkBookCard({
         {actionLabel}
       </div>
     </Link>
-  );
+  </motion.div>
+);
 }

@@ -234,19 +234,56 @@ export default function HeroCarousel() {
 
       <div className="relative mx-auto flex flex-col-reverse lg:grid min-h-[calc(100vh-8rem)] max-w-7xl gap-10 lg:grid-cols-[0.4fr_0.6fr] lg:items-center">
         {" "}
-        <div className="w-full text-center lg:text-left lg:max-w-xl lg:pr-6">
-          <p className="inline-flex rounded-full border border-sky-400/20 dark:border-sky-400/20 bg-sky-400/10 dark:bg-sky-400/10 px-4 py-2 text-[10px] lg:text-xs font-black uppercase tracking-[0.25em] text-sky-600 dark:text-sky-300">
+        <motion.div 
+          className="w-full text-center lg:text-left lg:max-w-xl lg:pr-6"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.12,
+              }
+            }
+          }}
+        >
+          <motion.p 
+            variants={{
+              hidden: { opacity: 0, y: 15 },
+              visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+            }}
+            className="inline-flex rounded-full border border-sky-400/20 dark:border-sky-400/20 bg-sky-400/10 dark:bg-sky-400/10 px-4 py-2 text-[10px] lg:text-xs font-black uppercase tracking-[0.25em] text-sky-600 dark:text-sky-300"
+          >
             Lighten your heart by reading books.
-          </p>
-          <h1 className="mt-6  text-2xl font-black leading-tight text-slate-900 dark:text-white sm:text-4xl lg:text-6xl">
+          </motion.p>
+          <motion.h1 
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+            }}
+            className="mt-6 text-2xl font-black leading-tight text-slate-900 dark:text-white sm:text-4xl lg:text-6xl"
+          >
             Discover & Read Original Ebooks
-          </h1>
-          <p className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
+          </motion.h1>
+          <motion.p 
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+            }}
+            className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg"
+          >
             Explore curated literature masterpieces handpicked by our librarians
             for readers chasing dynamic modern stories.
-          </p>
+          </motion.p>
 
-          <div className="my-8 flex justify-center lg:justify-start items-center gap-3">
+          <motion.div 
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+            }}
+            className="my-8 flex justify-center lg:justify-start items-center gap-3"
+          >
             <HeroButton href="/books" variant="primary">
               Browse Ebooks
               <FaArrowRight />
@@ -255,8 +292,8 @@ export default function HeroCarousel() {
               <MdDashboard />
               View Dashboard
             </HeroButton>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
         <div className="relative w-full">
           <div className="absolute inset-0 rounded-4xl bg-sky-500/5 dark:bg-sky-500/10 blur-3xl" />
           <div className="relative">

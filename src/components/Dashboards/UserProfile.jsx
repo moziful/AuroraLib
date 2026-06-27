@@ -4,6 +4,7 @@ import { MdEmail, MdPerson, MdVerifiedUser, MdEdit, MdSave, MdClose, MdCameraAlt
 import { authClient } from "@/lib/auth-client";
 import { toast } from "react-toastify";
 import { updateUserDetails } from "@/lib/actions";
+import { motion } from "framer-motion";
 
 import RoleBadge from "@/components/RoleBadge";
 
@@ -48,8 +49,6 @@ export default function UserProfile({ user, role = "Reader" }) {
     );
   }
 
-
-
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -59,20 +58,29 @@ export default function UserProfile({ user, role = "Reader" }) {
 
     setUploading(true);
     try {
-      const formData = new FormData();
-      formData.append("image", file);
-      const res = await fetch("/api/upload-image", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || "Upload failed");
+      const data = new FormData();
+      data.append("file", file);
+      data.append("upload_preset", "solaiman");
+      data.append("cloud_name", "dsubx18sp");
+
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/dsubx18sp/image/upload",
+        {
+          method: "POST",
+          body: data,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to upload image to Cloudinary");
       }
-      setImagePreview(data.url);
-      toast.success("Profile picture uploaded successfully!");
+
+      const resData = await response.json();
+      setImagePreview(resData.secure_url);
+      toast.info("Avatar uploaded to storage. Click 'Save Profile' to finalize.");
     } catch (err) {
-      toast.error("Profile picture upload failed: " + err.message);
+      console.error(err);
+      toast.error("Avatar upload failed: " + err.message);
       // Reset back to original image
       setImagePreview(user?.image || "");
     } finally {
@@ -122,7 +130,11 @@ export default function UserProfile({ user, role = "Reader" }) {
   };
 
   return (
-    <div className="max-w-2xl rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-6 shadow-xl relative">
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="max-w-2xl rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-6 shadow-xl relative"
+    >
       {/* Edit Trigger Pen Icon */}
       {!isEditing && (
         <button
@@ -245,6 +257,6 @@ export default function UserProfile({ user, role = "Reader" }) {
           </button>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
