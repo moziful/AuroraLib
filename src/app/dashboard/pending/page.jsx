@@ -39,7 +39,7 @@ export default function PendingDashboard() {
 
     try {
       const userId = session.user.id;
-      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
       const url = `${apiBase}/users/${userId}/role`;
       const res = await fetch(url, {
         method: "PATCH",
