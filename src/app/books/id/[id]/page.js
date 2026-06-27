@@ -37,7 +37,7 @@ export default async function BookDetailsPage({ params }) {
   const statusStyles = getStatusStyles(book.status);
 
   return (
-    <div className="sm:h-[calc(100vh-4rem)] overflow-hidden bg-white dark:bg-slate-950 px-4 py-6">
+    <div className="min-h-[calc(100vh-4rem)] sm:h-[calc(100vh-4rem)] bg-white dark:bg-slate-950 px-4 py-6 overflow-y-auto sm:overflow-hidden">
       <div className="mx-auto flex h-full min-h-0 max-w-7xl flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <BackButton />

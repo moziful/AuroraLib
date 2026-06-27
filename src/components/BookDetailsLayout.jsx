@@ -59,13 +59,13 @@ export default function BookDetailsLayout({
   ];
 
   return (
-    <div className="grid flex-1 min-h-0 grid-cols-1 sm:grid-cols-3 gap-2 overflow-hidden rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 md:flex-row">
+    <div className="flex flex-col sm:grid sm:grid-cols-3 flex-1 sm:min-h-0 gap-4 sm:gap-2 overflow-visible sm:overflow-hidden rounded-xl border-0 sm:border-2 border-slate-300 dark:border-slate-700 bg-transparent sm:bg-slate-100 dark:sm:bg-slate-800">
       {/* Left side content (Image) */}
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, type: "spring", stiffness: 100, damping: 20 }}
-        className="relative h-full min-h-0 w-full overflow-hidden shrink-0"
+        className="relative h-80 sm:h-full min-h-0 w-full overflow-hidden shrink-0 rounded-t-xl sm:rounded-none"
       >
         <Image
           src={book.coverImage || "/placeholder-cover.png"}
@@ -82,19 +82,19 @@ export default function BookDetailsLayout({
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.15 }}
-        className="min-h-0 overflow-hidden bg-white dark:bg-slate-900 p-6 shadow-lg shadow-black/20 overflow-y-auto scrollbar-none"
+        className="sm:min-h-0 bg-white dark:bg-slate-900 p-6 shadow-none sm:shadow-lg sm:shadow-black/20 sm:overflow-y-auto scrollbar-none rounded-xl sm:rounded-none"
       >
-        <h1 className="mb-2 text-4xl font-black text-slate-800 dark:text-white lg:text-5xl tracking-tight leading-tight">
+        <h1 className="mb-2 text-3xl sm:text-4xl font-black text-slate-800 dark:text-white lg:text-5xl tracking-tight leading-tight">
           {book.title}
         </h1>
         <div className="h-1 w-12 bg-sky-500 rounded mb-4" />
-        <p className="text-base leading-8 text-slate-600 dark:text-slate-300 text-justify">
+        <p className="text-sm sm:text-base leading-7 sm:leading-8 text-slate-600 dark:text-slate-300 text-justify">
           {book.description}
         </p>
       </motion.div>
 
       {/* Right side content (Sidebar & Buy details) */}
-      <div className="flex min-h-0 flex-col justify-between bg-slate-100 dark:bg-slate-800 overflow-hidden">
+      <div className="flex sm:min-h-0 flex-col justify-between bg-slate-100 dark:bg-slate-800 rounded-xl sm:rounded-none overflow-hidden">
         <div className="space-y-0.5">
           {sidebarItems.map((item, idx) => (
             <motion.div
@@ -140,3 +140,4 @@ export default function BookDetailsLayout({
     </div>
   );
 }
+

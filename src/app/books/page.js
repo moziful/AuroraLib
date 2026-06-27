@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getAllBooks } from "@/lib/data";
-import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaTimes, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import BookCard, { BookCardSkeleton } from "@/components/BookCard";
 import { motion } from "framer-motion";
 
@@ -71,6 +71,7 @@ function EbooksPage() {
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [restored, setRestored] = useState(false);
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   const isFirstFetch = useRef(true);
 
@@ -233,88 +234,109 @@ function EbooksPage() {
           </span>
         </h1>
       </div>
-      <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-4 mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-4 items-end shadow-lg shadow-black/20">
-        <div className="w-full sm:col-span-2 md:col-span-3 lg:col-span-2 xl:col-span-2">
+      <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-4 mb-8 flex flex-col lg:grid lg:grid-cols-12 gap-3 items-end shadow-lg shadow-black/20">
+        <div className="w-full lg:col-span-3 flex flex-col gap-1">
           <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Search (Title, Author, Genre)</label>
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Type to search..."
-            className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors placeholder:text-slate-500"
-          />
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Type to search..."
+              className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors placeholder:text-slate-500"
+            />
+            <button
+              onClick={handleClearFilters}
+              title="Clear Filters"
+              className="lg:hidden h-9 w-9 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 flex items-center justify-center transition-colors shrink-0 text-sm"
+            >
+              <FaTimes />
+            </button>
+            <button
+              onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
+              title={isMobileFiltersOpen ? "Collapse Filters" : "Expand Filters"}
+              className="lg:hidden h-9 w-9 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 flex items-center justify-center transition-colors shrink-0 text-sm"
+            >
+              {isMobileFiltersOpen ? <FaChevronUp /> : <FaChevronDown />}
+            </button>
+          </div>
         </div>
-        <div className="w-full">
-          <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Genre</label>
-          <select
-            value={genre}
-            onChange={(e) => setGenre(e.target.value)}
-            className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors"
-          >
-            <option value="all">All Genres</option>
-            {GENRES.map((g) => (
-              <option key={g} value={g}>{g}</option>
-            ))}
-          </select>
+
+        <div className={`${isMobileFiltersOpen ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:contents" : "hidden lg:contents"} gap-3 w-full`}>
+          <div className="w-full lg:col-span-2">
+            <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Genre</label>
+            <select
+              value={genre}
+              onChange={(e) => setGenre(e.target.value)}
+              className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors"
+            >
+              <option value="all">All Genres</option>
+              {GENRES.map((g) => (
+                <option key={g} value={g}>{g}</option>
+              ))}
+            </select>
+          </div>
+          <div className="w-full lg:col-span-2">
+            <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Status</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors"
+            >
+              <option value="all">All Status</option>
+              <option value="Available">Available</option>
+              <option value="Unavailable">Unavailable</option>
+              <option value="Coming Soon">Coming Soon</option>
+            </select>
+          </div>
+          <div className="w-full lg:col-span-1">
+            <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Min ($)</label>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              placeholder="Min"
+              className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-2 text-xs sm:text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors placeholder:text-slate-500"
+            />
+          </div>
+          <div className="w-full lg:col-span-1">
+            <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Max ($)</label>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              placeholder="Max"
+              className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-2 text-xs sm:text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors placeholder:text-slate-500"
+            />
+          </div>
+          <div className="w-full lg:col-span-2">
+            <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Sort By</label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors"
+            >
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+              <option value="price_low">Price: Low to High</option>
+              <option value="price_high">Price: High to Low</option>
+            </select>
+          </div>
+          <div className="w-full lg:col-span-1 flex justify-end">
+            <button
+              onClick={handleClearFilters}
+              title="Clear Filters"
+              className="flex w-full h-9 px-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white items-center justify-center gap-1 transition-colors text-xs font-medium whitespace-nowrap shrink-0"
+            >
+              <FaTimes />
+              <span>Clear</span>
+            </button>
+          </div>
         </div>
-        <div className="w-full">
-          <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Status</label>
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors"
-          >
-            <option value="all">All Status</option>
-            <option value="Available">Available</option>
-            <option value="Unavailable">Unavailable</option>
-            <option value="Coming Soon">Coming Soon</option>
-          </select>
-        </div>
-        <div className="w-full">
-          <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Min Price ($)</label>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-            placeholder="Min"
-            className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors placeholder:text-slate-500"
-          />
-        </div>
-        <div className="w-full">
-          <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Max Price ($)</label>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-            placeholder="Max"
-            className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors placeholder:text-slate-500"
-          />
-        </div>
-        <div className="w-full">
-          <label className="block text-xs text-slate-700 dark:text-slate-400 mb-1">Sort By</label>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-600 dark:text-slate-200 focus:outline-none focus:border-sky-400 transition-colors"
-          >
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="price_low">Price: Low to High</option>
-            <option value="price_high">Price: High to Low</option>
-          </select>
-        </div>
-        <button
-          onClick={handleClearFilters}
-          title="Clear Filters"
-          className="w-full h-10 px-4 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center gap-2 transition-colors text-sm font-medium"
-        >
-          <FaTimes />
-          <span>Clear Filters</span>
-        </button>
       </div>
       <motion.div
         variants={{
