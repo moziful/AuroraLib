@@ -4,7 +4,7 @@ export const getAllBooks = async (params = {}) => {
             Object.entries(params).filter(([_, v]) => v != null && v !== "")
         ).toString();
         const url = `${process.env.NEXT_PUBLIC_API_URL}/books${queryParams ? `?${queryParams}` : ''}`;
-        const res = await fetch(url);
+        const res = await fetch(url, { cache: "no-store" });
 
         if (!res.ok) {
             console.error(`API error: ${res.status} ${res.statusText}`);
@@ -22,7 +22,8 @@ export const getAllBooks = async (params = {}) => {
 export const getBooksByEmail = async (email) => {
     try {
         const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/books/email/${encodeURIComponent(email)}`
+            `${process.env.NEXT_PUBLIC_API_URL}/books/email/${encodeURIComponent(email)}`,
+            { cache: "no-store" }
         );
 
         if (!res.ok) {
@@ -39,7 +40,7 @@ export const getBooksByEmail = async (email) => {
 
 export const getBookById = async (id) => {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books/${id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books/${id}`, { cache: "no-store" });
 
         if (!res.ok) {
             console.error(`API error: ${res.status} ${res.statusText}`);

@@ -143,39 +143,30 @@ export default function WriterDashboard() {
     }
   };
 
+  const loadWriterData = async () => {
+    if (!user?.email) return;
+    setLoading(true);
+    try {
+      const [writerBooks, salesData, bookmarksData, purchasedData] = await Promise.all([
+        getBooksByEmail(user.email),
+        getWriterSales(user.email),
+        getBookmarkedBooks(user.email),
+        getPurchasedBooks(user.email),
+      ]);
+
+      setBooks(writerBooks || []);
+      setSales(salesData || []);
+      setBookmarks(bookmarksData || []);
+      setPurchasedBooks(purchasedData || []);
+    } catch (err) {
+      console.error("Failed to load writer data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    let alive = true;
-
-    const loadWriterData = async () => {
-      if (!user?.email) return;
-      setLoading(true);
-      try {
-        const [writerBooks, salesData, bookmarksData, purchasedData] = await Promise.all([
-          getBooksByEmail(user.email),
-          getWriterSales(user.email),
-          getBookmarkedBooks(user.email),
-          getPurchasedBooks(user.email),
-        ]);
-
-        if (alive) {
-          setBooks(writerBooks || []);
-          setSales(salesData || []);
-          setBookmarks(bookmarksData || []);
-          setPurchasedBooks(purchasedData || []);
-        }
-      } catch (err) {
-        console.error("Failed to load writer data:", err);
-      } finally {
-        if (alive) {
-          setLoading(false);
-        }
-      }
-    };
-
     loadWriterData();
-    return () => {
-      alive = false;
-    };
   }, [user?.email]);
 
   const handleUnbookmark = (bookId) => {
@@ -397,8 +388,8 @@ export default function WriterDashboard() {
                   <AddBookForm
                     initialData={editingBookData}
                     onSuccess={() => {
-                      fetchWriterBooks();
-                      setActiveTab("manage");
+                      loadWriterData();
+                      handleTabChange("manage");
                     }}
                   />
                 </div>

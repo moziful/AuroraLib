@@ -209,6 +209,7 @@ export default function AddBookForm({ initialData, onSuccess }) {
       if (initialData) {
         await updateBook(initialData._id || initialData.id, payload, token);
         toast.success("Book updated successfully!");
+        await revalidateBooks();
         if (onSuccess) {
           setTimeout(() => onSuccess(), 1500);
           return;

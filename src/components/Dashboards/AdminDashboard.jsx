@@ -114,41 +114,31 @@ export default function AdminDashboard() {
     { id: "profile", label: "Profile Management", icon: MdPerson },
   ];
 
-  useEffect(() => {
-    let active = true;
+  const loadAdminData = async () => {
+    setLoading(true);
+    try {
+      const [overviewData, usersRes] = await Promise.all([
+        getAdminOverviewData(),
+        authClient.admin.listUsers({ query: { limit: 100 } }).catch((err) => {
+          console.error("Failed to fetch users:", err);
+          return { data: { users: [] } };
+        }),
+      ]);
 
-    const loadAdminData = async () => {
-      setLoading(true);
-      try {
-        const [overviewData, usersRes] = await Promise.all([
-          getAdminOverviewData(),
-          authClient.admin.listUsers({ query: { limit: 100 } }).catch((err) => {
-            console.error("Failed to fetch users:", err);
-            return { data: { users: [] } };
-          }),
-        ]);
-
-        if (active) {
-          setEbooks(overviewData.ebooks || []);
-          setTransactions(overviewData.transactions || []);
-          if (usersRes?.data?.users) {
-            setUsers(usersRes.data.users);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to load admin dashboard data:", err);
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
+      setEbooks(overviewData.ebooks || []);
+      setTransactions(overviewData.transactions || []);
+      if (usersRes?.data?.users) {
+        setUsers(usersRes.data.users);
       }
-    };
+    } catch (err) {
+      console.error("Failed to load admin dashboard data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadAdminData();
-
-    return () => {
-      active = false;
-    };
   }, []);
 
   useEffect(() => {
@@ -636,8 +626,8 @@ export default function AdminDashboard() {
                 <AddBookForm
                   initialData={editingBookData}
                   onSuccess={() => {
-                    setEditingBookData(null);
-                    setActiveTab("ebooks");
+                    loadAdminData();
+                    handleTabChange("ebooks");
                   }}
                 />
               </div>
