@@ -110,9 +110,12 @@ export default function Footer() {
         <p></p>
         <p>
           Developed by{" "}
-          <span className="text-sky-400 font-semibold leading-loose uppercase text-xs bg-sky-100/20 rounded-sm px-1">
+          <Link
+            href="http://moziful.vercel.app/"
+            className="text-sky-400 font-semibold leading-loose uppercase text-xs bg-sky-100/20 rounded-sm px-1"
+          >
             Moziful Haque
-          </span>
+          </Link>
         </p>
       </div>
     </footer>
